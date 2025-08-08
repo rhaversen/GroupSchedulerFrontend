@@ -4,38 +4,51 @@ import axios from 'axios'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { type ReactElement, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import validator from 'validator'
 
 const ConfirmEmailInner = (): ReactElement => {
 	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const searchParams = useSearchParams()
 	const [message, setMessage] = useState('')
 	const [isSuccess, setIsSuccess] = useState(false)
+	const [isError, setIsError] = useState(false)
 	const [codeInput, setCodeInput] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
 
+	const [resendEmail, setResendEmail] = useState('')
+	const [resendMessage, setResendMessage] = useState('')
+	const [resendIsError, setResendIsError] = useState(false)
+	const [isResendLoading, setIsResendLoading] = useState(false)
+	const [showResendForm, setShowResendForm] = useState(false)
+
 	const codeFromQuery = searchParams?.get('confirmationCode') ?? ''
 	const hasCodeInQuery = useMemo(() => codeFromQuery.length > 0, [codeFromQuery])
+	const isResendEmailValid = useMemo(() => validator.isEmail(resendEmail || ''), [resendEmail])
 
 	const confirmWithCode = useCallback(async (code: string): Promise<void> => {
 		if (typeof API_URL !== 'string' || API_URL.length === 0) {
 			setMessage('Server is not configured. Please try again later.')
 			setIsSuccess(false)
+			setIsError(true)
 			return
 		}
 
 		if (code.trim().length === 0) {
 			setMessage('Please enter a confirmation code.')
 			setIsSuccess(false)
+			setIsError(true)
 			return
 		}
 
 		setIsLoading(true)
+		setIsError(false)
 		setMessage('Confirming your email...')
 		try {
 			const encoded = encodeURIComponent(code.trim())
 			const res = await axios.post(`${API_URL}/v1/users/confirm?confirmationCode=${encoded}`)
 			setMessage(res?.data?.message ?? 'Confirmation successful! Your account has been activated.')
 			setIsSuccess(true)
+			setIsError(false)
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				setMessage(error.response?.data?.error ?? 'Confirmation unsuccessful. Please try again.')
@@ -43,10 +56,43 @@ const ConfirmEmailInner = (): ReactElement => {
 				setMessage('Confirmation unsuccessful. Please try again.')
 			}
 			setIsSuccess(false)
+			setIsError(true)
 		} finally {
 			setIsLoading(false)
 		}
 	}, [API_URL])
+
+	const requestNewConfirmation = useCallback(async (): Promise<void> => {
+		setResendMessage('')
+		setResendIsError(false)
+
+		if (typeof API_URL !== 'string' || API_URL.length === 0) {
+			setResendMessage('Server is not configured. Please try again later.')
+			setResendIsError(true)
+			return
+		}
+		if (!isResendEmailValid) {
+			setResendMessage('Enter a valid email address')
+			setResendIsError(true)
+			return
+		}
+
+		try {
+			setIsResendLoading(true)
+			await axios.post(`${API_URL}/v1/users/request-confirmation`, { email: resendEmail })
+			setResendMessage('If your account is unconfirmed, a new confirmation email has been sent.')
+			setResendIsError(false)
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				setResendMessage(error.response?.data?.error ?? 'Unable to send confirmation email. Please try again later.')
+			} else {
+				setResendMessage('Unable to send confirmation email. Please try again later.')
+			}
+			setResendIsError(true)
+		} finally {
+			setIsResendLoading(false)
+		}
+	}, [API_URL, resendEmail, isResendEmailValid])
 
 	useEffect(() => {
 		if (!hasCodeInQuery) {
@@ -64,12 +110,12 @@ const ConfirmEmailInner = (): ReactElement => {
 	return (
 		<div className="w-full max-w-md space-y-4">
 			{message !== '' && (
-				<div className={`px-4 py-2 rounded border ${isSuccess ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+				<div className={`px-4 py-2 rounded border ${isError ? 'bg-red-50 border-red-200 text-red-800' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
 					<p>{message}</p>
 				</div>
 			)}
 
-			{!hasCodeInQuery && !isSuccess && (
+			{!isSuccess && !showResendForm && !hasCodeInQuery && (
 				<form
 					className="space-y-3 bg-white p-4 rounded shadow"
 					onSubmit={(e) => {
@@ -89,12 +135,60 @@ const ConfirmEmailInner = (): ReactElement => {
 					/>
 					<button
 						type="submit"
-						disabled={isLoading}
-						className="w-full rounded bg-indigo-600 text-white py-2 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
+						disabled={isLoading || codeInput.trim().length === 0}
+						className="w-full rounded bg-indigo-600 text-white py-2 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
 					>
 						{isLoading ? 'Confirming…' : 'Confirm Email'}
 					</button>
 				</form>
+			)}
+
+			{!isSuccess && showResendForm && (
+				<div className="space-y-3 bg-white p-4 rounded shadow">
+					<h2 className="text-sm font-medium text-gray-800">{'Resend confirmation email'}</h2>
+					<form onSubmit={(e) => {
+						e.preventDefault()
+						void requestNewConfirmation()
+					}} className="space-y-2">
+						<label className="block text-sm font-medium text-gray-700" htmlFor="resendEmail">{'Email'}</label>
+						<input
+							id="resendEmail"
+							type="email"
+							value={resendEmail}
+							onChange={(e) => setResendEmail(e.target.value)}
+							placeholder="Enter your email"
+							className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							autoComplete="email"
+						/>
+						{resendEmail.length > 0 && !isResendEmailValid && (
+							<p className="text-xs text-red-600">{'Enter a valid email address'}</p>
+						)}
+						<button
+							type="submit"
+							disabled={isResendLoading || !isResendEmailValid}
+							className="w-full rounded bg-indigo-600 text-white py-2 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+						>
+							{isResendLoading ? 'Sending…' : 'Send confirmation email'}
+						</button>
+					</form>
+					{resendMessage !== '' && (
+						<div className={`px-3 py-2 rounded border ${resendIsError ? 'bg-red-50 border-red-200 text-red-800' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
+							<p>{resendMessage}</p>
+						</div>
+					)}
+				</div>
+			)}
+
+			{!isSuccess && (
+				<div>
+					<button
+						type="button"
+						onClick={() => setShowResendForm(prev => !prev)}
+						className="text-sm text-indigo-600 hover:text-indigo-900 underline cursor-pointer"
+					>
+						{showResendForm ? 'I have a confirmation code' : 'Resend confirmation email'}
+					</button>
+				</div>
 			)}
 
 			<div className="text-sm">
