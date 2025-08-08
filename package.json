@@ -20,7 +20,8 @@
 		"react-dom": "19.1.0",
 		"react-icons": "^5.5.0",
 		"react-use": "^17.6.0",
-		"socket.io-client": "^4.8.1"
+		"socket.io-client": "^4.8.1",
+		"validator": "^13.15.15"
 	},
 	"engines": {
 		"node": ">=22.0.0"
@@ -33,6 +34,7 @@
 		"@types/node": "^22.15.21",
 		"@types/react": "19.1.5",
 		"@types/react-dom": "19.1.5",
+		"@types/validator": "^13.15.2",
 		"@typescript-eslint/eslint-plugin": "^8.32.1",
 		"cspell": "^9.0.2",
 		"eslint": "^9.27.0",
