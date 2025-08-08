@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 		default: 'RainDate'
 	},
 	description: 'Find the Time to Do Some Things',
-	keywords: 'event, planning, calendar, events, dashboard, availability, group scheduler, friends, holiday, vacation, plans, rally, RainDate, reindate, schedule, social gatherings, time, date, ocean, rain',
+	keywords: ['event', 'planning', 'calendar', 'events', 'dashboard', 'availability', 'group scheduler', 'friends', 'holiday', 'vacation', 'plans', 'rally', 'RainDate', 'reindate', 'schedule', 'social gatherings', 'time', 'date', 'ocean', 'rain', 'find the time to do some things', 'umbrella', 'date', 'group scheduling', 'group scheduling app', 'group scheduling tool'],
 	alternates: {
 		canonical: 'https://www.raindate.net'
 	},
