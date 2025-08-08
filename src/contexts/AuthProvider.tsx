@@ -1,0 +1,64 @@
+'use client'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import { type ReactNode, useCallback, useEffect, useState } from 'react'
+
+import { useEntitySocket } from '@/hooks/CudWebsocket'
+import { type SessionType } from '@/types/backendDataTypes'
+
+import { useError } from './ErrorProvider'
+import { useUser } from './UserProvider'
+
+export default function AdminAuthProvider ({ children }: Readonly<{ children: ReactNode }>): ReactNode {
+	const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+	const { addError } = useError()
+	const { setCurrentUser } = useUser()
+	const router = useRouter()
+
+	const [currentSession, setCurrentSession] = useState<string | null>(null)
+
+	const checkAuthentication = useCallback(async (): Promise<void> => {
+		try {
+			const response = await axios.get<string>(`${API_URL}/v1/auth/is-authenticated`, { withCredentials: true })
+			setCurrentSession(response.data)
+		} catch {
+			// If not authenticated, log out and redirect to admin login page
+			setCurrentUser(null)
+			setCurrentSession(null)
+			await axios.post(`${API_URL}/v1/auth/logout-local`, { withCredentials: true })
+			router.push('/login-admin')
+		}
+	}, [API_URL, router, setCurrentUser])
+
+	const checkAuthorization = useCallback(async (): Promise<void> => {
+		try {
+			// Check if user is an admin
+			await axios.get(`${API_URL}/v1/auth/is-admin`, { withCredentials: true })
+			// If admin, do nothing (let them stay on the current page)
+		} catch {
+			// If not admin, redirect to login page
+			router.push('/login-admin')
+		}
+	}, [API_URL, router])
+
+	// Run the authentication and authorization checks on component mount
+	useEffect(() => {
+		if (currentSession === null) {
+			checkAuthentication().then(checkAuthorization).catch(addError)
+		}
+	}, [currentSession, checkAuthentication, checkAuthorization, addError])
+
+	// Listen for session CUD events
+	useEntitySocket<SessionType>('session', {
+		onDelete: (deletedSessionId) => {
+			if (deletedSessionId === currentSession) {
+				setCurrentUser(null)
+				setCurrentSession(null)
+				router.push('/login-admin')
+			}
+		}
+	})
+
+	return <>{children}</>
+}

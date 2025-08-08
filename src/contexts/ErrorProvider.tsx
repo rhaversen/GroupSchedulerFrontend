@@ -1,10 +1,28 @@
 'use client'
 
 import { isAxiosError } from 'axios'
-import React, { type ReactNode, useCallback, useState } from 'react'
+import React, { createContext, type ReactNode, useCallback, useContext, useState } from 'react'
 
 import ErrorWindow from '@/components/ui/ErrorWindow'
-import { ErrorContext, type ErrorInfo } from '@/contexts/ErrorContext/ErrorContext'
+
+export interface ErrorInfo {
+	id: number
+	error: string[]
+}
+
+interface ErrorContextType {
+	errors: ErrorInfo[]
+	addError: (...args: unknown[]) => void
+	removeError: (id: number) => void
+}
+
+export const ErrorContext = createContext<ErrorContextType>({
+	errors: [],
+	addError: () => {},
+	removeError: () => {}
+})
+
+export const useError = (): ErrorContextType => useContext(ErrorContext)
 
 /**
  * Parses various error inputs into an array of readable message strings.
