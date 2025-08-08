@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
+import { fredoka } from '@/lib/fonts'
+
 function Custom404 () {
 	const router = useRouter()
 	return (
@@ -31,24 +33,11 @@ function Custom404 () {
 			/>
 
 			<div className="absolute w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-				<h1
-					className="text-center text-9xl text-blue-700"
-				>
-					{'404\r'}
-				</h1>
+				<h1 className="text-center text-9xl text-blue-700">{'404\r'}</h1>
 
-				<h2
-					className="text-center text-3xl mb-5 text-blue-700"
-				>
-					{'Sorry, this page got lost at sea\r'}
-				</h2>
+				<h2 className={`${fredoka.className} text-center text-3xl mb-5 text-blue-700`}>{'Sorry, this page got lost at sea\r'}</h2>
 
-				<h3
-					className="text-center text-xl mb-5 text-blue-900"
-				>
-					{'This app is still under development, please come back later\r'}
-				</h3>
-
+				<h3 className={`${fredoka.className} text-center text-xl mb-5 text-blue-900`}>{'This app is still under development, please come back later\r'}</h3>
 				<button
 					className="block mx-auto px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-950 transition-colors"
 					onClick={() => router.push('/')}
