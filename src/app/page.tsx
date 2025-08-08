@@ -32,17 +32,26 @@ const Dashboard: React.FC = () => {
 			<h1 className={`${caveat.className} font-bold absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 max-w-full text-5xl text-center text-blue-800 whitespace-nowrap`}>
 				{'Find the Time '}<br /> {'to Do Some Things\r'}
 			</h1>
-			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center w-full">
-				<Link href="/signup">
-					<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
-						{'Sign up\r'}
-					</button>
-				</Link>
-				<Link href="/login">
-					<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
-						{'Log in\r'}
-					</button>
-				</Link>
+			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
+				<div className="flex justify-center">
+					<Link href="/signup">
+						<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
+							{'Sign up\r'}
+						</button>
+					</Link>
+					<Link href="/login">
+						<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
+							{'Log in\r'}
+						</button>
+					</Link>
+				</div>
+				<div className="mt-4">
+					<Link href="/reset-password">
+						<button className={`${fredoka.className} text-sm bg-blue-800 text-white py-1.5 px-8 rounded-lg cursor-pointer transition duration-300`}>
+							{'Reset Password'}
+						</button>
+					</Link>
+				</div>
 			</div>
 		</div>
 	)

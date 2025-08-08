@@ -1,6 +1,7 @@
 'use client'
 
 import axios from 'axios'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import validator from 'validator'
@@ -61,17 +62,12 @@ function UsernameStep ({ username, onUsernameChange, onBack, onSubmit, isLoading
 					{isLoading ? 'Creating account...' : 'Create account'}
 				</button>
 			</div>
-			<div className="mt-2">
-				<button
-					type="button"
-					onClick={() => {
-						// Navigate back to home if desired
-						window.location.assign('/')
-					}}
-					className="text-sm text-indigo-600 hover:text-indigo-900"
-				>
-					{'Back to home'}
-				</button>
+			<div className="mt-2 space-y-2 text-sm text-left w-full max-w-sm">
+				<div>
+					<Link href="/" className="text-sm text-indigo-600 hover:text-indigo-900">
+						{'Back to home'}
+					</Link>
+				</div>
 			</div>
 		</form>
 	)
@@ -255,16 +251,20 @@ export default function Page (): ReactElement {
 									{'Continue'}
 								</button>
 							</div>
-							<div className="mt-2">
-								<button
-									type="button"
-									onClick={() => {
-										router.push('/login')
-									}}
-									className="text-sm text-indigo-600 hover:text-indigo-900"
-								>
-									{'Already have an account? Log in'}
-								</button>
+							<div className="mt-2 space-y-2 text-sm text-left w-full max-w-sm">
+								<div>
+									<span className="text-gray-700">{'Already have an account? '}</span>
+									<Link href="/login" className="text-indigo-600 hover:text-indigo-900">{'Log in'}</Link>
+								</div>
+								<div>
+									<span className="text-gray-700">{'Forgot your password? ' }</span>
+									<Link href="/reset-password" className="text-indigo-600 hover:text-indigo-900">{'Reset it'}</Link>
+								</div>
+								<div>
+									<Link href="/" className="text-sm text-indigo-600 hover:text-indigo-900">
+										{'Back to home'}
+									</Link>
+								</div>
 							</div>
 						</form>
 					</div>

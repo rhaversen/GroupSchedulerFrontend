@@ -1,6 +1,7 @@
 'use client'
 
 import axios from 'axios'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { type ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -114,11 +115,20 @@ export default function Page (): ReactElement {
 					</button>
 				</div>
 			</form>
-			<div className="mt-5">
-				<button type="button" onClick={() => { router.push('/') }}
-					className="text-sm text-indigo-600 hover:text-indigo-900">
-					{'Back to home'}
-				</button>
+			<div className="mt-5 space-y-2 text-sm text-left w-full max-w-sm">
+				<div>
+					<span className="text-gray-700">{'Don\'t have an account? '}</span>
+					<Link href="/signup" className="text-indigo-600 hover:text-indigo-900">{'Sign up'}</Link>
+				</div>
+				<div>
+					<span className="text-gray-700">{'Forgot your password? ' }</span>
+					<Link href="/reset-password" className="text-indigo-600 hover:text-indigo-900">{'Reset it'}</Link>
+				</div>
+				<div>
+					<Link href="/" className="text-sm text-indigo-600 hover:text-indigo-900">
+						{'Back to home'}
+					</Link>
+				</div>
 			</div>
 		</main>
 	)
