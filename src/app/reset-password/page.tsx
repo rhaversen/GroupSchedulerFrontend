@@ -1,12 +1,12 @@
-'use client'
+"use client"
 
 import axios from 'axios'
 import Link from 'next/link'
-import React, { type ReactElement, useCallback, useMemo, useState } from 'react'
+import React, { type ReactElement, Suspense, useCallback, useMemo, useState } from 'react'
 import validator from 'validator'
 import { useSearchParams } from 'next/navigation'
 
-export default function Page (): ReactElement {
+const ResetPasswordInner = (): ReactElement => {
 	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const searchParams = useSearchParams()
 	const passwordResetCodeFromQuery = searchParams.get('passwordResetCode')
@@ -214,5 +214,13 @@ export default function Page (): ReactElement {
 				</div>
 			</div>
 		</main>
+	)
+}
+
+export default function Page (): ReactElement {
+	return (
+		<Suspense fallback={<div />}>
+			<ResetPasswordInner />
+		</Suspense>
 	)
 }
