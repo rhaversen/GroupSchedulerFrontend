@@ -24,23 +24,24 @@ function UsernameStep ({ username, onUsernameChange, onBack, onSubmit, isLoading
 	return (
 		<form className="w-full max-w-sm flex flex-col justify-between space-y-5" onSubmit={onSubmit}>
 			<div className="space-y-1">
-				<h1 className="text-2xl font-semibold text-gray-900">{'Hello there!'}</h1>
-				<p className="text-sm text-gray-600">{'Please type your name to finish setting up your account.'}</p>
+				<h1 className="text-2xl font-semibold text-gray-900">{'Hello There!'}</h1>
+				<p className="text-sm text-gray-600">{'What should we call you?'}</p>
 			</div>
 			<div className="space-y-2">
-				<label htmlFor="username" className="block text-sm font-medium text-gray-700">
-					{'Name'}
-				</label>
 				<input
 					type="text"
 					id="username"
 					name="username"
 					value={username}
 					onChange={(e) => onUsernameChange(e.target.value)}
-					placeholder="Your name"
+					placeholder="Your username"
+					aria-describedby="username-help"
 					className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 					required
 				/>
+				<p id="username-help" className="text-xs text-gray-500">
+					{'This is how others will recognize you. Don’t worry, you can always change this later.'}
+				</p>
 			</div>
 			<div className="flex gap-3">
 				<button
@@ -203,7 +204,7 @@ export default function Page (): ReactElement {
 									required
 								/>
 								{!emailValid && email.length > 0 && (
-									<p className="text-xs text-red-600">{'Enter a valid email address'}</p>
+									<p className="mt-1 text-xs text-red-600">{'Enter a valid email address'}</p>
 								)}
 							</div>
 							<div className="space-y-2">
@@ -220,7 +221,7 @@ export default function Page (): ReactElement {
 									required
 								/>
 								{password.length > 0 && !passwordValid && (
-									<p className="text-xs text-red-600">{'Password must be at least 4 characters long'}</p>
+									<p className="mt-1 text-xs text-red-600">{'Password must be at least 4 characters long'}</p>
 								)}
 							</div>
 							<div className="space-y-2">
@@ -237,7 +238,7 @@ export default function Page (): ReactElement {
 									required
 								/>
 								{!passwordsMatch && confirmPassword.length > 0 && (
-									<p className="text-xs text-red-600">{'Passwords must match'}</p>
+									<p className="mt-1 text-xs text-red-600">{'Passwords must match'}</p>
 								)}
 							</div>
 							<div>
@@ -253,11 +254,11 @@ export default function Page (): ReactElement {
 							</div>
 							<div className="mt-2 space-y-2 text-sm text-left w-full max-w-sm">
 								<div>
-									<span className="text-gray-700">{'Already have an account? '}</span>
+									<span className="text-gray-600">{'Already have an account? '}</span>
 									<Link href="/login" className="text-indigo-600 hover:text-indigo-900">{'Log in'}</Link>
 								</div>
 								<div>
-									<span className="text-gray-700">{'Forgot your password? ' }</span>
+									<span className="text-gray-600">{'Forgot your password? ' }</span>
 									<Link href="/reset-password" className="text-indigo-600 hover:text-indigo-900">{'Reset it'}</Link>
 								</div>
 								<div>
