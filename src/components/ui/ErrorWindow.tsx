@@ -35,7 +35,7 @@ const ErrorWindow = ({ error, onClose }: { error: string[]; onClose: () => void 
 		>
 			<div className="right-0 top-5 flex flex-row p-2">
 				<div className="flex flex-col justify-center items-center">
-					<h1 className="text-xl font-bold text-white">{'Der skete en fejl'}</h1>
+					<h1 className="text-xl font-bold text-white">{'An error occurred'}</h1>
 					<ul className="list-disc pl-5">
 						{messages.map((msg, idx) => (
 							<li key={idx} className="text-lg text-white">{msg}</li>
