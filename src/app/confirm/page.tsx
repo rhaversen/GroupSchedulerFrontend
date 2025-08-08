@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { type ReactElement, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import validator from 'validator'
+
 import { useUser } from '@/contexts/UserProvider'
 import { type UserType } from '@/types/backendDataTypes'
 
@@ -58,13 +59,12 @@ const ConfirmEmailInner = (): ReactElement => {
 			const data: unknown = res?.data
 			let newMessage: string | undefined
 			let updatedUser: UserType | undefined
-			if (data && typeof data === 'object') {
+			if (data != null && typeof data === 'object') {
 				const maybeObj = data as Record<string, unknown>
-				if (typeof maybeObj.message === 'string') newMessage = maybeObj.message
-				if (maybeObj.user && typeof maybeObj.user === 'object') updatedUser = maybeObj.user as UserType
-				else if (typeof (maybeObj as any)._id === 'string') updatedUser = maybeObj as unknown as UserType
+				if (typeof maybeObj.message === 'string') { newMessage = maybeObj.message }
+				if (maybeObj.user != null && typeof maybeObj.user === 'object') { updatedUser = maybeObj.user as UserType } else if (typeof (maybeObj)._id === 'string') { updatedUser = maybeObj as unknown as UserType }
 			}
-			if (updatedUser) setCurrentUser(updatedUser)
+			if (updatedUser) { setCurrentUser(updatedUser) }
 			setMessage(newMessage ?? 'Confirmation successful! Your account has been activated.')
 			setIsSuccess(true)
 			setIsError(false)

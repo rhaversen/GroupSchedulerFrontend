@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
 import axios from 'axios'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import React, { type ReactElement, Suspense, useCallback, useMemo, useState } from 'react'
 import validator from 'validator'
-import { useSearchParams } from 'next/navigation'
 
 const ResetPasswordInner = (): ReactElement => {
 	const API_URL = process.env.NEXT_PUBLIC_API_URL
@@ -18,7 +18,7 @@ const ResetPasswordInner = (): ReactElement => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [shouldShake, setShouldShake] = useState(false)
 	const [manualResetCode, setManualResetCode] = useState('')
-	const [step, setStep] = useState<number>(passwordResetCodeFromQuery ? 3 : 1)
+	const [step, setStep] = useState<number>((passwordResetCodeFromQuery != null) ? 3 : 1)
 
 	const effectiveResetCode = passwordResetCodeFromQuery ?? (manualResetCode || null)
 
@@ -105,13 +105,13 @@ const ResetPasswordInner = (): ReactElement => {
 		<main className="p-5 flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">
 			{step === 4 ? (
 				<div className="w-full max-w-sm flex flex-col space-y-5 text-center">
-					<h1 className="text-xl font-semibold">Password reset successful</h1>
-					<p className="text-sm text-gray-700">Your password has been updated. You can now log in with your new password.</p>
+					<h1 className="text-xl font-semibold">{'Password reset successful'}</h1>
+					<p className="text-sm text-gray-700">{'Your password has been updated. You can now log in with your new password.'}</p>
 					<Link
 						href="/login"
 						className="w-full inline-flex items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 					>
-						Go to login
+						{'Go to login\r'}
 					</Link>
 				</div>
 			) : (
