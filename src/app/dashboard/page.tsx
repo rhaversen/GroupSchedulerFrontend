@@ -171,13 +171,19 @@ export default function DashboardPage () {
 
 	useEffect(() => {
 		const loadEvents = async () => {
+			if (!currentUser) {
+				setEvents([])
+				setLoading(false)
+				return
+			}
+
 			try {
-				const response = await api.get<EventType[]>('/v1/events/user')
-				setEvents(response.data)
+				const response = await api.get<{ events: EventType[]; total: number }>(`/v1/events?memberOf=${currentUser._id}`)
+				setEvents(response.data.events)
 
 				// Extract unique user IDs from all participants
 				const userIds = new Set<string>()
-				response.data.forEach(event => {
+				response.data.events.forEach(event => {
 					event.participants.forEach(participant => {
 						userIds.add(participant.userId)
 					})
@@ -206,7 +212,7 @@ export default function DashboardPage () {
 			}
 		}
 		loadEvents()
-	}, [])
+	}, [currentUser])
 
 	const stats = useMemo((): DashboardStats => {
 		if (!events || !currentUser) {
