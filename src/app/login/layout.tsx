@@ -1,10 +1,9 @@
 import { type Metadata } from 'next'
+import { type ReactElement } from 'react'
 
 export const metadata: Metadata = {
-	title: {
-		template: '%s | RainDate',
-		default: 'Login'
-	},
+	title: 'Login',
+	description: 'Sign in to your RainDate account',
 	alternates: {
 		canonical: 'https://www.raindate.net/login'
 	}
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 export default function LoginLayout ({
 	children
 }: Readonly<{
-    children: React.ReactNode
-}>) {
-	return <div>{children}</div>
+	children: React.ReactNode
+}>): ReactElement {
+	return <>{children}</>
 }
