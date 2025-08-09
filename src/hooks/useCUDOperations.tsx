@@ -1,7 +1,7 @@
-import axios from 'axios'
 import { useCallback } from 'react'
 
 import { useError } from '@/contexts/ErrorProvider'
+import { api } from '@/lib/api'
 
 const useCUDOperations = <PostType, PatchType, ReturnType = void> (
 	entityPath: string
@@ -12,35 +12,33 @@ const useCUDOperations = <PostType, PatchType, ReturnType = void> (
 	createEntityAsync: (data: PostType) => Promise<ReturnType>
 	updateEntityAsync: (id: string, data: PatchType) => Promise<ReturnType>
 } => {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const { addError } = useError()
 
 	const createEntity = useCallback((data: PostType) => {
-		axios.post(`${API_URL}${entityPath}`, data, { withCredentials: true }).catch(addError)
-	}, [API_URL, entityPath, addError])
+		api.post(entityPath, data).catch(addError)
+	}, [entityPath, addError])
 
 	const createEntityAsync = useCallback(async (data: PostType) => {
-		const response = await axios.post<ReturnType>(`${API_URL}${entityPath}`, data, { withCredentials: true })
+		const response = await api.post<ReturnType>(entityPath, data)
 		return response.data
-	}, [API_URL, entityPath])
+	}, [entityPath])
 
 	const updateEntity = useCallback((id: string, data: PatchType) => {
-		const url = id ? `${API_URL}${entityPath}/${id}` : `${API_URL}${entityPath}`
-		axios.patch(url, data, { withCredentials: true }).catch(addError)
-	}, [API_URL, entityPath, addError])
+		const url = id ? `${entityPath}/${id}` : entityPath
+		api.patch(url, data).catch(addError)
+	}, [entityPath, addError])
 
 	const updateEntityAsync = useCallback(async (id: string, data: PatchType) => {
-		const url = id ? `${API_URL}${entityPath}/${id}` : `${API_URL}${entityPath}`
-		const response = await axios.patch<ReturnType>(url, data, { withCredentials: true })
+		const url = id ? `${entityPath}/${id}` : entityPath
+		const response = await api.patch<ReturnType>(url, data)
 		return response.data
-	}, [API_URL, entityPath])
+	}, [entityPath])
 
 	const deleteEntity = useCallback((id: string, confirm: boolean) => {
-		axios.delete(`${API_URL}${entityPath}/${id}`, {
-			data: { confirm },
-			withCredentials: true
+		api.delete(`${entityPath}/${id}`, {
+			data: { confirm }
 		}).catch(addError)
-	}, [API_URL, entityPath, addError])
+	}, [entityPath, addError])
 
 	return {
 		createEntity,

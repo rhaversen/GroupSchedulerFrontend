@@ -1,13 +1,13 @@
 'use client'
 
-import axios from 'axios'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import React, { type ReactElement, Suspense, useCallback, useMemo, useState } from 'react'
 import validator from 'validator'
 
+import { api } from '@/lib/api'
+
 const ResetPasswordInner = (): ReactElement => {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const searchParams = useSearchParams()
 	const passwordResetCodeFromQuery = searchParams.get('passwordResetCode')
 
@@ -36,12 +36,6 @@ const ResetPasswordInner = (): ReactElement => {
 		e.preventDefault()
 		setMessage('')
 
-		if (typeof API_URL !== 'string' || API_URL.length === 0) {
-			setMessage('Server is not configured. Please try again later.')
-			triggerErrorShake()
-			return
-		}
-
 		if (step === 4) {
 			return
 		}
@@ -60,7 +54,7 @@ const ResetPasswordInner = (): ReactElement => {
 
 			try {
 				setIsLoading(true)
-				await axios.post(`${API_URL}/v1/users/reset-password`, {
+				await api.post('/v1/users/reset-password', {
 					passwordResetCode: effectiveResetCode,
 					newPassword,
 					confirmNewPassword
@@ -82,7 +76,7 @@ const ResetPasswordInner = (): ReactElement => {
 
 			try {
 				setIsLoading(true)
-				await axios.post(`${API_URL}/v1/users/request-password-reset-email`, { email })
+				await api.post('/v1/users/request-password-reset-email', { email })
 				setMessage('If you have signed up with this email, a password reset link has been sent to your email inbox')
 				setStep(2)
 			} catch {
@@ -99,7 +93,7 @@ const ResetPasswordInner = (): ReactElement => {
 			}
 			setStep(3)
 		}
-	}, [API_URL, email, newPassword, confirmNewPassword, isEmailValid, isPasswordValid, isConfirmPasswordValid, isResetCodeProvided, effectiveResetCode, step, manualResetCode])
+	}, [email, newPassword, confirmNewPassword, isEmailValid, isPasswordValid, isConfirmPasswordValid, isResetCodeProvided, effectiveResetCode, step, manualResetCode])
 
 	return (
 		<main className="p-5 flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">

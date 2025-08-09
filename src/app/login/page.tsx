@@ -1,16 +1,16 @@
 'use client'
 
-import axios from 'axios'
+import { isAxiosError } from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { type ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useError } from '@/contexts/ErrorProvider'
 import { useUser } from '@/contexts/UserProvider'
+import { api } from '@/lib/api'
 import { type UserType } from '@/types/backendDataTypes'
 
 export default function Page (): ReactElement {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const router = useRouter()
 	const { addError } = useError()
 	const { setCurrentUser } = useUser()
@@ -29,17 +29,17 @@ export default function Page (): ReactElement {
 	}) => {
 		try {
 			setIsLoading(true) // Set loading true
-			const response = await axios.post<{
+			const response = await api.post<{
 				auth: boolean
 				user: UserType
-			}>(`${API_URL}/v1/auth/login-user-local`, credentials, { withCredentials: true })
+			}>('/v1/auth/login-user-local', credentials)
 			setCurrentUser(response.data.user)
 			router.push('/dashboard')
 		} catch (error) {
 			setCurrentUser(null)
 			setIsLoading(false) // Set loading false only on error
 			// Check if it's an Axios error and has a response
-			if (axios.isAxiosError(error) && error.response) {
+			if (isAxiosError(error) && error.response) {
 				// Check if the status code is 401
 				if (error.response.status === 401) {
 					triggerErrorShake() // Trigger shake effect on 401
@@ -55,16 +55,16 @@ export default function Page (): ReactElement {
 				addError(error)
 			}
 		}
-	}, [API_URL, addError, router, setCurrentUser])
+	}, [addError, router, setCurrentUser])
 
 	useEffect(() => {
-		axios.get(`${API_URL}/v1/auth/is-authenticated`, { withCredentials: true }).then(() => {
+		api.get('/v1/auth/is-authenticated').then(() => {
 			router.push('/dashboard')
 			return null
 		}).catch(() => {
 			// Do nothing
 		})
-	}, [API_URL, router])
+	}, [router])
 
 	const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault() // Prevent default form submission

@@ -1,16 +1,16 @@
 'use client'
 
-import axios from 'axios'
+import { isAxiosError } from 'axios'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { type ReactElement, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import validator from 'validator'
 
 import { useUser } from '@/contexts/UserProvider'
+import { api } from '@/lib/api'
 import { type UserType } from '@/types/backendDataTypes'
 
 const ConfirmEmailInner = (): ReactElement => {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const searchParams = useSearchParams()
 	const [message, setMessage] = useState('')
 	const [isSuccess, setIsSuccess] = useState(false)
@@ -36,13 +36,6 @@ const ConfirmEmailInner = (): ReactElement => {
 	const isAlreadyConfirmed = currentUser?.confirmed === true
 
 	const confirmWithCode = useCallback(async (code: string): Promise<void> => {
-		if (typeof API_URL !== 'string' || API_URL.length === 0) {
-			setMessage('Server is not configured. Please try again later.')
-			setIsSuccess(false)
-			setIsError(true)
-			return
-		}
-
 		if (code.trim().length === 0) {
 			setMessage('Please enter a confirmation code.')
 			setIsSuccess(false)
@@ -55,7 +48,7 @@ const ConfirmEmailInner = (): ReactElement => {
 		setMessage('Confirming your email...')
 		try {
 			const encoded = encodeURIComponent(code.trim())
-			const res = await axios.post(`${API_URL}/v1/users/confirm?confirmationCode=${encoded}`)
+			const res = await api.post(`/v1/users/confirm?confirmationCode=${encoded}`)
 			const data: unknown = res?.data
 			let newMessage: string | undefined
 			let updatedUser: UserType | undefined
@@ -69,7 +62,7 @@ const ConfirmEmailInner = (): ReactElement => {
 			setIsSuccess(true)
 			setIsError(false)
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
+			if (isAxiosError(error)) {
 				setMessage(error.response?.data?.error ?? 'Confirmation unsuccessful. Please try again.')
 			} else {
 				setMessage('Confirmation unsuccessful. Please try again.')
@@ -79,17 +72,12 @@ const ConfirmEmailInner = (): ReactElement => {
 		} finally {
 			setIsLoading(false)
 		}
-	}, [API_URL, setCurrentUser])
+	}, [setCurrentUser])
 
 	const requestNewConfirmation = useCallback(async (): Promise<void> => {
 		setResendMessage('')
 		setResendIsError(false)
 
-		if (typeof API_URL !== 'string' || API_URL.length === 0) {
-			setResendMessage('Server is not configured. Please try again later.')
-			setResendIsError(true)
-			return
-		}
 		if (!isResendEmailValid) {
 			setResendMessage('Enter a valid email address')
 			setResendIsError(true)
@@ -98,11 +86,11 @@ const ConfirmEmailInner = (): ReactElement => {
 
 		try {
 			setIsResendLoading(true)
-			await axios.post(`${API_URL}/v1/users/request-confirmation`, { email: effectiveResendEmail })
+			await api.post('/v1/users/request-confirmation', { email: effectiveResendEmail })
 			setResendMessage('If your account is unconfirmed, a new confirmation email has been sent.')
 			setResendIsError(false)
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
+			if (isAxiosError(error)) {
 				setResendMessage(error.response?.data?.error ?? 'Unable to send confirmation email. Please try again later.')
 			} else {
 				setResendMessage('Unable to send confirmation email. Please try again later.')
@@ -111,7 +99,7 @@ const ConfirmEmailInner = (): ReactElement => {
 		} finally {
 			setIsResendLoading(false)
 		}
-	}, [API_URL, effectiveResendEmail, isResendEmailValid])
+	}, [effectiveResendEmail, isResendEmailValid])
 
 	useEffect(() => {
 		if (!hasCodeInQuery) {

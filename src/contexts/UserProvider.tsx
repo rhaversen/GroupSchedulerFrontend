@@ -1,6 +1,5 @@
 'use client'
 
-import axios from 'axios'
 import Cookies from 'js-cookie'
 import React, {
 	createContext,
@@ -13,6 +12,7 @@ import React, {
 	useState
 } from 'react'
 
+import { api } from '@/lib/api'
 import { type UserType } from '@/types/backendDataTypes'
 
 interface UserContextType {
@@ -35,10 +35,9 @@ export default function UserProvider ({ children }: { readonly children: ReactNo
 		if (cookie != null) {
 			setCurrentUser(JSON.parse(cookie))
 		} else {
-			const API_URL = process.env.NEXT_PUBLIC_API_URL
 			const fetchUser = async () => {
 				try {
-					const userRes = await axios.get<UserType>(`${API_URL}/v1/users/me`, { withCredentials: true })
+					const userRes = await api.get<UserType>('/v1/users/me')
 					setCurrentUser(userRes.data)
 				} catch {
 					setCurrentUser(null)

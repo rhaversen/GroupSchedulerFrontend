@@ -1,17 +1,15 @@
 'use client'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { type ReactNode, useCallback, useEffect, useState } from 'react'
 
 import { useEntitySocket } from '@/hooks/CudWebsocket'
+import { api } from '@/lib/api'
 import { type SessionType } from '@/types/backendDataTypes'
 
 import { useError } from './ErrorProvider'
 import { useUser } from './UserProvider'
 
 export default function AdminAuthProvider ({ children }: Readonly<{ children: ReactNode }>): ReactNode {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
-
 	const { addError } = useError()
 	const { setCurrentUser } = useUser()
 	const router = useRouter()
@@ -20,27 +18,27 @@ export default function AdminAuthProvider ({ children }: Readonly<{ children: Re
 
 	const checkAuthentication = useCallback(async (): Promise<void> => {
 		try {
-			const response = await axios.get<string>(`${API_URL}/v1/auth/is-authenticated`, { withCredentials: true })
+			const response = await api.get<string>('/v1/auth/is-authenticated')
 			setCurrentSession(response.data)
 		} catch {
 			// If not authenticated, log out and redirect to admin login page
 			setCurrentUser(null)
 			setCurrentSession(null)
-			await axios.post(`${API_URL}/v1/auth/logout-local`, { withCredentials: true })
+			await api.post('/v1/auth/logout-local')
 			router.push('/login-admin')
 		}
-	}, [API_URL, router, setCurrentUser])
+	}, [router, setCurrentUser])
 
 	const checkAuthorization = useCallback(async (): Promise<void> => {
 		try {
 			// Check if user is an admin
-			await axios.get(`${API_URL}/v1/auth/is-admin`, { withCredentials: true })
+			await api.get('/v1/auth/is-admin')
 			// If admin, do nothing (let them stay on the current page)
 		} catch {
 			// If not admin, redirect to login page
 			router.push('/login-admin')
 		}
-	}, [API_URL, router])
+	}, [router])
 
 	// Run the authentication and authorization checks on component mount
 	useEffect(() => {

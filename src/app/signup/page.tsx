@@ -1,6 +1,6 @@
 'use client'
 
-import axios from 'axios'
+import { isAxiosError } from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
@@ -8,6 +8,7 @@ import validator from 'validator'
 
 import { useError } from '@/contexts/ErrorProvider'
 import { useUser } from '@/contexts/UserProvider'
+import { api } from '@/lib/api'
 import { type UserType } from '@/types/backendDataTypes'
 
 type Step = 1 | 2
@@ -68,7 +69,6 @@ function UsernameStep ({ username, onUsernameChange, onBack, onSubmit, isLoading
 }
 
 export default function Page (): ReactElement {
-	const API_URL = process.env.NEXT_PUBLIC_API_URL
 	const router = useRouter()
 	const { addError } = useError()
 	const { setCurrentUser } = useUser()
@@ -103,16 +103,16 @@ export default function Page (): ReactElement {
 		try {
 			setIsLoading(true)
 			const payload = { email: email.trim(), password, confirmPassword, username: username.trim() }
-			const response = await axios.post<{
+			const response = await api.post<{
 				auth: boolean
 				user: UserType
-			}>(`${API_URL}/v1/users/register`, payload, { withCredentials: true })
+			}>('/v1/users/register', payload)
 			setCurrentUser(response.data.user)
 			router.push('/dashboard')
 		} catch (error) {
 			setCurrentUser(null)
 			setIsLoading(false)
-			if (axios.isAxiosError(error) && error.response) {
+			if (isAxiosError(error) && error.response) {
 				if (error.response.status === 401) {
 					goBack()
 					setLoginError('A user already registered with this email, and the password is incorrect')
@@ -124,11 +124,11 @@ export default function Page (): ReactElement {
 				addError(error)
 			}
 		}
-	}, [API_URL, addError, confirmPassword, email, goBack, password, router, setCurrentUser, username])
+	}, [addError, confirmPassword, email, goBack, password, router, setCurrentUser, username])
 
 	useEffect(() => {
-		axios
-			.get(`${API_URL}/v1/auth/is-authenticated`, { withCredentials: true })
+		api
+			.get('/v1/auth/is-authenticated')
 			.then(() => {
 				router.push('/dashboard')
 				return null
@@ -136,7 +136,7 @@ export default function Page (): ReactElement {
 			.catch(() => {
 				// Not authenticated; stay on page
 			})
-	}, [API_URL, router])
+	}, [router])
 
 	const onSubmitStep1 = useCallback(
 		(e: React.FormEvent<HTMLFormElement>) => {
