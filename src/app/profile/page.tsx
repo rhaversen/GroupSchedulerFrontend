@@ -35,6 +35,7 @@ export default function ProfilePage () {
 
 	const [deletionStep, setDeletionStep] = useState<'initial' | 'codeRequested' | 'entering'>('initial')
 	const [deletionCode, setDeletionCode] = useState('')
+	const [deletionError, setDeletionError] = useState('')
 	const [requestingDeletion, setRequestingDeletion] = useState(false)
 	const [confirmingDeletion, setConfirmingDeletion] = useState(false)
 
@@ -111,10 +112,17 @@ export default function ProfilePage () {
 	const confirmAccountDeletion = useCallback(async () => {
 		try {
 			setConfirmingDeletion(true)
+			setDeletionError('')
 			await api.delete(`/v1/users/confirm-deletion?deletionCode=${deletionCode}`)
 			logout('/')
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('Failed to confirm account deletion:', error)
+
+			if (axios.isAxiosError(error) && error.response?.status === 400) {
+				setDeletionError('Invalid deletion code')
+			} else {
+				setDeletionError('Failed to delete account. Please try again.')
+			}
 		} finally {
 			setConfirmingDeletion(false)
 		}
@@ -417,11 +425,19 @@ export default function ProfilePage () {
 															type="text"
 															id="deletionCode"
 															value={deletionCode}
-															onChange={(e) => setDeletionCode(e.target.value)}
+															onChange={(e) => {
+																setDeletionCode(e.target.value)
+																setDeletionError('')
+															}}
 															className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
 															placeholder="Enter deletion code from email"
 														/>
 													</div>
+													{deletionError && (
+														<div className="bg-red-50 border border-red-200 rounded-lg p-4">
+															<p className="text-red-700 text-sm font-medium">{deletionError}</p>
+														</div>
+													)}
 													<div className="flex gap-3">
 														<Button
 															onClick={confirmAccountDeletion}
@@ -434,6 +450,7 @@ export default function ProfilePage () {
 															onClick={() => {
 																setDeletionStep('initial')
 																setDeletionCode('')
+																setDeletionError('')
 															}}
 															className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3"
 														>
