@@ -1,29 +1,19 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { type ReactElement } from 'react'
 
 import { Button } from '@/components/ui'
-import { useUser } from '@/contexts/UserProvider'
-import { api } from '@/lib/api'
+import { useLogout } from '@/hooks/useLogout'
 
 const Navigation = (): ReactElement => {
 	const pathname = usePathname()
-	const router = useRouter()
-	const { setCurrentUser } = useUser()
+	const { logout } = useLogout()
 
-	const handleLogout = async () => {
-		try {
-			await api.post('/v1/auth/logout-local')
-			setCurrentUser(null)
-			router.push('/login')
-		} catch (error) {
-			console.error('Logout failed:', error)
-			// Even if logout request fails, clear local state and redirect
-			setCurrentUser(null)
-			router.push('/login')
-		}
+	const handleLogout = () => {
+		logout('/')
 	}
 
 	const navItems = [
@@ -53,20 +43,23 @@ const Navigation = (): ReactElement => {
 						<div className="flex-shrink-0 flex items-center">
 							<Link href="/dashboard" className="flex items-center">
 								<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg p-2">
-									<img 
-										src="/svg/raindate-logo.svg" 
-										alt="RainDate" 
-										className="h-6 w-auto filter brightness-0 invert"
+									<Image
+										src="/svg/raindate-logo.svg"
+										alt="RainDate"
+										width={24}
+										height={24}
+										priority
+										className="h-6 w-auto"
 									/>
 								</div>
 							</Link>
 						</div>
 						<div className="hidden sm:ml-6 sm:flex sm:space-x-8">
 							{navItems.map((item) => {
-								const isActive = item.href === '/events' 
+								const isActive = item.href === '/events'
 									? pathname.startsWith('/events')
 									: pathname === item.href
-								
+
 								return (
 									<Link
 										key={item.href}
@@ -84,8 +77,8 @@ const Navigation = (): ReactElement => {
 						</div>
 					</div>
 					<div className="flex items-center">
-						<Button 
-							variant="secondary" 
+						<Button
+							variant="secondary"
 							size="sm"
 							onClick={handleLogout}
 							className="text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400"

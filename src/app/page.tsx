@@ -5,10 +5,16 @@ import Link from 'next/link'
 import React from 'react'
 
 import { useUser } from '@/contexts/UserProvider'
+import { useLogout } from '@/hooks/useLogout'
 import { caveat, fredoka } from '@/lib/fonts'
 
 const Dashboard: React.FC = () => {
 	const { currentUser } = useUser()
+	const { logout } = useLogout()
+
+	const handleLogout = () => {
+		logout('/')
+	}
 
 	return (
 		<div className="relative w-screen h-screen overflow-hidden">
@@ -38,11 +44,19 @@ const Dashboard: React.FC = () => {
 			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full">
 				<div>
 					{currentUser ? (
-						<Link href="/dashboard">
-							<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
-								{'Go to Dashboard\r'}
+						<div className="flex flex-col justify-center items-center">
+							<Link href="/dashboard">
+								<button className={`${fredoka.className} text-lg bg-blue-800 text-white py-2.5 px-12 m-2.5 rounded-lg cursor-pointer transition duration-300`}>
+									{'Go to Dashboard\r'}
+								</button>
+							</Link>
+							<button
+								onClick={handleLogout}
+								className={`${fredoka.className} text-sm text-blue-800 underline cursor-pointer transition duration-300 hover:text-blue-900 mt-2`}
+							>
+								{'Logout'}
 							</button>
-						</Link>
+						</div>
 					) : (
 						<div className="flex flex-col justify-center items-center">
 							<div>
