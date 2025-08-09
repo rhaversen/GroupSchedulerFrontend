@@ -76,7 +76,7 @@ const ResetPasswordInner = (): ReactElement => {
 
 			try {
 				setIsLoading(true)
-				await api.post('/v1/users/request-password-reset-email', { email })
+				await api.post('/v1/users/request-password-reset', { email })
 				setMessage('If you have signed up with this email, a password reset link has been sent to your email inbox')
 				setStep(2)
 			} catch {

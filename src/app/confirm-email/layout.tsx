@@ -5,7 +5,7 @@ export const metadata: Metadata = {
 	title: 'Confirm Email',
 	description: 'Confirm your email address to activate your RainDate account',
 	alternates: {
-		canonical: 'https://www.raindate.net/confirm'
+		canonical: 'https://www.raindate.net/confirm-email'
 	}
 }
 

@@ -48,7 +48,7 @@ const ConfirmEmailInner = (): ReactElement => {
 		setMessage('Confirming your email...')
 		try {
 			const encoded = encodeURIComponent(code.trim())
-			const res = await api.post(`/v1/users/confirm?confirmationCode=${encoded}`)
+			const res = await api.post(`/v1/users/confirm-email?confirmationCode=${encoded}`)
 			const data: unknown = res?.data
 			let newMessage: string | undefined
 			let updatedUser: UserType | undefined
@@ -86,7 +86,7 @@ const ConfirmEmailInner = (): ReactElement => {
 
 		try {
 			setIsResendLoading(true)
-			await api.post('/v1/users/request-confirmation', { email: effectiveResendEmail })
+			await api.post('/v1/users/request-email-confirmation', { email: effectiveResendEmail })
 			setResendMessage('If your account is unconfirmed, a new confirmation email has been sent.')
 			setResendIsError(false)
 		} catch (error) {
