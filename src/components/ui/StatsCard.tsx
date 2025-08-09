@@ -24,7 +24,7 @@ const StatsCard = ({ title, value, description, icon, className = '' }: StatsCar
 							<dd className="text-lg font-medium text-gray-900">
 								{value}
 							</dd>
-							{description && (
+							{(description != null) && (
 								<dd className="text-sm text-gray-500">
 									{description}
 								</dd>

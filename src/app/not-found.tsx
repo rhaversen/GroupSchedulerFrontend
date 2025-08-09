@@ -47,12 +47,12 @@ export default function NotFound () {
 					{'The page you\'re looking for doesn\'t exist or has been moved'}
 				</h3>
 
-                <p className="text-center text-lg text-blue-800 mb-8 mx-auto">
-                    {currentUser
-                        ? 'You can return to your dashboard or homepage.'
-                        : 'You can return to the homepage or sign in to your account.'
-                    }
-                </p>
+				<p className="text-center text-lg text-blue-800 mb-8 mx-auto">
+					{currentUser
+						? 'You can return to your dashboard or homepage.'
+						: 'You can return to the homepage or sign in to your account.'
+					}
+				</p>
 
 				<div className="flex justify-center gap-4">
 					<button

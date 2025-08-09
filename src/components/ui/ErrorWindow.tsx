@@ -43,7 +43,7 @@ const ErrorWindow = ({ error, onClose }: { error: string[]; onClose: () => void 
 					</ul>
 				</div>
 				<button type="button" className="text-3xl p-3" onClick={handleClose}>
-          &times;
+			&times;
 				</button>
 			</div>
 			<div

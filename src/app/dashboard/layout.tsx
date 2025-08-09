@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 	description: 'Your RainDate dashboard - manage events and schedule efficiently'
 }
 
-export default function DashboardLayout({
+export default function DashboardLayout ({
 	children
 }: {
 	children: React.ReactNode
