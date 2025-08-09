@@ -402,7 +402,7 @@ export default function ProfilePage () {
 													<div>
 														<button
 															type="button"
-															onClick={() => window.location.href = '/confirm-deletion'}
+															onClick={() => setDeletionStep('codeRequested')}
 															className="text-red-600 hover:text-red-700 underline text-sm"
 														>
 															{'I already have a deletion code'}
