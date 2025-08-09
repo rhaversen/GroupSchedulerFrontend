@@ -84,7 +84,7 @@ export default function Page (): ReactElement {
 	const [loginError, setLoginError] = useState<string | null>(null)
 
 	const emailValid = useMemo(() => {
-		return validator.isEmail(email.trim()) && email.trim().length >= 5
+		return validator.isEmail(email.trim())
 	}, [email])
 
 	const passwordsMatch = useMemo(() => password === confirmPassword, [password, confirmPassword])

@@ -23,7 +23,7 @@ const ResetPasswordInner = (): ReactElement => {
 	const effectiveResetCode = passwordResetCodeFromQuery ?? (manualResetCode || null)
 
 	const isEmailValid = useMemo(() => validator.isEmail(email || ''), [email])
-	const isPasswordValid = useMemo(() => newPassword.length >= 8, [newPassword])
+	const isPasswordValid = useMemo(() => newPassword.length >= 4, [newPassword])
 	const isConfirmPasswordValid = useMemo(() => newPassword === confirmNewPassword, [newPassword, confirmNewPassword])
 	const isResetCodeProvided = useMemo(() => typeof effectiveResetCode === 'string' && effectiveResetCode.length > 0, [effectiveResetCode])
 
