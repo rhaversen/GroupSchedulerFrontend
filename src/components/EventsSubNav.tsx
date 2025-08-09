@@ -10,7 +10,7 @@ const EventsSubNav = (): ReactElement => {
 	const subNavItems = [
 		{
 			href: '/events/my-events',
-			label: 'Events I Manage'
+			label: 'My Events'
 		},
 		{
 			href: '/events/participating',

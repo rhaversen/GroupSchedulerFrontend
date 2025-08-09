@@ -305,7 +305,7 @@ export default function DashboardPage () {
 					{/* Stats Grid */}
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 						<StatsCard
-							title="Events I Manage"
+							title="My Events"
 							value={stats.myEvents}
 							description="Events I created/manage"
 							icon={<div className="h-6 w-6 text-indigo-600">{'🎯'}</div>}
