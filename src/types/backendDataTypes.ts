@@ -37,13 +37,15 @@ export interface EventType {
 	status: 'draft' | 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
 	scheduledTime?: number
 
+	public: boolean
+
 	blackoutPeriods: ITimeRange[]
 	preferredTimes?: ITimeRange[]
 
 	/** Created at timestamp */
-	createdAt: Date
+	createdAt: string
 	/** Updated at timestamp */
-	updatedAt: Date
+	updatedAt: string
 }
 
 // User types
@@ -55,11 +57,11 @@ export interface UserType {
 	/** Email of the user, null if not the current user */
 	email: string | null
 	/** Expiration date for the user, null if not the current user */
-	expirationDate: Date | null
+	expirationDate: string | null
 	/** If the user has confirmed their email, null if not the current user */
 	confirmed: boolean | null
 	/** Created at timestamp */
-	createdAt: Date
+	createdAt: string
 	/** Updated at timestamp */
-	updatedAt: Date
+	updatedAt: string
 }
