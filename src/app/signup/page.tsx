@@ -35,13 +35,13 @@ function UsernameStep ({ username, onUsernameChange, onBack, onSubmit, isLoading
 					name="username"
 					value={username}
 					onChange={(e) => onUsernameChange(e.target.value)}
-					placeholder="Your username"
+					placeholder="Your full name"
 					aria-describedby="username-help"
 					className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 					required
 				/>
 				<p id="username-help" className="text-xs text-gray-500">
-					{'This is how others will recognize you. Don’t worry, you can always change this later.'}
+					{'This is how others will recognize you. Include your last name if you want people to recognize you. Don’t worry, you can always change this later.'}
 				</p>
 			</div>
 			<div className="flex gap-3">
