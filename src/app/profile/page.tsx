@@ -1,5 +1,6 @@
 'use client'
 
+import axios from 'axios'
 import { useCallback, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
@@ -24,6 +25,8 @@ export default function ProfilePage () {
 		confirmNewPassword: ''
 	})
 	const [changingPassword, setChangingPassword] = useState(false)
+	const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false)
+	const [passwordChangeError, setPasswordChangeError] = useState('')
 	const [showPasswords, setShowPasswords] = useState({
 		current: false,
 		new: false,
@@ -64,6 +67,8 @@ export default function ProfilePage () {
 	const changePassword = useCallback(async () => {
 		try {
 			setChangingPassword(true)
+			setPasswordChangeSuccess(false)
+			setPasswordChangeError('')
 			await api.patch('/v1/users/me/password', {
 				currentPassword: passwordData.currentPassword,
 				newPassword: passwordData.newPassword,
@@ -75,8 +80,15 @@ export default function ProfilePage () {
 				newPassword: '',
 				confirmNewPassword: ''
 			})
-		} catch (error) {
+			setPasswordChangeSuccess(true)
+		} catch (error: unknown) {
 			console.error('Failed to change password:', error)
+
+			if (axios.isAxiosError(error) && error.response?.status === 400) {
+				setPasswordChangeError('Current password is incorrect')
+			} else {
+				setPasswordChangeError('Failed to change password. Please try again.')
+			}
 		} finally {
 			setChangingPassword(false)
 		}
@@ -203,12 +215,17 @@ export default function ProfilePage () {
 											type={showPasswords.current ? 'text' : 'password'}
 											id="currentPassword"
 											value={passwordData.currentPassword}
-											onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+											onChange={(e) => {
+												setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))
+												setPasswordChangeSuccess(false)
+												setPasswordChangeError('')
+											}}
 											className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
 											placeholder="Enter current password"
 										/>
 										<button
 											type="button"
+											tabIndex={-1}
 											onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
 											className="absolute inset-y-0 right-0 pr-4 flex items-center"
 										>
@@ -229,12 +246,17 @@ export default function ProfilePage () {
 											type={showPasswords.new ? 'text' : 'password'}
 											id="newPassword"
 											value={passwordData.newPassword}
-											onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+											onChange={(e) => {
+												setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))
+												setPasswordChangeSuccess(false)
+												setPasswordChangeError('')
+											}}
 											className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-											placeholder="Enter new password (min 6 characters)"
+											placeholder="Enter new password (min 4 characters)"
 										/>
 										<button
 											type="button"
+											tabIndex={-1}
 											onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
 											className="absolute inset-y-0 right-0 pr-4 flex items-center"
 										>
@@ -255,12 +277,17 @@ export default function ProfilePage () {
 											type={showPasswords.confirm ? 'text' : 'password'}
 											id="confirmNewPassword"
 											value={passwordData.confirmNewPassword}
-											onChange={(e) => setPasswordData(prev => ({ ...prev, confirmNewPassword: e.target.value }))}
+											onChange={(e) => {
+												setPasswordData(prev => ({ ...prev, confirmNewPassword: e.target.value }))
+												setPasswordChangeSuccess(false)
+												setPasswordChangeError('')
+											}}
 											className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
 											placeholder="Confirm new password"
 										/>
 										<button
 											type="button"
+											tabIndex={-1}
 											onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
 											className="absolute inset-y-0 right-0 pr-4 flex items-center"
 										>
@@ -277,9 +304,19 @@ export default function ProfilePage () {
 										<p className="text-red-700 text-sm font-medium">{'Passwords do not match'}</p>
 									</div>
 								)}
-								{passwordData.newPassword && passwordData.newPassword.length < 6 && (
+								{passwordData.newPassword && passwordData.newPassword.length < 4 && (
 									<div className="bg-red-50 border border-red-200 rounded-lg p-4">
-										<p className="text-red-700 text-sm font-medium">{'Password must be at least 6 characters'}</p>
+										<p className="text-red-700 text-sm font-medium">{'Password must be at least 4 characters'}</p>
+									</div>
+								)}
+								{passwordChangeSuccess && (
+									<div className="bg-green-50 border border-green-200 rounded-lg p-4">
+										<p className="text-green-700 text-sm font-medium">{'Password changed successfully!'}</p>
+									</div>
+								)}
+								{passwordChangeError && (
+									<div className="bg-red-50 border border-red-200 rounded-lg p-4">
+										<p className="text-red-700 text-sm font-medium">{passwordChangeError}</p>
 									</div>
 								)}
 								<Button
@@ -304,7 +341,7 @@ export default function ProfilePage () {
 								<div className="space-y-4 text-gray-600">
 									<div className="flex items-start gap-3">
 										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
-										<span>{'Use a strong password with at least 6 characters'}</span>
+										<span>{'Use a strong password with at least 4 characters'}</span>
 									</div>
 									<div className="flex items-start gap-3">
 										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
