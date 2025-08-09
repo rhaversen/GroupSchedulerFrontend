@@ -7,16 +7,17 @@ export const useLogout = () => {
 	const router = useRouter()
 	const { setCurrentUser } = useUser()
 
-	const logout = async (redirectPath: string = '/login') => {
+	const logout = async (redirectPath?: string) => {
 		try {
 			await api.post('/v1/auth/logout-local')
-			setCurrentUser(null)
-			router.push(redirectPath)
 		} catch (error) {
 			console.error('Logout failed:', error)
 			// Even if logout request fails, clear local state and redirect
+		} finally {
 			setCurrentUser(null)
-			router.push(redirectPath)
+			if (redirectPath !== undefined) {
+				router.push(redirectPath)
+			}
 		}
 	}
 
