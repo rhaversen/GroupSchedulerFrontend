@@ -33,7 +33,7 @@ export default function ProfilePage () {
 		confirm: false
 	})
 
-	const [deletionStep, setDeletionStep] = useState<'initial' | 'codeRequested' | 'entering'>('initial')
+	const [deletionStep, setDeletionStep] = useState<'initial' | 'codeRequested'>('initial')
 	const [deletionCode, setDeletionCode] = useState('')
 	const [deletionError, setDeletionError] = useState('')
 	const [requestingDeletion, setRequestingDeletion] = useState(false)
