@@ -18,5 +18,14 @@
         "dist/**"
     ],
     "ignoreWords": [
+        "Fredoka",
+        "fredoka",
+        "raindate",
+        "reindate",
+        "signup",
+        "setLocal",
+        "enabledelayedexpansion",
+        "dummyimage",
+        "chunkname"
     ]
 }
