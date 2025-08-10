@@ -49,10 +49,16 @@ const config: Config = {
 				shimmer: {
 					'0%': { transform: 'translateX(-100%)' },
 					'100%': { transform: 'translateX(100%)' }
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
 				}
 			},
 			animation: {
-				shimmer: 'shimmer 2.5s ease-in-out infinite'
+				shimmer: 'shimmer 2.5s ease-in-out infinite',
+				'fade-in': 'fade-in 0.5s ease-out',
+				'fade-in-slow': 'fade-in 1s ease-out'
 			}
 		}
 	},
