@@ -75,8 +75,8 @@ export default function EventsFilters ({
 
 			{(isExpanded || typeof window !== 'undefined') && (
 				<div className={`mt-3 space-y-3 lg:block ${isExpanded ? 'block animate-in slide-in-from-top-2 duration-200' : 'hidden'} lg:animate-none`}>
-					<div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
-						<div className="space-y-1.5 lg:col-span-3">
+					<div className="grid grid-cols-1 lg:grid-cols-[70%_auto] gap-3">
+						<div className="space-y-1.5">
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Event Type'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
@@ -102,9 +102,9 @@ export default function EventsFilters ({
 							</div>
 						</div>
 
-						<div className="space-y-1.5 lg:col-span-1">
+						<div className="space-y-1.5">
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Time Period'}</h3>
-							<div className="flex gap-2">
+							<div className="flex flex-wrap gap-2">
 								{[
 									{ id: 'upcoming', label: 'Upcoming', icon: '⏰' },
 									{ id: 'past', label: 'Past', icon: '📜' }
@@ -126,9 +126,9 @@ export default function EventsFilters ({
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+					<div className="grid grid-cols-1 lg:grid-cols-[70%_auto] gap-3">
 						{statusOptions.length > 0 && (
-							<div className="space-y-1.5 lg:col-span-3">
+							<div className="space-y-1.5">
 								<h3 className="text-white/90 text-xs font-medium px-1">{'Status'}</h3>
 								<div className="flex flex-wrap gap-2">
 									{statusOptions.map((status) => (
@@ -149,9 +149,9 @@ export default function EventsFilters ({
 							</div>
 						)}
 
-						<div className="space-y-1.5 lg:col-span-1">
+						<div className="space-y-1.5">
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Visibility'}</h3>
-							<div className="flex gap-2">
+							<div className="flex flex-wrap gap-2">
 								{[
 									{ id: 'all', label: 'All', icon: '🌐' },
 									{ id: 'public', label: 'Public', icon: '🔓' },

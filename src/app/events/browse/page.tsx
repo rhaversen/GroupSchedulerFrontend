@@ -14,7 +14,7 @@ export default function BrowseEventsPage () {
 							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
 								{'Public Events'}
 							</h1>
-							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
+							<p className="text-indigo-100 text-lg sm:text-xl">
 								{'Discover and join events happening in your community.'}
 							</p>
 						</div>
