@@ -3,14 +3,44 @@
 import Link from 'next/link'
 
 import { Badge, Card, CardContent } from '@/components/ui'
-import { timeSince } from '@/lib/timeUtils'
+import { timeSince, timeUntil } from '@/lib/timeUtils'
 import { type EventType } from '@/types/backendDataTypes'
 
 interface EventCardProps {
 	event: EventType
+	currentUser?: { _id: string } | null
+	userNames?: Map<string, string>
 }
 
-export function EventCard ({ event }: EventCardProps) {
+export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
+	const getUserRole = () => {
+		const member = event.members.find(m => m.userId === currentUser?._id)
+		return member?.role || 'unknown'
+	}
+
+	const getCreator = () => event.members.find(m => m.role === 'creator')
+
+	const getCreatorName = () => {
+		const creator = getCreator()
+		if (!creator) { return 'Unknown' }
+		if (creator.userId === currentUser?._id) { return 'you' }
+		if (userNames != null && userNames.has(creator.userId)) { return userNames.get(creator.userId) as string }
+		return 'Unknown User'
+	}
+
+	const getRoleDisplay = (role: string) => {
+		switch (role) {
+			case 'creator':
+				return { text: 'Creator', color: 'text-purple-600', icon: '👑', showRole: true }
+			case 'admin':
+				return { text: 'Admin', color: 'text-blue-600', icon: '⚙️', showRole: true }
+			case 'participant':
+				return { text: 'Participant', color: 'text-green-600', icon: '👤', showRole: false }
+			default:
+				return { text: 'Unknown', color: 'text-gray-600', icon: '❓', showRole: false }
+		}
+	}
+
 	const getStatusColor = (status: EventType['status']) => {
 		switch (status) {
 			case 'draft':
@@ -30,100 +60,117 @@ export function EventCard ({ event }: EventCardProps) {
 
 	const getStatusIcon = (status: EventType['status']) => {
 		switch (status) {
-			case 'draft':
-				return '📝'
-			case 'scheduling':
-				return '⏰'
-			case 'scheduled':
-				return '📅'
-			case 'confirmed':
-				return '✅'
-			case 'cancelled':
-				return '❌'
-			default:
-				return '📋'
+			case 'draft': return '📝'
+			case 'scheduling': return '⏰'
+			case 'scheduled': return '📅'
+			case 'confirmed': return '✅'
+			case 'cancelled': return '❌'
+			default: return '📋'
 		}
 	}
 
-	const formatTimeDisplay = () => {
-		if (event.scheduledTime != null) {
-			return {
-				label: 'Scheduled for',
-				value: new Date(event.scheduledTime).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'short',
-					day: 'numeric',
-					hour: 'numeric',
-					minute: '2-digit'
-				})
-			}
-		}
-
-		return {
-			label: 'Time window',
-			value: `${new Date(event.timeWindow.start).toLocaleDateString()} - ${new Date(event.timeWindow.end).toLocaleDateString()}`
-		}
-	}
-
-	const timeDisplay = formatTimeDisplay()
+	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
+		? new Date(event.scheduledTime)
+		: new Date(event.timeWindow.end)
+	const isUpcoming = eventTime.getTime() > Date.now()
+	const userRole = getUserRole()
+	const roleDisplay = getRoleDisplay(userRole)
+	const creator = getCreator()
+	const creatorName = getCreatorName()
 
 	return (
-		<Link href={`/events/${event._id}`}>
-			<Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer h-full">
-				<CardContent className="p-6">
-					<div className="space-y-4">
-						{/* Header */}
-						<div className="flex items-start justify-between">
-							<div className="flex-1 min-w-0">
-								<h3 className="text-lg font-semibold text-gray-900 truncate">
-									{event.name}
-								</h3>
-								<p className="text-sm text-gray-600 mt-1 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-									{event.description}
-								</p>
-							</div>
-							<div className="flex items-center gap-2 ml-4">
-								{event.public && (
-									<Badge variant="info" className="bg-purple-100 text-purple-800 text-xs">
-										{'🌐 Public'}
-									</Badge>
-								)}
-								<Badge className={`${getStatusColor(event.status)} text-xs`}>
-									{getStatusIcon(event.status)} {event.status}
-								</Badge>
-							</div>
-						</div>
-
-						{/* Event Details */}
-						<div className="space-y-3">
-							<div className="flex items-center text-sm text-gray-600">
-								<span className="mr-2">{'📅'}</span>
-								<div>
-									<span className="font-medium">{timeDisplay.label}{':'}</span>
-									<span className="ml-1">{timeDisplay.value}</span>
-								</div>
-							</div>
-
-							<div className="flex items-center justify-between text-sm text-gray-600">
-								<div className="flex items-center">
-									<span className="mr-2">{'👥'}</span>
-									<span>{event.members.length}{' member'}{event.members.length !== 1 ? 's' : ''}</span>
-								</div>
-								<div className="flex items-center">
-									<span className="mr-2">{'⏱️'}</span>
-									<span>{Math.floor(event.duration / 60)}{'h '}{event.duration % 60}{'m'}</span>
-								</div>
-							</div>
-
-							<div className="flex items-center text-xs text-gray-500">
-								<span className="mr-2">{'🕒'}</span>
-								<span>{'Updated '}{timeSince(event.updatedAt)}</span>
-							</div>
-						</div>
+		<Card className="border-0 shadow-md">
+			<CardContent>
+				<div className="pt-2 mb-4">
+					<div className="flex items-baseline gap-3 mb-2">
+						<h3 className="font-semibold text-gray-900 truncate text-xl">
+							{event.name}
+						</h3>
+						{creator && (
+							<Link
+								href={`/people/${creator.userId}`}
+								className="text-sm text-gray-500 hover:text-indigo-600 transition-colors cursor-pointer flex-shrink-0 underline hover:no-underline"
+							>
+								{'by '}{creatorName}
+							</Link>
+						)}
 					</div>
-				</CardContent>
-			</Card>
-		</Link>
+					<p className="text-sm text-gray-600 line-clamp-2 mb-4">
+						{event.description}
+					</p>
+					{roleDisplay.showRole && (
+						<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-full mb-2">
+							<span className="text-sm">{roleDisplay.icon}</span>
+							<span className={`text-sm font-medium ${roleDisplay.color}`}>
+								{'You\'re a '}{roleDisplay.text.toLowerCase()}{' of this event'}
+							</span>
+						</div>
+					)}
+				</div>
+
+				<div className="space-y-3 text-sm text-gray-600">
+					{event.scheduledTime !== null && event.scheduledTime !== undefined ? (
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-2">
+								<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
+									{'Scheduled'}
+								</span>
+								<span className="font-medium">
+									{new Date(event.scheduledTime).toLocaleDateString()}
+								</span>
+							</div>
+							{isUpcoming && (
+								<span className="text-xs text-gray-500 font-medium">
+									{timeUntil(event.scheduledTime)}
+								</span>
+							)}
+						</div>
+					) : (
+						<div className="flex items-center gap-2">
+							<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
+								{'Window'}
+							</span>
+							<span>
+								{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
+							</span>
+						</div>
+					)}
+
+					<div className="flex items-center gap-2">
+						<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+							{'Members'}
+						</span>
+						<span>{event.members.length}</span>
+					</div>
+				</div>
+
+				<div className="mt-4 pt-3 border-t border-gray-100">
+					<div className="flex justify-between items-start mb-3">
+						<span className="text-xs text-gray-500">
+							{'Updated '}{timeSince(event.updatedAt)}
+						</span>
+					</div>
+					<div className="flex justify-between items-center">
+						<div className="flex items-center gap-2">
+							{event.public && (
+								<Badge variant="info" className="bg-purple-100 text-purple-800 text-xs">
+									{'🌐 Public'}
+								</Badge>
+							)}
+							<Badge className={`${getStatusColor(event.status)} text-xs`}>
+								{getStatusIcon(event.status)} {event.status}
+							</Badge>
+						</div>
+						<Link
+							className="inline-flex items-center px-4 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-300 hover:text-indigo-600 rounded-md transition-all duration-200 shadow-sm"
+							href={`/events/${event._id}`}
+						>
+							{'View Details'}
+						</Link>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
 	)
 }
 

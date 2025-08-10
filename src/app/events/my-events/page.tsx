@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 
-import { Navigation, EventsSubNav, EventsFilters, EventsList } from '@/components'
+import { Navigation, EventsSubNav, EventsFilters } from '@/components'
+import EventCard from '@/components/EventCard'
 import { Card, CardContent, Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { useEventsFilters, useEventsData } from '@/hooks'
@@ -98,13 +99,55 @@ export default function MyEventsPage () {
 						/>
 					</div>
 
-					<EventsList
-						events={filteredEvents}
-						loading={loading}
-						error={error}
-						total={total}
-						emptyState={emptyState}
-					/>
+					{/* Events Grid */}
+					{loading ? (
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{[...Array(3)].map((_, i) => (
+								<div
+									key={i}
+									className="animate-pulse animate-fade-in-slow opacity-0"
+									style={{ animationDelay: `${i * 150}ms`, animationFillMode: 'forwards' }}
+								>
+									<div className="h-48 bg-gray-200 rounded-lg" />
+								</div>
+							))}
+						</div>
+					) : error != null ? (
+						<Card className="border-0 shadow-lg">
+							<CardContent>
+								<div className="text-center py-12">
+									<div className="text-6xl mb-6">{'❌'}</div>
+									<h3 className="text-xl font-medium text-gray-900 mb-3">{'Failed to Load Events'}</h3>
+									<p className="text-gray-600">{error}</p>
+								</div>
+							</CardContent>
+						</Card>
+					) : filteredEvents.length === 0 ? (
+						<Card className="border-0 shadow-md">
+							<CardContent>
+								<div className="text-center py-12">
+									<div className="text-6xl mb-6">{emptyState.icon}</div>
+									<h3 className="text-xl font-medium text-gray-900 mb-3">{emptyState.title}</h3>
+									<p className="text-gray-600">{emptyState.description}</p>
+								</div>
+							</CardContent>
+						</Card>
+					) : (
+						<>
+							<div className="flex items-center justify-between mb-6">
+								<p className="text-gray-600">
+									{filteredEvents.length === total
+										? `${total} ${total === 1 ? 'event' : 'events'}`
+										: `Showing ${filteredEvents.length} of ${total} events`}
+								</p>
+							</div>
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+								{filteredEvents.map(event => (
+									<EventCard key={event._id} event={event} currentUser={currentUser} />
+								))}
+							</div>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

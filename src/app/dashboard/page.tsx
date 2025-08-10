@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
+import EventCard from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
 import { Button, Card, CardContent, CardHeader, CardTitle, StatsCard } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
-import { timeUntil } from '@/lib/timeUtils'
 import { type EventType } from '@/types/backendDataTypes'
 
 interface DashboardStats {
@@ -19,135 +19,6 @@ interface DashboardStats {
 	scheduled: number
 	confirmed: number
 	cancelled: number
-}
-
-const EventCard = ({ event, currentUser, userNames }: { event: EventType; currentUser: { _id: string } | null; userNames: Map<string, string> }) => {
-	const getUserRole = () => {
-		const member = event.members.find(m => m.userId === currentUser?._id)
-		return member?.role || 'unknown'
-	}
-
-	const getCreator = () => {
-		const creator = event.members.find(m => m.role === 'creator')
-		return creator
-	}
-
-	const getCreatorName = () => {
-		const creator = getCreator()
-		if (!creator) {
-			return 'Unknown'
-		}
-		if (creator.userId === currentUser?._id) {
-			return 'you'
-		}
-		// Use the fetched user name if available
-		const userName = userNames.get(creator.userId)
-		return userName != null ? userName : 'Unknown User'
-	}
-
-	const getRoleDisplay = (role: string) => {
-		switch (role) {
-			case 'creator':
-				return { text: 'Creator', color: 'text-purple-600', icon: '👑', showRole: true }
-			case 'admin':
-				return { text: 'Admin', color: 'text-blue-600', icon: '⚙️', showRole: true }
-			case 'participant':
-				return { text: 'Participant', color: 'text-green-600', icon: '👤', showRole: false }
-			default:
-				return { text: 'Unknown', color: 'text-gray-600', icon: '❓', showRole: false }
-		}
-	}
-
-	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
-		? new Date(event.scheduledTime)
-		: new Date(event.timeWindow.end)
-
-	const isUpcoming = eventTime.getTime() > Date.now()
-	const userRole = getUserRole()
-	const roleDisplay = getRoleDisplay(userRole)
-	const creator = getCreator()
-	const creatorName = getCreatorName()
-
-	return (
-		<Card className="border-0 shadow-md">
-			<CardContent>
-				<div className="pt-2 mb-6">
-					<div className="flex items-baseline gap-3 mb-2">
-						<h3 className="font-semibold text-gray-900 truncate text-xl">
-							{event.name}
-						</h3>
-						{creator && (
-							<Link
-								href={`/people/${creator.userId}`}
-								className="text-sm text-gray-500 hover:text-indigo-600 transition-colors cursor-pointer flex-shrink-0"
-							>
-								{'by '}{creatorName}
-							</Link>
-						)}
-					</div>
-					<p className="text-sm text-gray-600 line-clamp-2 mb-4">
-						{event.description}
-					</p>
-					{roleDisplay.showRole && (
-						<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-full mb-2">
-							<span className="text-sm">{roleDisplay.icon}</span>
-							<span className={`text-sm font-medium ${roleDisplay.color}`}>
-								{'You\'re a '}{roleDisplay.text.toLowerCase()}{' of this event'}
-							</span>
-						</div>
-					)}
-				</div>
-
-				<div className="space-y-4 text-sm text-gray-600">
-					{event.scheduledTime !== null && event.scheduledTime !== undefined ? (
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
-									{'Scheduled'}
-								</span>
-								<span className="font-medium">
-									{new Date(event.scheduledTime).toLocaleDateString()}
-								</span>
-							</div>
-							{isUpcoming && (
-								<span className="text-xs text-gray-500 font-medium">
-									{timeUntil(event.scheduledTime)}
-								</span>
-							)}
-						</div>
-					) : (
-						<div className="flex items-center gap-2">
-							<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
-								{'Window'}
-							</span>
-							<span>
-								{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
-							</span>
-						</div>
-					)}
-
-					<div className="flex items-center gap-2">
-						<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-							{'Members'}
-						</span>
-						<span>{event.members.length}</span>
-					</div>
-				</div>
-
-				<div className="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center">
-					<span className="text-xs text-gray-500">
-						{'Created '}{new Date(event.createdAt).toLocaleDateString()}
-					</span>
-					<Link
-						href={`/events/${event._id}`}
-						className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-300 hover:text-indigo-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-					>
-						{'View Details'}
-					</Link>
-				</div>
-			</CardContent>
-		</Card>
-	)
 }
 
 export default function DashboardPage () {
