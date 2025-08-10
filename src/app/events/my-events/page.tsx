@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import { Navigation, EventsSubNav, EventsHeader, EventsFilters, EventsList } from '@/components'
+import { Navigation, EventsSubNav, EventsFilters, EventsList } from '@/components'
 import { Card, CardContent, Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { useEventsFilters, useEventsData } from '@/hooks'
@@ -70,26 +70,33 @@ export default function MyEventsPage () {
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
 			<EventsSubNav />
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
 				<div className="space-y-8">
-					<EventsHeader
-						title="My Events"
-						description="All events you're involved in - as creator, admin, or participant."
-					/>
+					{/* Header */}
+					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
+						<div className="max-w-4xl">
+							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+								{'My Events'}
+							</h1>
+							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
+								{'All events you\'re involved in - as creator, admin, or participant.'}
+							</p>
+						</div>
 
-					<EventsFilters
-						searchTerm={searchTerm}
-						setSearchTerm={setSearchTerm}
-						statusFilter={statusFilter}
-						setStatusFilter={setStatusFilter}
-						viewTab={viewTab}
-						setViewTab={setViewTab}
-						viewMode={viewMode}
-						setViewMode={setViewMode}
-						publicFilter={publicFilter}
-						setPublicFilter={setPublicFilter}
-						statusOptions={statusOptions}
-					/>
+						<EventsFilters
+							searchTerm={searchTerm}
+							setSearchTerm={setSearchTerm}
+							statusFilter={statusFilter}
+							setStatusFilter={setStatusFilter}
+							viewTab={viewTab}
+							setViewTab={setViewTab}
+							viewMode={viewMode}
+							setViewMode={setViewMode}
+							publicFilter={publicFilter}
+							setPublicFilter={setPublicFilter}
+							statusOptions={statusOptions}
+						/>
+					</div>
 
 					<EventsList
 						events={filteredEvents}

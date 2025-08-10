@@ -127,27 +127,30 @@ export default function PeoplePage () {
 			<Navigation />
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-				<div className="space-y-8">
-					<div>
-						<h1 className="text-3xl font-bold text-gray-900 mb-2">
-							{'People'}
-						</h1>
-						<p className="text-gray-600 text-lg">
-							{'Discover and connect with other users on the platform.'}
-						</p>
-					</div>
-
-					<div className="relative">
-						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-							<span className="text-gray-400 text-lg">{'🔍'}</span>
+				<div className="space-y-10">
+					{/* Header */}
+					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
+						<div className="max-w-3xl">
+							<h1 className="text-4xl font-bold mb-3">
+								{'People'}
+							</h1>
+							<p className="text-indigo-100 text-xl mb-8">
+								{'Discover and connect with other users on the platform.'}
+							</p>
 						</div>
-						<input
-							type="text"
-							placeholder="Search people..."
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-							className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-						/>
+
+						<div className="relative">
+							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+								<span className="text-gray-600 text-lg">{'🔍'}</span>
+							</div>
+							<input
+								type="text"
+								placeholder="Search people..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="block w-full pl-10 pr-3 py-3 border border-white border-opacity-50 rounded-lg leading-5 bg-white placeholder-gray-600 text-gray-900 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-white"
+							/>
+						</div>
 					</div>
 
 					{filteredUsers.length === 0 ? (

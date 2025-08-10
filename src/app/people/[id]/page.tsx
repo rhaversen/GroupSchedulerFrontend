@@ -118,23 +118,27 @@ export default function UserProfilePage () {
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
 
-			<div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-				<div className="space-y-8">
-					{/* Hero Section */}
-					<div className="text-center py-12">
-						<div className="mb-6">
-							<div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-								{user.username.charAt(0).toUpperCase()}
+			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
+				<div className="space-y-10">
+					{/* Header */}
+					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
+						<div className="max-w-3xl">
+							<div className="flex items-center gap-6 mb-6">
+								<div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold shadow-lg">
+									{user.username.charAt(0).toUpperCase()}
+								</div>
+								<div>
+									<h1 className="text-4xl font-bold mb-2">
+										{user.username}
+									</h1>
+									<div className="flex items-center gap-2 text-indigo-100">
+										<span>{'📅'}</span>
+										<span className="text-lg">
+											{timeSince(user.createdAt)}
+										</span>
+									</div>
+								</div>
 							</div>
-						</div>
-						<h1 className="text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-							{user.username}
-						</h1>
-						<div className="flex items-center justify-center gap-2 text-gray-500">
-							<span className="text-lg">{'📅'}</span>
-							<span className="text-lg">
-								{timeSince(user.createdAt)}
-							</span>
 						</div>
 					</div>
 

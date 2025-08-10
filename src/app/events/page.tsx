@@ -12,15 +12,15 @@ export default function EventsPage () {
 			<Navigation />
 			<EventsSubNav />
 
-			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-				<div className="space-y-10">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+				<div className="space-y-8">
 					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
-							<h1 className="text-4xl font-bold mb-3">
+					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
+						<div className="max-w-4xl">
+							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
 								{'Events'}
 							</h1>
-							<p className="text-indigo-100 text-xl mb-8">
+							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
 								{'Manage your events, discover new ones, and connect with your community.'}
 							</p>
 							<div className="flex flex-wrap gap-4">
