@@ -1,6 +1,7 @@
 'use client'
 
 import axios from 'axios'
+import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
@@ -148,14 +149,40 @@ export default function ProfilePage () {
 				<div className="space-y-10">
 					{/* Header */}
 					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
-							<h1 className="text-4xl font-bold mb-3">
-								{'Profile Settings'}
-							</h1>
-							<p className="text-indigo-100 text-xl">
-								{'Manage your account settings, security, and preferences.'}
-							</p>
+						<div className="max-w-3xl mb-6">
+							<div className="flex items-start justify-between">
+								<div>
+									<h1 className="text-4xl font-bold mb-3">
+										{'Profile Settings'}
+									</h1>
+									<p className="text-indigo-100 text-xl">
+										{'Manage your account settings, security, and preferences.'}
+									</p>
+								</div>
+							</div>
 						</div>
+						{currentUser != null && (
+							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
+								<div className="flex items-start gap-4">
+									<div className="text-3xl">{'👁️'}</div>
+									<div className="flex-1">
+										<div className="text-indigo-800 font-semibold text-lg mb-1">
+											{'View Your Public Profile'}
+										</div>
+										<div className="text-indigo-700 text-sm mb-3">
+											{'See how your profile appears to other users'}
+										</div>
+										<Link
+											href={`/people/${currentUser._id}`}
+											className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200 hover:underline"
+										>
+											<span>{'View Public Profile'}</span>
+											<span className="text-xs">{'→'}</span>
+										</Link>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Profile Information */}

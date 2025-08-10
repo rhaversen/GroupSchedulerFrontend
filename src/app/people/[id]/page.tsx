@@ -1,10 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import Navigation from '@/components/Navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
 import { timeSince } from '@/lib/timeUtils'
 import { UserType } from '@/types/backendDataTypes'
@@ -34,11 +36,14 @@ function getMemberStatus (createdAt: string): string {
 export default function UserProfilePage () {
 	const params = useParams()
 	const userId = params.id as string
+	const { currentUser } = useUser()
 
 	const [user, setUser] = useState<UserType | null>(null)
 	const [userStats, setUserStats] = useState<UserStats>({ eventsCreated: 0, eventsParticipating: 0 })
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
+
+	const isCurrentUser = currentUser?._id === userId
 
 	useEffect(() => {
 		const loadUser = async () => {
@@ -122,7 +127,7 @@ export default function UserProfilePage () {
 				<div className="space-y-10">
 					{/* Header */}
 					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
+						<div className="max-w-3xl mb-6">
 							<div className="flex items-center gap-6">
 								<div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold shadow-lg">
 									{user.username.charAt(0).toUpperCase()}
@@ -140,6 +145,28 @@ export default function UserProfilePage () {
 								</div>
 							</div>
 						</div>
+						{isCurrentUser && (
+							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
+								<div className="flex items-start gap-4">
+									<div className="text-3xl">{'👋'}</div>
+									<div className="flex-1">
+										<div className="text-indigo-800 font-semibold text-lg mb-1">
+											{'Hey, that\'s you!'}
+										</div>
+										<div className="text-indigo-700 text-sm mb-3">
+											{'You\'re viewing your own public profile'}
+										</div>
+										<Link
+											href="/profile"
+											className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200 hover:underline"
+										>
+											<span>{'Go to My Profile'}</span>
+											<span className="text-xs">{'→'}</span>
+										</Link>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
