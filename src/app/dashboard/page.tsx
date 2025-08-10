@@ -35,6 +35,28 @@ export default function DashboardPage () {
 		return 'Good evening'
 	}, [])
 
+	const displayName = useMemo(() => {
+		if ((currentUser?.username) == null) { return '' }
+
+		const nameParts = currentUser.username.split(/\s+/).filter(part => part.length > 0)
+		if (nameParts.length === 0) { return '' }
+
+		// Always include the first name
+		let result = nameParts[0]
+
+		// Add additional name parts if total length stays under 10 characters
+		for (let i = 1; i < nameParts.length; i++) {
+			const potential = result + ' ' + nameParts[i]
+			if (potential.length <= 10) {
+				result = potential
+			} else {
+				break
+			}
+		}
+
+		return result
+	}, [currentUser?.username])
+
 	const [events, setEvents] = useState<EventType[] | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
@@ -153,7 +175,7 @@ export default function DashboardPage () {
 					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
 						<div className="max-w-3xl">
 							<h1 className="text-4xl font-bold mb-3">
-								{greeting}{', '}{currentUser?.username}{'!\r'}
+								{greeting}{', '}{displayName}{'!\r'}
 							</h1>
 							<p className="text-indigo-100 text-xl mb-8">
 								{'Plan, share, and find the time that works for everyone.\r'}
