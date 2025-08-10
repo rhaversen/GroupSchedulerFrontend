@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 import Navigation from '@/components/Navigation'
 import { Card, CardContent } from '@/components/ui'
+import UserAvatar from '@/components/UserAvatar'
 import { api } from '@/lib/api'
 import { timeSince } from '@/lib/timeUtils'
 import { UserType } from '@/types/backendDataTypes'
@@ -190,9 +191,7 @@ export default function PeoplePage () {
 									>
 										<CardContent className="pt-6">
 											<div className="text-center">
-												<div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-md mb-4">
-													{user.username.charAt(0).toUpperCase()}
-												</div>
+												<UserAvatar username={user.username} className="mx-auto mb-4" />
 												<h3 className="text-lg font-semibold text-gray-900 mb-2">
 													{user.username}
 												</h3>
