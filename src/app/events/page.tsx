@@ -29,6 +29,11 @@ export default function EventsPage () {
 										{'+ Create New Event'}
 									</Button>
 								</Link>
+								<Link href="/events/my-events">
+									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
+										{'View My Events'}
+									</Button>
+								</Link>
 								<Link href="/events/browse">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
 										{'Browse Public Events'}
@@ -39,7 +44,7 @@ export default function EventsPage () {
 					</div>
 
 					{/* Event Categories */}
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
 							<CardHeader className="pb-4">
 								<div className="flex items-center gap-3 mb-2">
@@ -54,25 +59,6 @@ export default function EventsPage () {
 								<Link href="/events/my-events">
 									<Button variant="primary" className="w-full">
 										{'View My Events'}
-									</Button>
-								</Link>
-							</CardContent>
-						</Card>
-
-						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-							<CardHeader className="pb-4">
-								<div className="flex items-center gap-3 mb-2">
-									<span className="text-3xl">{'👥'}</span>
-									<CardTitle className="text-xl">{'Events I\'m In'}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent>
-								<p className="text-gray-600 mb-6">
-									{'All events where you have any role - creator, admin, or participant. Your complete event involvement.'}
-								</p>
-								<Link href="/events/my-events">
-									<Button variant="primary" className="w-full">
-										{'View All My Events'}
 									</Button>
 								</Link>
 							</CardContent>

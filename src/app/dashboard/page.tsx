@@ -290,7 +290,7 @@ export default function DashboardPage () {
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'+ Create Event\r'}
+										{'+ Create New Event\r'}
 									</Button>
 								</Link>
 								<Link href="/events">
@@ -356,7 +356,7 @@ export default function DashboardPage () {
 										<h3 className="text-xl font-medium text-gray-900 mb-3">{'No upcoming events'}</h3>
 										<p className="text-gray-600 mb-6 text-lg">{'Create your first event to get started with scheduling.'}</p>
 										<Link href="/events/new">
-											<Button variant="primary" size="lg" className="px-8 py-3">{'Create Event'}</Button>
+											<Button variant="primary" size="lg" className="px-8 py-3">{'Create New Event'}</Button>
 										</Link>
 									</div>
 								) : (
