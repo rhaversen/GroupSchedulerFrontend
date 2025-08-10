@@ -23,7 +23,7 @@ export interface EventType {
 	name: string
 	description: string
 
-	participants: {
+	members: {
 		userId: string
 		role: 'creator' | 'admin' | 'participant'
 	}[]

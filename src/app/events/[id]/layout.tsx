@@ -3,7 +3,7 @@ import { type ReactElement } from 'react'
 
 export const metadata: Metadata = {
 	title: 'Event Details',
-	description: 'View and manage event details, participants, and scheduling'
+	description: 'View and manage event details, members, and scheduling'
 }
 
 export default function EventDetailLayout ({

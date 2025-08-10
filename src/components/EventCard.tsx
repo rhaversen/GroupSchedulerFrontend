@@ -107,7 +107,7 @@ export function EventCard ({ event }: EventCardProps) {
 							<div className="flex items-center justify-between text-sm text-gray-600">
 								<div className="flex items-center">
 									<span className="mr-2">{'👥'}</span>
-									<span>{event.participants.length}{' participant'}{event.participants.length !== 1 ? 's' : ''}</span>
+									<span>{event.members.length}{' member'}{event.members.length !== 1 ? 's' : ''}</span>
 								</div>
 								<div className="flex items-center">
 									<span className="mr-2">{'⏱️'}</span>

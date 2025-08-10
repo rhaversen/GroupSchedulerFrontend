@@ -49,28 +49,28 @@ export default function EventDetailPage () {
 	const [event, setEvent] = useState<EventType | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
-	const [participantNames, setParticipantNames] = useState<Map<string, string>>(new Map())
+	const [memberNames, setMemberNames] = useState<Map<string, string>>(new Map())
 
 	useEffect(() => {
 		const loadEvent = async () => {
 			try {
-				const response = await api.get(`/v1/events/${eventId}`)
+				const response = await api.get<EventType>(`/v1/events/${eventId}`)
 				const eventData = response.data
 				setEvent(eventData)
 
-				// Load participant names
+				// Load member names
 				const names = new Map<string, string>()
-				for (const participant of eventData.participants) {
+				for (const member of eventData.members) {
 					try {
-						const userResponse = await api.get(`/v1/users/${participant.userId}`)
+						const userResponse = await api.get<UserType>(`/v1/users/${member.userId}`)
 						const userData = userResponse.data as UserType
-						names.set(participant.userId, userData.username)
+						names.set(member.userId, userData.username)
 					} catch (err) {
-						console.warn(`Failed to fetch user ${participant.userId}:`, err)
-						names.set(participant.userId, 'Unknown User')
+						console.warn(`Failed to fetch user ${member.userId}:`, err)
+						names.set(member.userId, 'Unknown User')
 					}
 				}
-				setParticipantNames(names)
+				setMemberNames(names)
 			} catch (err) {
 				console.error('Failed to load event:', err)
 				setError('Failed to load event details')
@@ -85,15 +85,15 @@ export default function EventDetailPage () {
 	}, [eventId])
 
 	const getUserDisplayName = (userId: string) => {
-		return participantNames.get(userId) ?? 'Unknown User'
+		return memberNames.get(userId) ?? 'Unknown User'
 	}
 
 	const getCurrentUserRole = () => {
 		if (currentUser == null || event == null) {
 			return null
 		}
-		const userParticipant = event.participants.find(p => p.userId === currentUser._id)
-		return userParticipant?.role ?? null
+		const eventUserMember = event.members.find(m => m.userId === currentUser._id)
+		return eventUserMember?.role ?? null
 	}
 
 	const getRoleDisplay = (role: string) => {
@@ -206,8 +206,8 @@ export default function EventDetailPage () {
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
 								<div className="text-3xl mb-2">{'👥'}</div>
-								<div className="text-2xl font-bold text-gray-900">{event.participants.length}</div>
-								<div className="text-sm text-gray-500">{'Total Participants'}</div>
+								<div className="text-2xl font-bold text-gray-900">{event.members.length}</div>
+								<div className="text-sm text-gray-500">{'Total Members'}</div>
 							</CardContent>
 						</Card>
 
@@ -271,7 +271,7 @@ export default function EventDetailPage () {
 						</CardContent>
 					</Card>
 
-					{/* Participants List */}
+					{/* Members List */}
 					<Card className="border-0 shadow-md">
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2 text-xl">
@@ -284,7 +284,7 @@ export default function EventDetailPage () {
 								{/* Role breakdown */}
 								<div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
 									{['creator', 'admin', 'participant'].map(role => {
-										const count = event.participants.filter(p => p.role === role).length
+										const count = event.members.filter(m => m.role === role).length
 										if (count === 0) {
 											return null
 										}
@@ -300,22 +300,22 @@ export default function EventDetailPage () {
 									})}
 								</div>
 
-								{/* Participants list */}
+								{/* Members list */}
 								<div className="space-y-3">
-									{event.participants.map((participant) => {
-										const roleInfo = getRoleDisplay(participant.role)
-										const displayName = getUserDisplayName(participant.userId)
-										const isCurrentUser = currentUser?._id === participant.userId
+									{event.members.map((member) => {
+										const roleInfo = getRoleDisplay(member.role)
+										const displayName = getUserDisplayName(member.userId)
+										const isCurrentUser = currentUser?._id === member.userId
 
 										return (
 											<div
-												key={participant.userId}
+												key={member.userId}
 												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
 													isCurrentUser
 														? 'bg-indigo-50 border-indigo-200'
 														: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
 												}`}
-												onClick={() => !isCurrentUser && handleUserClick(participant.userId)}
+												onClick={() => !isCurrentUser && handleUserClick(member.userId)}
 											>
 												<div className="flex items-center gap-4">
 													<div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">

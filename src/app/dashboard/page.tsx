@@ -23,12 +23,12 @@ interface DashboardStats {
 
 const EventCard = ({ event, currentUser, userNames }: { event: EventType; currentUser: { _id: string } | null; userNames: Map<string, string> }) => {
 	const getUserRole = () => {
-		const participant = event.participants.find(p => p.userId === currentUser?._id)
-		return participant?.role || 'unknown'
+		const member = event.members.find(m => m.userId === currentUser?._id)
+		return member?.role || 'unknown'
 	}
 
 	const getCreator = () => {
-		const creator = event.participants.find(p => p.role === 'creator')
+		const creator = event.members.find(m => m.role === 'creator')
 		return creator
 	}
 
@@ -128,9 +128,9 @@ const EventCard = ({ event, currentUser, userNames }: { event: EventType; curren
 
 					<div className="flex items-center gap-2">
 						<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-							{'Participants'}
+							{'Members'}
 						</span>
-						<span>{event.participants.length}</span>
+						<span>{event.members.length}</span>
 					</div>
 				</div>
 
@@ -181,11 +181,11 @@ export default function DashboardPage () {
 				const response = await api.get<{ events: EventType[]; total: number }>(`/v1/events?memberOf=${currentUser._id}`)
 				setEvents(response.data.events)
 
-				// Extract unique user IDs from all participants
+				// Extract unique user IDs from all members
 				const userIds = new Set<string>()
 				response.data.events.forEach(event => {
-					event.participants.forEach(participant => {
-						userIds.add(participant.userId)
+					event.members.forEach(member => {
+						userIds.add(member.userId)
 					})
 				})
 
@@ -220,11 +220,11 @@ export default function DashboardPage () {
 		}
 
 		const myEvents = events.filter(e =>
-			e.participants.some(p => p.userId === currentUser._id && (p.role === 'creator' || p.role === 'admin'))
+			e.members.some(m => m.userId === currentUser._id && (m.role === 'creator' || m.role === 'admin'))
 		)
 
 		const participating = events.filter(e =>
-			e.participants.some(p => p.userId === currentUser._id && p.role === 'participant')
+			e.members.some(m => m.userId === currentUser._id && m.role === 'participant')
 		)
 
 		return {

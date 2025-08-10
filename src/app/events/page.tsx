@@ -49,7 +49,7 @@ export default function EventsPage () {
 							</CardHeader>
 							<CardContent>
 								<p className="text-gray-600 mb-6">
-									{'Events where you are the creator or admin. Full control over scheduling, participants, and settings.'}
+									{'Events where you are the creator or admin. Full control over scheduling, members, and settings.'}
 								</p>
 								<Link href="/events/my-events">
 									<Button variant="primary" className="w-full">
