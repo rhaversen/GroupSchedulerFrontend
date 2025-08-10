@@ -152,7 +152,7 @@ export default function ProfilePage () {
 							<h1 className="text-4xl font-bold mb-3">
 								{'Profile Settings'}
 							</h1>
-							<p className="text-indigo-100 text-xl mb-8">
+							<p className="text-indigo-100 text-xl">
 								{'Manage your account settings, security, and preferences.'}
 							</p>
 						</div>

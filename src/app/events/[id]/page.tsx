@@ -170,13 +170,13 @@ export default function EventDetailPage () {
 							<div className="flex items-center gap-4">
 								<Badge
 									variant={getStatusBadgeVariant(event.status)}
-									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-white border-white border-opacity-30"
+									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
 								>
 									{getStatusIcon(event.status)}
 									<span className="capitalize font-medium">{event.status}</span>
 								</Badge>
 								{event.scheduledTime != null && (
-									<div className="flex items-center gap-2 text-white bg-white bg-opacity-20 px-4 py-2 rounded-full border border-white border-opacity-30">
+									<div className="flex items-center gap-2 text-indigo-600 bg-white bg-opacity-20 px-4 py-2 rounded-full border border-white border-opacity-30">
 										<HiOutlineCheckCircle className="h-5 w-5" />
 										<span className="font-medium">
 											{formatRelativeDateLabel(new Date(event.scheduledTime))}
@@ -190,7 +190,7 @@ export default function EventDetailPage () {
 								<div className="mt-6 flex items-center gap-3">
 									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
 										<span className="text-xl">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
-										<span className="font-medium text-lg text-white">
+										<span className="font-medium text-lg text-indigo-600">
 											{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
 										</span>
 									</div>

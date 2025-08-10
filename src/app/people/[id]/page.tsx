@@ -123,7 +123,7 @@ export default function UserProfilePage () {
 					{/* Header */}
 					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
 						<div className="max-w-3xl">
-							<div className="flex items-center gap-6 mb-6">
+							<div className="flex items-center gap-6">
 								<div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold shadow-lg">
 									{user.username.charAt(0).toUpperCase()}
 								</div>
