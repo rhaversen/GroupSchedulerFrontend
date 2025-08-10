@@ -10,13 +10,13 @@ const UnconfirmedUserBanner = (): ReactElement | null => {
 	const { currentUser } = useUser()
 	const [isDismissed, setIsDismissed] = useState(false)
 
-	if (!currentUser || currentUser.confirmed !== false || !currentUser.expirationDate || isDismissed) {
+	if (!currentUser || currentUser.confirmed !== false || (currentUser.expirationDate == null) || isDismissed) {
 		return null
 	}
 
 	const expirationTime = timeUntil(currentUser.expirationDate)
 	const isExpired = expirationTime === 'Expired'
-	
+
 	// Check if expiration is very soon (less than 24 hours)
 	const expirationDate = new Date(currentUser.expirationDate)
 	const now = new Date()
@@ -25,20 +25,20 @@ const UnconfirmedUserBanner = (): ReactElement | null => {
 
 	return (
 		<div className={`border-l-4 px-4 py-4 shadow-sm sticky top-16 z-40 animate-in slide-in-from-top-2 duration-300 ${
-			isExpired || isUrgent 
-				? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-400' 
+			isExpired || isUrgent
+				? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-400'
 				: 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-400'
 		}`}>
 			<div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
 				<div className="flex items-start gap-3 flex-grow">
 					<div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-						isExpired || isUrgent 
-							? 'bg-red-100 animate-pulse' 
+						isExpired || isUrgent
+							? 'bg-red-100 animate-pulse'
 							: 'bg-amber-100 animate-pulse'
 					}`}>
 						<span className={`text-lg ${
 							isExpired || isUrgent ? 'text-red-600' : 'text-amber-600'
-						}`} aria-label="Warning">⚠️</span>
+						}`} aria-label="Warning">{'⚠️'}</span>
 					</div>
 					<div className="flex-grow">
 						<div className={`font-semibold text-base ${
@@ -49,7 +49,7 @@ const UnconfirmedUserBanner = (): ReactElement | null => {
 						<div className={`text-sm mt-1 ${
 							isExpired || isUrgent ? 'text-red-700' : 'text-amber-700'
 						}`}>
-							{isExpired 
+							{isExpired
 								? 'Your account will be permanently deleted soon. Confirm your email immediately to prevent data loss.'
 								: `Your account will be automatically deleted ${expirationTime} if not confirmed. All your events and data will be lost.`
 							}
@@ -65,7 +65,7 @@ const UnconfirmedUserBanner = (): ReactElement | null => {
 								: 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500'
 						}`}
 					>
-						Confirm Email Now
+						{'Confirm Email Now\r'}
 					</Link>
 					<button
 						onClick={() => setIsDismissed(true)}
