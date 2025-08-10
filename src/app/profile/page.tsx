@@ -3,6 +3,7 @@
 import axios from 'axios'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
+import { FaEye, FaUser, FaLock, FaShieldAlt, FaCheck, FaExclamationTriangle, FaTrash, FaArrowRight } from 'react-icons/fa'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
 import Navigation from '@/components/Navigation'
@@ -164,7 +165,7 @@ export default function ProfilePage () {
 						{currentUser != null && (
 							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
 								<div className="flex items-start gap-4">
-									<div className="text-3xl">{'👁️'}</div>
+									<div className="text-3xl text-indigo-600"><FaEye /></div>
 									<div className="flex-1">
 										<div className="text-indigo-800 font-semibold text-lg mb-1">
 											{'View Your Public Profile'}
@@ -177,7 +178,7 @@ export default function ProfilePage () {
 											className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200 hover:underline"
 										>
 											<span>{'View Public Profile'}</span>
-											<span className="text-xs">{'→'}</span>
+											<span className="text-xs"><FaArrowRight /></span>
 										</Link>
 									</div>
 								</div>
@@ -189,7 +190,7 @@ export default function ProfilePage () {
 					<Card className="border-0 shadow-lg">
 						<CardHeader className="pb-6">
 							<CardTitle className="text-2xl flex items-center gap-3">
-								<span className="text-2xl">{'👤'}</span>
+								<span className="text-2xl text-blue-600"><FaUser /></span>
 								{'Profile Information'}
 							</CardTitle>
 						</CardHeader>
@@ -236,7 +237,7 @@ export default function ProfilePage () {
 						<Card className="border-0 shadow-lg">
 							<CardHeader className="pb-6">
 								<CardTitle className="text-2xl flex items-center gap-3">
-									<span className="text-2xl">{'🔐'}</span>
+									<span className="text-2xl text-amber-600"><FaLock /></span>
 									{'Change Password'}
 								</CardTitle>
 							</CardHeader>
@@ -368,30 +369,30 @@ export default function ProfilePage () {
 						<Card className="border-0 shadow-lg">
 							<CardHeader className="pb-6">
 								<CardTitle className="text-2xl flex items-center gap-3">
-									<span className="text-2xl">{'🛡️'}</span>
+									<span className="text-2xl text-green-600"><FaShieldAlt /></span>
 									{'Security Tips'}
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4 text-gray-600">
 									<div className="flex items-start gap-3">
-										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
+										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5"><FaCheck /></span>
 										<span>{'Use a strong password with at least 4 characters'}</span>
 									</div>
 									<div className="flex items-start gap-3">
-										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
+										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5"><FaCheck /></span>
 										<span>{'Include numbers, letters, and special characters'}</span>
 									</div>
 									<div className="flex items-start gap-3">
-										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
+										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5"><FaCheck /></span>
 										<span>{'Don\'t reuse passwords from other accounts'}</span>
 									</div>
 									<div className="flex items-start gap-3">
-										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
+										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5"><FaCheck /></span>
 										<span>{'Update your password regularly'}</span>
 									</div>
 									<div className="flex items-start gap-3">
-										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5">{'✓'}</span>
+										<span className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium mt-0.5"><FaCheck /></span>
 										<span>{'Keep your account information up to date'}</span>
 									</div>
 								</div>
@@ -403,14 +404,14 @@ export default function ProfilePage () {
 					<Card className="border-0 shadow-lg">
 						<CardHeader className="pb-6">
 							<CardTitle className="text-2xl flex items-center gap-3 text-red-600">
-								<span className="text-2xl">{'⚠️'}</span>
+								<span className="text-2xl"><FaExclamationTriangle /></span>
 								{'Danger Zone'}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="p-6 border border-red-200 rounded-xl bg-red-50">
 								<div className="flex items-start gap-4">
-									<span className="text-3xl">{'🗑️'}</span>
+									<span className="text-3xl text-red-500"><FaTrash /></span>
 									<div className="flex-1">
 										<h3 className="text-xl font-semibold text-red-800 mb-3">{'Delete Account'}</h3>
 										{deletionStep === 'initial' && (

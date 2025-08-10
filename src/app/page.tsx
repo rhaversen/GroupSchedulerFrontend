@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { FaBullseye, FaCalendarAlt, FaRobot } from 'react-icons/fa'
 
 import { Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
@@ -132,7 +133,7 @@ const Dashboard: React.FC = () => {
 
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-							<div className="text-5xl mb-6">{'🎯'}</div>
+							<div className="text-5xl mb-6"><FaBullseye className="mx-auto text-indigo-600" /></div>
 							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
 								{'Join without conflicts'}
 							</h3>
@@ -144,7 +145,7 @@ const Dashboard: React.FC = () => {
 						</div>
 
 						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-							<div className="text-5xl mb-6">{'📅'}</div>
+							<div className="text-5xl mb-6"><FaCalendarAlt className="mx-auto text-blue-500" /></div>
 							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
 								{'Create smart events'}
 							</h3>
@@ -156,7 +157,7 @@ const Dashboard: React.FC = () => {
 						</div>
 
 						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-							<div className="text-5xl mb-6">{'🤖'}</div>
+							<div className="text-5xl mb-6"><FaRobot className="mx-auto text-purple-500" /></div>
 							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
 								{'Automatic optimization'}
 							</h3>

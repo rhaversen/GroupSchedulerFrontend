@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import { FaBullseye, FaUsers, FaCheckCircle, FaPlus, FaClock } from 'react-icons/fa'
 
 import EventCard from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
@@ -183,7 +184,7 @@ export default function DashboardPage () {
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'+ Create New Event\r'}
+										<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
 									</Button>
 								</Link>
 								<Link href="/events">
@@ -201,29 +202,27 @@ export default function DashboardPage () {
 							title="My Events"
 							value={stats.myEvents}
 							description="Events I created/manage"
-							icon={<div className="h-6 w-6 text-indigo-600">{'🎯'}</div>}
+							icon={<FaBullseye className="text-2xl text-indigo-600" />}
 						/>
 						<StatsCard
 							title="Participating"
 							value={stats.participating}
 							description="Events I'm invited to"
-							icon={<div className="h-6 w-6 text-blue-600">{'👥'}</div>}
+							icon={<FaUsers className="text-2xl text-blue-600" />}
 						/>
 						<StatsCard
 							title="Upcoming"
 							value={stats.confirmed}
 							description="Ready to go"
-							icon={<div className="h-6 w-6 text-green-600">{'✅'}</div>}
+							icon={<FaCheckCircle className="text-2xl text-green-600" />}
 						/>
 						<StatsCard
 							title="In Progress"
 							value={stats.scheduling}
 							description="Currently scheduling"
-							icon={<div className="h-6 w-6 text-yellow-600">{'⏰'}</div>}
+							icon={<FaClock className="text-2xl text-yellow-600" />}
 						/>
-					</div>
-
-					{/* Upcoming Events */}
+					</div>					{/* Upcoming Events */}
 					<div className="w-full">
 						<Card className="border-0 shadow-lg">
 							<CardHeader className="pb-6">
@@ -249,7 +248,9 @@ export default function DashboardPage () {
 										<h3 className="text-xl font-medium text-gray-900 mb-3">{'No upcoming events'}</h3>
 										<p className="text-gray-600 mb-6 text-lg">{'Create an event to get started.'}</p>
 										<Link href="/events/new">
-											<Button variant="primary" size="lg" className="px-8 py-3">{'+ Create New Event'}</Button>
+											<Button variant="primary" size="lg" className="px-8 py-3">
+												<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
+											</Button>
 										</Link>
 									</div>
 								) : (

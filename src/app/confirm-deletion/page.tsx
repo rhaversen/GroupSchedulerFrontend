@@ -4,6 +4,7 @@ import { isAxiosError } from 'axios'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type ReactElement, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { FaExclamationTriangle } from 'react-icons/fa'
 
 import { useUser } from '@/contexts/UserProvider'
 import { useLogout } from '@/hooks/useLogout'
@@ -112,7 +113,7 @@ const ConfirmDeletionInner = (): ReactElement => {
 
 					<div className="bg-red-50 border border-red-200 rounded-lg p-4">
 						<div className="flex items-start">
-							<span className="text-red-500 text-lg mr-3">{'⚠️'}</span>
+							<span className="text-red-500 text-lg mr-3"><FaExclamationTriangle /></span>
 							<div>
 								<h3 className="text-sm font-medium text-red-800 mb-1">{'Final Warning'}</h3>
 								<p className="text-sm text-red-700">
@@ -180,7 +181,7 @@ const ConfirmDeletionInner = (): ReactElement => {
 
 					<div className="bg-red-50 border border-red-200 rounded-lg p-4">
 						<div className="flex items-start">
-							<span className="text-red-500 text-lg mr-3">{'⚠️'}</span>
+							<span className="text-red-500 text-lg mr-3"><FaExclamationTriangle /></span>
 							<div>
 								<h3 className="text-sm font-medium text-red-800 mb-1">{'Warning'}</h3>
 								<p className="text-sm text-red-700">

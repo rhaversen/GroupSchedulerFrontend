@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { FaTimes, FaCalendarAlt, FaHandPaper, FaBullseye, FaCheckCircle, FaUser, FaSearch, FaRocket, FaChartBar, FaTrophy, FaChartLine, FaStar, FaArrowRight } from 'react-icons/fa'
 
 import { EventCard } from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
@@ -159,7 +160,9 @@ export default function UserProfilePage () {
 					<Card className="border-0 shadow-lg">
 						<CardContent>
 							<div className="text-center py-12">
-								<div className="text-6xl mb-6">{'❌'}</div>
+								<div className="flex justify-center mb-6">
+									<FaTimes className="text-6xl text-red-400" />
+								</div>
 								<h3 className="text-xl font-medium text-gray-900 mb-3">
 									{'User Not Found'}
 								</h3>
@@ -190,7 +193,7 @@ export default function UserProfilePage () {
 										{user.username}
 									</h1>
 									<div className="flex items-center gap-2 text-indigo-100">
-										<span>{'📅'}</span>
+										<span><FaCalendarAlt /></span>
 										<span className="text-lg">
 											{timeSince(user.createdAt)}
 										</span>
@@ -201,7 +204,7 @@ export default function UserProfilePage () {
 						{isCurrentUser && (
 							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
 								<div className="flex items-start gap-4">
-									<div className="text-3xl">{'👋'}</div>
+									<div className="text-3xl text-amber-500"><FaHandPaper /></div>
 									<div className="flex-1">
 										<div className="text-indigo-800 font-semibold text-lg mb-1">
 											{'Hey, that\'s you!'}
@@ -214,7 +217,7 @@ export default function UserProfilePage () {
 											className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200 hover:underline"
 										>
 											<span>{'Go to My Profile'}</span>
-											<span className="text-xs">{'→'}</span>
+											<span className="text-xs"><FaArrowRight /></span>
 										</Link>
 									</div>
 								</div>
@@ -225,7 +228,9 @@ export default function UserProfilePage () {
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
-								<div className="text-3xl mb-2">{'🎯'}</div>
+								<div className="flex justify-center mb-2">
+									<FaBullseye className="text-3xl text-indigo-600" />
+								</div>
 								<div className="text-2xl font-bold text-gray-900">{userStats.eventsCreated}</div>
 								<div className="text-sm text-gray-500">{'Events Created'}</div>
 							</CardContent>
@@ -233,7 +238,9 @@ export default function UserProfilePage () {
 
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
-								<div className="text-3xl mb-2">{'✅'}</div>
+								<div className="flex justify-center mb-2">
+									<FaCheckCircle className="text-3xl text-green-500" />
+								</div>
 								<div className="text-2xl font-bold text-gray-900">{userStats.eventsParticipating}</div>
 								<div className="text-sm text-gray-500">{'Events Joined'}</div>
 							</CardContent>
@@ -243,13 +250,17 @@ export default function UserProfilePage () {
 							<CardContent className="pt-6">
 								{isNewUser(user.createdAt) ? (
 									<>
-										<div className="text-3xl mb-2">{'⭐'}</div>
+										<div className="flex justify-center mb-2">
+											<FaStar className="text-3xl text-yellow-500" />
+										</div>
 										<div className="text-2xl font-bold text-gray-900">{'New User'}</div>
 										<div className="text-sm text-gray-500">{'Member Status'}</div>
 									</>
 								) : (
 									<>
-										<div className="text-3xl mb-2">{'👤'}</div>
+										<div className="flex justify-center mb-2">
+											<FaUser className="text-3xl text-blue-500" />
+										</div>
 										<div className="text-2xl font-bold text-gray-900">{getMemberStatus(user.createdAt)}</div>
 										<div className="text-sm text-gray-500">{'Member Status'}</div>
 									</>
@@ -287,7 +298,9 @@ export default function UserProfilePage () {
 									</div>
 								) : (
 									<div className="text-center py-8">
-										<div className="text-4xl mb-4">{'🔍'}</div>
+										<div className="flex justify-center mb-4">
+											<FaSearch className="text-4xl text-gray-400" />
+										</div>
 										<p className="text-gray-600">
 											{`You and ${user.username} don't have any events in common yet.`}
 										</p>
@@ -301,22 +314,22 @@ export default function UserProfilePage () {
 					<Card className="border-0 shadow-md">
 						<CardHeader>
 							<CardTitle className="text-xl flex items-center gap-3">
-								<span className="text-xl">{'🚀'}</span>
+								<span className="text-xl text-purple-500"><FaRocket /></span>
 								{'More Coming Soon'}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
 								<div className="flex items-center gap-2">
-									<span>{'📊'}</span>
+									<span><FaChartBar /></span>
 									{'Activity insights'}
 								</div>
 								<div className="flex items-center gap-2">
-									<span>{'🏆'}</span>
+									<span><FaTrophy /></span>
 									{'Achievement badges'}
 								</div>
 								<div className="flex items-center gap-2">
-									<span>{'📈'}</span>
+									<span><FaChartLine /></span>
 									{'Detailed statistics'}
 								</div>
 							</div>

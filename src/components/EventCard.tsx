@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaClock, FaCalendarAlt, FaCheckCircle, FaTimes, FaClipboardList, FaGlobe } from 'react-icons/fa'
 
 import { Badge, Card, CardContent } from '@/components/ui'
 import { timeSince, timeUntil } from '@/lib/timeUtils'
@@ -31,13 +32,13 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 	const getRoleDisplay = (role: string) => {
 		switch (role) {
 			case 'creator':
-				return { text: 'Creator', color: 'text-purple-600', icon: '👑', showRole: true }
+				return { text: 'Creator', color: 'text-purple-600', icon: <FaUserTie />, showRole: true }
 			case 'admin':
-				return { text: 'Admin', color: 'text-blue-600', icon: '⚙️', showRole: true }
+				return { text: 'Admin', color: 'text-blue-600', icon: <FaCog />, showRole: true }
 			case 'participant':
-				return { text: 'Participant', color: 'text-green-600', icon: '👤', showRole: false }
+				return { text: 'Participant', color: 'text-green-600', icon: <FaUser />, showRole: false }
 			default:
-				return { text: 'Unknown', color: 'text-gray-600', icon: '❓', showRole: false }
+				return { text: 'Unknown', color: 'text-gray-600', icon: <FaQuestionCircle />, showRole: false }
 		}
 	}
 
@@ -60,12 +61,12 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 
 	const getStatusIcon = (status: EventType['status']) => {
 		switch (status) {
-			case 'draft': return '📝'
-			case 'scheduling': return '⏰'
-			case 'scheduled': return '📅'
-			case 'confirmed': return '✅'
-			case 'cancelled': return '❌'
-			default: return '📋'
+			case 'draft': return <FaEdit className="text-gray-500" />
+			case 'scheduling': return <FaClock className="text-yellow-500" />
+			case 'scheduled': return <FaCalendarAlt className="text-blue-500" />
+			case 'confirmed': return <FaCheckCircle className="text-green-500" />
+			case 'cancelled': return <FaTimes className="text-red-500" />
+			default: return <FaClipboardList className="text-gray-400" />
 		}
 	}
 
@@ -154,11 +155,11 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 						<div className="flex items-center gap-2">
 							{event.public && (
 								<Badge variant="info" className="bg-purple-100 text-purple-800 text-xs">
-									{'🌐 Public'}
+									<FaGlobe className="inline mr-1" /> Public
 								</Badge>
 							)}
 							<Badge className={`${getStatusColor(event.status)} text-xs`}>
-								{getStatusIcon(event.status)} {event.status}
+								<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
 							</Badge>
 						</div>
 						<Link

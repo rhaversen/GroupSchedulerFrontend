@@ -1,3 +1,5 @@
+import { FaTimes } from 'react-icons/fa'
+
 import { EventCard } from '@/components/EventCard'
 import { Card, CardContent } from '@/components/ui'
 import { type EventType } from '@/types/backendDataTypes'
@@ -45,7 +47,9 @@ export default function EventsList ({
 			<Card className="border-0 shadow-lg">
 				<CardContent>
 					<div className="text-center py-12">
-						<div className="text-6xl mb-6">{'❌'}</div>
+						<div className="flex justify-center mb-6">
+							<FaTimes className="text-6xl text-red-400" />
+						</div>
 						<h3 className="text-xl font-medium text-gray-900 mb-3">
 							{'Failed to Load Events\r'}
 						</h3>

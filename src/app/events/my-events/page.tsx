@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FaLock, FaTimes } from 'react-icons/fa'
 
 import { Navigation, EventsSubNav, EventsFilters } from '@/components'
 import EventCard from '@/components/EventCard'
@@ -43,7 +44,9 @@ export default function MyEventsPage () {
 					<Card className="border-0 shadow-lg">
 						<CardContent>
 							<div className="text-center py-12">
-								<div className="text-6xl mb-6">{'🔒'}</div>
+								<div className="flex justify-center mb-6">
+									<FaLock className="text-6xl text-amber-500" />
+								</div>
 								<h3 className="text-xl font-medium text-gray-900 mb-3">
 									{'Authentication Required\r'}
 								</h3>
@@ -116,7 +119,9 @@ export default function MyEventsPage () {
 						<Card className="border-0 shadow-lg">
 							<CardContent>
 								<div className="text-center py-12">
-									<div className="text-6xl mb-6">{'❌'}</div>
+									<div className="flex justify-center mb-6">
+										<FaTimes className="text-6xl text-red-400" />
+									</div>
 									<h3 className="text-xl font-medium text-gray-900 mb-3">{'Failed to Load Events'}</h3>
 									<p className="text-gray-600">{error}</p>
 								</div>

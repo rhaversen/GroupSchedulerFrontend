@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { type ReactElement, useState } from 'react'
+import { FaExclamationTriangle } from 'react-icons/fa'
 
 import { useUser } from '@/contexts/UserProvider'
 import { timeUntil } from '@/lib/timeUtils'
@@ -38,7 +39,7 @@ const UnconfirmedUserBanner = (): ReactElement | null => {
 					}`}>
 						<span className={`text-lg ${
 							isExpired || isUrgent ? 'text-red-600' : 'text-amber-600'
-						}`} aria-label="Warning">{'⚠️'}</span>
+						}`} aria-label="Warning"><FaExclamationTriangle /></span>
 					</div>
 					<div className="flex-grow">
 						<div className={`font-semibold text-base ${

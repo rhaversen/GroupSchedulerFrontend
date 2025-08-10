@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { HiOutlineSearch, HiOutlineRefresh, HiChevronDown, HiChevronUp } from 'react-icons/hi'
+import { FaList, FaStar, FaCog, FaHandPaper, FaScroll, FaGlobe, FaUnlock, FaLock, FaClock } from 'react-icons/fa'
 
 interface EventsFiltersProps {
 	searchTerm: string
@@ -12,7 +13,7 @@ interface EventsFiltersProps {
 	setViewMode: (mode: 'created' | 'admin' | 'participant' | 'both') => void
 	publicFilter: 'all' | 'public' | 'private'
 	setPublicFilter: (filter: 'all' | 'public' | 'private') => void
-	statusOptions: Array<{ id: string; label: string; icon: string }>
+	statusOptions: Array<{ id: string; label: string; icon: ReactNode }>
 }
 
 export default function EventsFilters ({
@@ -80,10 +81,10 @@ export default function EventsFilters ({
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Event Type'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
-									{ id: 'both', label: 'All Events', shortLabel: 'All', icon: '👑' },
-									{ id: 'created', label: 'Created by Me', shortLabel: 'Created', icon: '✨' },
-									{ id: 'admin', label: 'Admin Role', shortLabel: 'Admin', icon: '⚙️' },
-									{ id: 'participant', label: 'Participating', shortLabel: 'Participant', icon: '🙋' }
+									{ id: 'both', label: 'All Events', shortLabel: 'All', icon: <FaList /> },
+									{ id: 'created', label: 'Created by Me', shortLabel: 'Created', icon: <FaStar /> },
+									{ id: 'admin', label: 'Admin Role', shortLabel: 'Admin', icon: <FaCog /> },
+									{ id: 'participant', label: 'Participating', shortLabel: 'Participant', icon: <FaHandPaper /> }
 								].map((modeOption) => (
 									<button
 										key={modeOption.id}
@@ -106,8 +107,8 @@ export default function EventsFilters ({
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Time Period'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
-									{ id: 'upcoming', label: 'Upcoming', icon: '⏰' },
-									{ id: 'past', label: 'Past', icon: '📜' }
+									{ id: 'upcoming', label: 'Upcoming', icon: <FaClock /> },
+									{ id: 'past', label: 'Past', icon: <FaScroll /> }
 								].map((tab) => (
 									<button
 										key={tab.id}
@@ -153,9 +154,9 @@ export default function EventsFilters ({
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Visibility'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
-									{ id: 'all', label: 'All', icon: '🌐' },
-									{ id: 'public', label: 'Public', icon: '🔓' },
-									{ id: 'private', label: 'Private', icon: '🔒' }
+									{ id: 'all', label: 'All', icon: <FaGlobe /> },
+									{ id: 'public', label: 'Public', icon: <FaUnlock /> },
+									{ id: 'private', label: 'Private', icon: <FaLock /> }
 								].map((filter) => (
 									<button
 										key={filter.id}

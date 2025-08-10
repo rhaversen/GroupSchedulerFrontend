@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaUsers, FaCalendarAlt, FaTools, FaClock } from 'react-icons/fa'
 import {
 	HiOutlineCalendar,
 	HiOutlineClock,
@@ -99,13 +100,13 @@ export default function EventDetailPage () {
 	const getRoleDisplay = (role: string) => {
 		switch (role) {
 			case 'creator':
-				return { text: 'Creator', color: 'text-purple-600', icon: '👑', bgColor: 'bg-purple-50' }
+				return { text: 'Creator', color: 'text-purple-600', icon: <FaUserTie />, bgColor: 'bg-purple-50' }
 			case 'admin':
-				return { text: 'Admin', color: 'text-blue-600', icon: '⚙️', bgColor: 'bg-blue-50' }
+				return { text: 'Admin', color: 'text-blue-600', icon: <FaCog />, bgColor: 'bg-blue-50' }
 			case 'participant':
-				return { text: 'Participant', color: 'text-green-600', icon: '👤', bgColor: 'bg-green-50' }
+				return { text: 'Participant', color: 'text-green-600', icon: <FaUser />, bgColor: 'bg-green-50' }
 			default:
-				return { text: 'Unknown', color: 'text-gray-600', icon: '❓', bgColor: 'bg-gray-50' }
+				return { text: 'Unknown', color: 'text-gray-600', icon: <FaQuestionCircle />, bgColor: 'bg-gray-50' }
 		}
 	}
 
@@ -189,7 +190,7 @@ export default function EventDetailPage () {
 							{currentUser != null && getCurrentUserRole() != null && (
 								<div className="mt-6 flex items-center gap-3">
 									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
-										<span className="text-xl">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
+										<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
 										<span className="font-medium text-lg text-indigo-600">
 											{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
 										</span>
@@ -203,7 +204,9 @@ export default function EventDetailPage () {
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
-								<div className="text-3xl mb-2">{'👥'}</div>
+								<div className="flex justify-center mb-2">
+									<FaUsers className="text-3xl text-blue-500" />
+								</div>
 								<div className="text-2xl font-bold text-gray-900">{event.members.length}</div>
 								<div className="text-sm text-gray-500">{'Total Members'}</div>
 							</CardContent>
@@ -211,7 +214,9 @@ export default function EventDetailPage () {
 
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
-								<div className="text-3xl mb-2">{'⏱️'}</div>
+								<div className="flex justify-center mb-2">
+									<FaClock className="text-3xl text-yellow-500" />
+								</div>
 								<div className="text-2xl font-bold text-gray-900">
 									{Math.round((event.duration || 3600000) / 3600000)}
 								</div>
@@ -221,7 +226,9 @@ export default function EventDetailPage () {
 
 						<Card className="border-0 shadow-md text-center">
 							<CardContent className="pt-6">
-								<div className="text-3xl mb-2">{'📅'}</div>
+								<div className="flex justify-center mb-2">
+									<FaCalendarAlt className="text-3xl text-green-500" />
+								</div>
 								<div className="text-2xl font-bold text-gray-900">
 									{new Date(event.createdAt).toLocaleDateString()}
 								</div>
@@ -355,21 +362,21 @@ export default function EventDetailPage () {
 					<Card className="border-0 shadow-lg">
 						<CardHeader>
 							<CardTitle className="text-2xl flex items-center gap-3">
-								<span className="text-2xl">{'🚧'}</span>
+								<span className="text-2xl text-amber-500"><FaTools /></span>
 								{'Event Management - Work in Progress'}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
 								<h4 className="font-medium text-blue-900 mb-2">{'Coming Soon:'}</h4>
-								<ul className="text-sm text-blue-800 space-y-1">
-									<li>{'• Participant management and invitations'}</li>
-									<li>{'• Time slot selection and voting'}</li>
-									<li>{'• Event scheduling and confirmation'}</li>
-									<li>{'• Real-time updates and notifications'}</li>
-									<li>{'• Event editing and deletion'}</li>
-									<li>{'• Availability calendar view'}</li>
-									<li>{'• Export to calendar apps'}</li>
+								<ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+									<li>{'Participant management and invitations'}</li>
+									<li>{'Time slot selection and voting'}</li>
+									<li>{'Event scheduling and confirmation'}</li>
+									<li>{'Real-time updates and notifications'}</li>
+									<li>{'Event editing and deletion'}</li>
+									<li>{'Availability calendar view'}</li>
+									<li>{'Export to calendar apps'}</li>
 								</ul>
 							</div>
 						</CardContent>

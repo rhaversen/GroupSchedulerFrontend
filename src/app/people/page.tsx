@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { FaTimes, FaSearch, FaUsers, FaCalendarAlt, FaBullseye, FaCheckCircle, FaStar } from 'react-icons/fa'
 
 import Navigation from '@/components/Navigation'
 import { Card, CardContent } from '@/components/ui'
@@ -108,7 +109,9 @@ export default function PeoplePage () {
 					<Card className="border-0 shadow-lg">
 						<CardContent>
 							<div className="text-center py-12">
-								<div className="text-6xl mb-6">{'❌'}</div>
+								<div className="flex justify-center mb-6">
+									<FaTimes className="text-6xl text-red-400" />
+								</div>
 								<h3 className="text-xl font-medium text-gray-900 mb-3">
 									{'Failed to Load Users'}
 								</h3>
@@ -142,7 +145,7 @@ export default function PeoplePage () {
 
 						<div className="relative">
 							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<span className="text-gray-600 text-lg">{'🔍'}</span>
+								<span className="text-gray-600 text-lg"><FaSearch /></span>
 							</div>
 							<input
 								type="text"
@@ -158,7 +161,9 @@ export default function PeoplePage () {
 						<Card className="border-0 shadow-md">
 							<CardContent>
 								<div className="text-center py-12">
-									<div className="text-6xl mb-6">{'👥'}</div>
+									<div className="flex justify-center mb-6">
+										<FaUsers className="text-6xl text-blue-500" />
+									</div>
 									<h3 className="text-xl font-medium text-gray-900 mb-3">
 										{searchTerm ? 'No users found' : 'No users yet'}
 									</h3>
@@ -196,23 +201,23 @@ export default function PeoplePage () {
 													{user.username}
 												</h3>
 												<div className="flex items-center justify-center gap-1 text-sm text-gray-500 mb-4">
-													<span>{'📅'}</span>
+													<span><FaCalendarAlt /></span>
 													<span>
 														{timeSince(user.createdAt)}
 													</span>
 												</div>
 												<div className="flex justify-center gap-4 text-xs text-gray-400">
 													<div className="flex items-center gap-1">
-														<span>{'🎯'}</span>
+														<span><FaBullseye /></span>
 														<span>{user.eventsCreated ?? 0}{' created'}</span>
 													</div>
 													<div className="flex items-center gap-1">
-														<span>{'✅'}</span>
+														<span><FaCheckCircle /></span>
 														<span>{user.eventsParticipating ?? 0}{' joined'}</span>
 													</div>
 													{isNewUser(user.createdAt) && (
 														<div className="flex items-center gap-1">
-															<span>{'⭐'}</span>
+															<span><FaStar /></span>
 															<span>{'New User'}</span>
 														</div>
 													)}

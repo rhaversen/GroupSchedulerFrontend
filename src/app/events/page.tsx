@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FaCalendarCheck, FaGlobe, FaStar, FaCheck, FaRocket, FaPlus } from 'react-icons/fa'
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
@@ -26,7 +27,7 @@ export default function EventsPage () {
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'+ Create New Event'}
+										<span className="flex items-center gap-2"><FaPlus className="text-sm" /> Create New Event</span>
 									</Button>
 								</Link>
 								<Link href="/events/my-events">
@@ -48,7 +49,7 @@ export default function EventsPage () {
 						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
 							<CardHeader className="pb-4">
 								<div className="flex items-center gap-3 mb-2">
-									<span className="text-3xl">{'👑'}</span>
+									<span className="text-3xl text-blue-500"><FaCalendarCheck /></span>
 									<CardTitle className="text-xl">{'My Events'}</CardTitle>
 								</div>
 							</CardHeader>
@@ -67,7 +68,7 @@ export default function EventsPage () {
 						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
 							<CardHeader className="pb-4">
 								<div className="flex items-center gap-3 mb-2">
-									<span className="text-3xl">{'🌐'}</span>
+									<span className="text-3xl text-green-500"><FaGlobe /></span>
 									<CardTitle className="text-xl">{'Public Events'}</CardTitle>
 								</div>
 							</CardHeader>
@@ -89,30 +90,30 @@ export default function EventsPage () {
 						<Card className="border-0 shadow-lg">
 							<CardHeader>
 								<CardTitle className="text-2xl flex items-center gap-3">
-									<span className="text-2xl">{'✨'}</span>
+									<span className="text-2xl text-yellow-500"><FaStar /></span>
 									{'Event Features'}
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-3 text-gray-600">
 									<li className="flex items-start gap-3">
-										<span className="text-green-500 mt-1">{'✓'}</span>
+										<span className="text-green-500 mt-1"><FaCheck /></span>
 										<span>{'Smart scheduling with time windows'}</span>
 									</li>
 									<li className="flex items-start gap-3">
-										<span className="text-green-500 mt-1">{'✓'}</span>
+										<span className="text-green-500 mt-1"><FaCheck /></span>
 										<span>{'Participant availability tracking'}</span>
 									</li>
 									<li className="flex items-start gap-3">
-										<span className="text-green-500 mt-1">{'✓'}</span>
+										<span className="text-green-500 mt-1"><FaCheck /></span>
 										<span>{'Real-time updates and notifications'}</span>
 									</li>
 									<li className="flex items-start gap-3">
-										<span className="text-green-500 mt-1">{'✓'}</span>
+										<span className="text-green-500 mt-1"><FaCheck /></span>
 										<span>{'Public and private event options'}</span>
 									</li>
 									<li className="flex items-start gap-3">
-										<span className="text-green-500 mt-1">{'✓'}</span>
+										<span className="text-green-500 mt-1"><FaCheck /></span>
 										<span>{'Easy participant management'}</span>
 									</li>
 								</ul>
@@ -122,7 +123,7 @@ export default function EventsPage () {
 						<Card className="border-0 shadow-lg">
 							<CardHeader>
 								<CardTitle className="text-2xl flex items-center gap-3">
-									<span className="text-2xl">{'🚀'}</span>
+									<span className="text-2xl text-purple-500"><FaRocket /></span>
 									{'Getting Started'}
 								</CardTitle>
 							</CardHeader>
