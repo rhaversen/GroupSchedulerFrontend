@@ -27,7 +27,7 @@ export default function EventsPage () {
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										<span className="flex items-center gap-2"><FaPlus className="text-sm" /> Create New Event</span>
+										<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
 									</Button>
 								</Link>
 								<Link href="/events/my-events">

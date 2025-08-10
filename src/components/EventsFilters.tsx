@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react'
-import { HiOutlineSearch, HiOutlineRefresh, HiChevronDown, HiChevronUp } from 'react-icons/hi'
 import { FaList, FaStar, FaCog, FaHandPaper, FaScroll, FaGlobe, FaUnlock, FaLock, FaClock } from 'react-icons/fa'
+import { HiOutlineSearch, HiOutlineRefresh, HiChevronDown, HiChevronUp } from 'react-icons/hi'
 
 interface EventsFiltersProps {
 	searchTerm: string

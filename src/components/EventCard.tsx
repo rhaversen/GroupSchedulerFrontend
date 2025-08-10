@@ -155,7 +155,7 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 						<div className="flex items-center gap-2">
 							{event.public && (
 								<Badge variant="info" className="bg-purple-100 text-purple-800 text-xs">
-									<FaGlobe className="inline mr-1" /> Public
+									<FaGlobe className="inline mr-1" /> {'Public\r'}
 								</Badge>
 							)}
 							<Badge className={`${getStatusColor(event.status)} text-xs`}>
