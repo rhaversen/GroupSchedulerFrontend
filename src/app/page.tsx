@@ -121,41 +121,48 @@ const Dashboard: React.FC = () => {
 				<div className="max-w-6xl mx-auto">
 					<div className="text-center mb-16">
 						<h2 className={`${fredoka.className} text-3xl md:text-4xl font-bold text-gray-900 mb-4`}>
-							{'Simple Group Scheduling'}
+							{'Perfect scheduling for everyone'}
 						</h2>
 						<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-							{'No more endless back-and-forth messages. Find times that work for everyone, effortlessly.'}
+							{'Whether you\'re creating events or joining them, '}
+							<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
+							{' ensures you never have scheduling conflicts. Do everything you want to do.'}
 						</p>
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
+							<div className="text-5xl mb-6">{'🎯'}</div>
+							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
+								{'Join without conflicts'}
+							</h3>
+							<p className="text-gray-600 leading-relaxed">
+								{'Accept event invitations knowing they\'ll never overlap with your other commitments. '}
+								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
+								{' keeps your schedule perfectly organized.'}
+							</p>
+						</div>
+
+						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
 							<div className="text-5xl mb-6">{'📅'}</div>
 							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
-								{'Create Events'}
+								{'Create smart events'}
 							</h3>
 							<p className="text-gray-600 leading-relaxed">
-								{'Set up events with flexible time windows and invite your group members.'}
+								{'Set flexible time windows and let '}
+								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
+								{' find the perfect slot when all your guests are free. No more back-and-forth coordination.'}
 							</p>
 						</div>
 
 						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-							<div className="text-5xl mb-6">{'🗳️'}</div>
+							<div className="text-5xl mb-6">{'🤖'}</div>
 							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
-								{'Share Availability'}
+								{'Automatic optimization'}
 							</h3>
 							<p className="text-gray-600 leading-relaxed">
-								{'Everyone can share when they\'re free within the proposed time window.'}
-							</p>
-						</div>
-
-						<div className="text-center p-8 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300">
-							<div className="text-5xl mb-6">{'✅'}</div>
-							<h3 className={`${fredoka.className} text-xl font-semibold text-gray-900 mb-4`}>
-								{'Confirm Time'}
-							</h3>
-							<p className="text-gray-600 leading-relaxed">
-								{'Find the perfect time slot that works for everyone and confirm your event.'}
+								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
+								{' ensures everyone can attend everything they want to. No compromises, no missed opportunities.'}
 							</p>
 						</div>
 					</div>

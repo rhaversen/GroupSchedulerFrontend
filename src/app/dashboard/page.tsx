@@ -178,7 +178,7 @@ export default function DashboardPage () {
 								{greeting}{', '}{displayName}{'!\r'}
 							</h1>
 							<p className="text-indigo-100 text-xl mb-8">
-								{'Plan, share, and find the time that works for everyone.\r'}
+								{'Your events and schedule at a glance.'}
 							</p>
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
@@ -247,9 +247,9 @@ export default function DashboardPage () {
 								) : upcomingEvents.length === 0 ? (
 									<div className="text-center py-12">
 										<h3 className="text-xl font-medium text-gray-900 mb-3">{'No upcoming events'}</h3>
-										<p className="text-gray-600 mb-6 text-lg">{'Create your first event to get started with scheduling.'}</p>
+										<p className="text-gray-600 mb-6 text-lg">{'Create an event to get started.'}</p>
 										<Link href="/events/new">
-											<Button variant="primary" size="lg" className="px-8 py-3">{'Create New Event'}</Button>
+											<Button variant="primary" size="lg" className="px-8 py-3">{'+ Create New Event'}</Button>
 										</Link>
 									</div>
 								) : (

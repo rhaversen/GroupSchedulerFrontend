@@ -21,7 +21,7 @@ export default function EventsPage () {
 								{'Events'}
 							</h1>
 							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
-								{'Manage your events, discover new ones, and connect with your community.'}
+								{'Create, manage, and join events.'}
 							</p>
 							<div className="flex flex-wrap gap-4">
 								<Link href="/events/new">
@@ -54,7 +54,7 @@ export default function EventsPage () {
 							</CardHeader>
 							<CardContent>
 								<p className="text-gray-600 mb-6">
-									{'Events where you are the creator or admin. Full control over scheduling, members, and settings.'}
+									{'Events you created or help manage.'}
 								</p>
 								<Link href="/events/my-events">
 									<Button variant="primary" className="w-full">
@@ -73,7 +73,7 @@ export default function EventsPage () {
 							</CardHeader>
 							<CardContent>
 								<p className="text-gray-600 mb-6">
-									{'Discover and join public events from the community. Find new activities and meet new people.'}
+									{'Find and join events from the community.'}
 								</p>
 								<Link href="/events/browse">
 									<Button variant="primary" className="w-full">
