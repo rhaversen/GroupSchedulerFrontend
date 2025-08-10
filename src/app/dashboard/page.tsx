@@ -295,7 +295,7 @@ export default function DashboardPage () {
 								</Link>
 								<Link href="/events">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'View All Events\r'}
+										{'View Events\r'}
 									</Button>
 								</Link>
 							</div>
@@ -341,7 +341,7 @@ export default function DashboardPage () {
 											href="/events"
 											className="inline-flex items-center px-6 py-3 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
 										>
-											{'View All Events'}
+											{'View Events'}
 										</Link>
 									)}
 								</div>
