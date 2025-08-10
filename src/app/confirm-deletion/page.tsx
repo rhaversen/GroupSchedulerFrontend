@@ -218,10 +218,10 @@ const ConfirmDeletionInner = (): ReactElement => {
 				</div>
 			)}
 
-            {isSuccess && (
+			{isSuccess && (
 				<Link href="/" className="w-full flex justify-center text-center text-indigo-600 hover:text-indigo-800 underline">
-                    {'Go to Home Page'}
-                </Link>
+					{'Go to Home Page'}
+				</Link>
 			)}
 		</div>
 	)
