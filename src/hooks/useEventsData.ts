@@ -9,7 +9,7 @@ interface EventsResponse {
 }
 
 export interface UseEventsDataProps {
-	viewMode?: 'created' | 'admin' | 'both'
+	viewMode?: 'created' | 'admin' | 'participant' | 'both'
 	statusFilter?: string
 	currentUser?: { _id: string } | null
 }
@@ -28,6 +28,8 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', currentUs
 				params.createdBy = currentUser._id
 			} else if (viewMode === 'admin') {
 				params.adminOf = currentUser._id
+			} else if (viewMode === 'participant') {
+				params.participantOf = currentUser._id
 			} else {
 				// 'both' mode - get all events user is involved in
 				params.memberOf = currentUser._id

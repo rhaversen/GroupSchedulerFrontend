@@ -19,6 +19,8 @@ export default function MyEventsPage () {
 		setViewTab,
 		viewMode,
 		setViewMode,
+		publicFilter,
+		setPublicFilter,
 		filterEvents,
 		getStatusOptions,
 		getEmptyState
@@ -84,6 +86,8 @@ export default function MyEventsPage () {
 						setViewTab={setViewTab}
 						viewMode={viewMode}
 						setViewMode={setViewMode}
+						publicFilter={publicFilter}
+						setPublicFilter={setPublicFilter}
 						statusOptions={statusOptions}
 					/>
 

@@ -5,15 +5,17 @@ import { type EventType } from '@/types/backendDataTypes'
 export interface FilterOptions {
 	searchTerm: string
 	statusFilter: string
-	viewTab: 'all' | 'upcoming' | 'past'
-	viewMode: 'created' | 'admin' | 'both'
+	viewTab: 'upcoming' | 'past'
+	viewMode: 'created' | 'admin' | 'participant' | 'both'
+	publicFilter: 'all' | 'public' | 'private'
 }
 
 export function useEventsFilters () {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [statusFilter, setStatusFilter] = useState<string>('')
-	const [viewTab, setViewTab] = useState<'all' | 'upcoming' | 'past'>('all')
-	const [viewMode, setViewMode] = useState<'created' | 'admin' | 'both'>('both')
+	const [viewTab, setViewTab] = useState<'upcoming' | 'past'>('upcoming')
+	const [viewMode, setViewMode] = useState<'created' | 'admin' | 'participant' | 'both'>('both')
+	const [publicFilter, setPublicFilter] = useState<'all' | 'public' | 'private'>('all')
 
 	const filterEvents = (events: EventType[]) => {
 		let filtered = events
@@ -26,19 +28,29 @@ export function useEventsFilters () {
 			)
 		}
 
-		if (viewTab !== 'all') {
-			const now = Date.now()
-			if (viewTab === 'upcoming') {
-				filtered = filtered.filter(event => {
-					const eventTime = event.scheduledTime ?? event.timeWindow.end
-					return eventTime > now
-				})
-			} else if (viewTab === 'past') {
-				filtered = filtered.filter(event => {
-					const eventTime = event.scheduledTime ?? event.timeWindow.end
-					return eventTime <= now
-				})
-			}
+		// Filter by time (upcoming vs past)
+		const now = Date.now()
+		if (viewTab === 'upcoming') {
+			filtered = filtered.filter(event => {
+				const eventTime = event.scheduledTime ?? event.timeWindow.end
+				return eventTime > now
+			})
+		} else if (viewTab === 'past') {
+			filtered = filtered.filter(event => {
+				const eventTime = event.scheduledTime ?? event.timeWindow.end
+				return eventTime <= now
+			})
+		}
+
+		// Filter by public/private
+		if (publicFilter !== 'all') {
+			filtered = filtered.filter(event => {
+				if (publicFilter === 'public') {
+					return event.public === true
+				} else {
+					return event.public === false
+				}
+			})
 		}
 
 		return filtered
@@ -55,24 +67,22 @@ export function useEventsFilters () {
 		]
 	}
 
-	const getEmptyState = (viewTab: 'all' | 'upcoming' | 'past', viewMode: 'created' | 'admin' | 'both') => {
+	const getEmptyState = (viewTab: 'upcoming' | 'past', viewMode: 'created' | 'admin' | 'participant' | 'both') => {
 		return {
 			icon: '👑',
 			title: 'No events found',
 			description: viewMode === 'created'
-				? viewTab === 'all'
-					? 'You haven\'t created any events yet.'
-					: viewTab === 'upcoming'
+				? viewTab === 'upcoming'
 					? 'You don\'t have any upcoming events you created.'
 					: 'You don\'t have any past events you created.'
 				: viewMode === 'admin'
-				? viewTab === 'all'
-					? 'You don\'t have admin access to any events yet.'
-					: viewTab === 'upcoming'
+				? viewTab === 'upcoming'
 					? 'You don\'t have admin access to any upcoming events.'
 					: 'You don\'t have admin access to any past events.'
-				: viewTab === 'all'
-				? 'You\'re not involved in any events yet. Create your first event!'
+				: viewMode === 'participant'
+				? viewTab === 'upcoming'
+					? 'You\'re not participating in any upcoming events.'
+					: 'You haven\'t participated in any past events.'
 				: viewTab === 'upcoming'
 				? 'You don\'t have any upcoming events.'
 				: 'You don\'t have any past events.'
@@ -88,6 +98,8 @@ export function useEventsFilters () {
 		setViewTab,
 		viewMode,
 		setViewMode,
+		publicFilter,
+		setPublicFilter,
 		filterEvents,
 		getStatusOptions,
 		getEmptyState
