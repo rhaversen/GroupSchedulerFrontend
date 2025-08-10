@@ -126,3 +126,5 @@ export function EventCard ({ event }: EventCardProps) {
 		</Link>
 	)
 }
+
+export default EventCard

@@ -70,7 +70,7 @@ export default function EventsPage () {
 								<p className="text-gray-600 mb-6">
 									{'All events where you have any role - creator, admin, or participant. Your complete event involvement.'}
 								</p>
-								<Link href="/events/participating">
+								<Link href="/events/my-events">
 									<Button variant="primary" className="w-full">
 										{'View All My Events'}
 									</Button>
