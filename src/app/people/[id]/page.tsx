@@ -4,16 +4,22 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { EventCard } from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
 import { timeSince } from '@/lib/timeUtils'
-import { UserType } from '@/types/backendDataTypes'
+import { EventType, UserType } from '@/types/backendDataTypes'
 
 interface UserStats {
 	eventsCreated: number
 	eventsParticipating: number
+}
+
+interface CommonEventsData {
+	events: EventType[]
+	userNames: Map<string, string>
 }
 
 function isNewUser (createdAt: string): boolean {
@@ -40,6 +46,7 @@ export default function UserProfilePage () {
 
 	const [user, setUser] = useState<UserType | null>(null)
 	const [userStats, setUserStats] = useState<UserStats>({ eventsCreated: 0, eventsParticipating: 0 })
+	const [commonEvents, setCommonEvents] = useState<CommonEventsData>({ events: [], userNames: new Map() })
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
@@ -65,6 +72,11 @@ export default function UserProfilePage () {
 						eventsCreated,
 						eventsParticipating
 					})
+
+					// Load common events if current user exists and it's not their own profile
+					if (currentUser && !isCurrentUser) {
+						await loadCommonEvents(memberResponse.data.events ?? [])
+					}
 				} catch {
 					setUserStats({ eventsCreated: 0, eventsParticipating: 0 })
 				}
@@ -76,10 +88,52 @@ export default function UserProfilePage () {
 			}
 		}
 
+		const loadCommonEvents = async (viewedUserEvents: EventType[]) => {
+			try {
+				// Get current user's events
+				const currentUserEventsResponse = await api.get(`/v1/events?memberOf=${currentUser?._id}`)
+				const currentUserEvents = currentUserEventsResponse.data.events ?? []
+
+				// Find events in common (by event ID)
+				const viewedUserEventIds = new Set(viewedUserEvents.map(event => event._id))
+				const eventsInCommon = currentUserEvents.filter((event: EventType) =>
+					viewedUserEventIds.has(event._id)
+				)
+
+				// Get user names for all participants in common events
+				const allUserIds = new Set<string>()
+				eventsInCommon.forEach((event: EventType) => {
+					event.members.forEach(member => allUserIds.add(member.userId))
+				})
+
+				const userNames = new Map<string, string>()
+				if (allUserIds.size > 0) {
+					const userPromises = Array.from(allUserIds).map(async (id) => {
+						try {
+							const userResponse = await api.get(`/v1/users/${id}`)
+							return { id, username: userResponse.data.username }
+						} catch {
+							return { id, username: 'Unknown User' }
+						}
+					})
+
+					const users = await Promise.all(userPromises)
+					users.forEach(({ id, username }) => {
+						userNames.set(id, username)
+					})
+				}
+
+				setCommonEvents({ events: eventsInCommon, userNames })
+			} catch (err) {
+				console.error('Failed to load common events:', err)
+				setCommonEvents({ events: [], userNames: new Map() })
+			}
+		}
+
 		if (userId) {
 			loadUser()
 		}
-	}, [userId])
+	}, [userId, currentUser, isCurrentUser])
 
 	if (loading) {
 		return (
@@ -206,6 +260,44 @@ export default function UserProfilePage () {
 						</Card>
 					</div>
 
+					{/* Events in Common */}
+					{currentUser && !isCurrentUser && (
+						<Card className="border-0 shadow-md">
+							<CardHeader>
+								<CardTitle className="text-xl flex items-center gap-3">
+									<span className="text-xl">{'🤝'}</span>
+									{`Events in Common with ${user.username}`}
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								{commonEvents.events.length > 0 ? (
+									<div className="space-y-4">
+										<p className="text-sm text-gray-600 mb-4">
+											{`You and ${user.username} are both participating in ${commonEvents.events.length} event${commonEvents.events.length === 1 ? '' : 's'}.`}
+										</p>
+										<div className="grid gap-4">
+											{commonEvents.events.map(event => (
+												<EventCard
+													key={event._id}
+													event={event}
+													currentUser={currentUser}
+													userNames={commonEvents.userNames}
+												/>
+											))}
+										</div>
+									</div>
+								) : (
+									<div className="text-center py-8">
+										<div className="text-4xl mb-4">{'🔍'}</div>
+										<p className="text-gray-600">
+											{`You and ${user.username} don't have any events in common yet.`}
+										</p>
+									</div>
+								)}
+							</CardContent>
+						</Card>
+					)}
+
 					{/* Coming Soon */}
 					<Card className="border-0 shadow-md">
 						<CardHeader>
@@ -225,8 +317,8 @@ export default function UserProfilePage () {
 									{'Achievement badges'}
 								</div>
 								<div className="flex items-center gap-2">
-									<span>{'🤝'}</span>
-									{'Events in common'}
+									<span>{'📈'}</span>
+									{'Detailed statistics'}
 								</div>
 							</div>
 						</CardContent>
