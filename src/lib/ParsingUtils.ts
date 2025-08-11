@@ -1,7 +1,7 @@
 export function parseUserAgent (uaString: string): { browser: string, os: string, deviceType: string } {
 	// Browser detection with version
-	let browser = 'Ukendt Browser'
-	let os = 'Ukendt Styresystem'
+	let browser = 'Unknown Browser'
+	let os = 'Unknown Operating System'
 	let deviceType = 'desktop'
 
 	// Device detection first (since it affects OS detection)
@@ -62,7 +62,7 @@ export function parseUserAgent (uaString: string): { browser: string, os: string
 	}
 
 	// OS detection (for non-iOS systems)
-	if (os === 'Ukendt Styresystem') {
+	if (os === 'Unknown Operating System') {
 		if (uaString.includes('Windows NT')) {
 			const match = uaString.match(/Windows NT ([0-9.]+)/)
 			if (match != null) {
