@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { FaTimes, FaPlus } from 'react-icons/fa'
 
-import { Navigation, EventsSubNav, EventsFilters, PageHero } from '@/components'
+import { Navigation, EventsSubNav, EventsFilters, PageHero, EventCardSkeleton } from '@/components'
 import AuthRequiredCard from '@/components/AuthRequiredCard'
 import EventCard from '@/components/EventCard'
 import { Card, CardContent, Button } from '@/components/ui'
@@ -31,22 +32,35 @@ export default function MyEventsPage () {
 
 // Map combined pending filter to underlying statuses for data hook using comma separation
 const effectiveStatusFilter = statusFilter === 'pending' ? 'scheduling,scheduled' : statusFilter
-const { events, loading, error, total } = useEventsData({
+const { events, loading, isRefetching, error, total } = useEventsData({
 	viewMode,
 	statusFilter: effectiveStatusFilter,
 	publicFilter,
 	currentUser
 })
 
+// Handle refetch indicator visibility with fade-out
+const [showRefetchIndicator, setShowRefetchIndicator] = useState(false)
+useEffect(() => {
+	if (isRefetching === true) {
+		setShowRefetchIndicator(true)
+	} else if (showRefetchIndicator === true) {
+		const t = setTimeout(() => setShowRefetchIndicator(false), 300)
+		return () => clearTimeout(t)
+	}
+}, [isRefetching, showRefetchIndicator])
+
 	if (userLoading) {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-					<div className="animate-pulse space-y-6">
-						<div className="h-48 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl" />
+				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
+					<div className="space-y-8">
+						<div className="h-48 rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 animate-fade-in-slow opacity-0" style={{ animationDelay: '30ms', animationFillMode: 'forwards' }} />
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-48 bg-gray-200 rounded-xl" />)}
+							{Array.from({ length: 6 }).map((_, i) => (
+								<EventCardSkeleton key={i} index={i} />
+							))}
 						</div>
 					</div>
 				</div>
@@ -97,14 +111,8 @@ const { events, loading, error, total } = useEventsData({
 					{/* Events Grid */}
 					{loading ? (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{[...Array(3)].map((_, i) => (
-								<div
-									key={i}
-									className="animate-pulse animate-fade-in-slow opacity-0"
-									style={{ animationDelay: `${i * 150}ms`, animationFillMode: 'forwards' }}
-								>
-									<div className="h-48 bg-gray-200 rounded-lg" />
-								</div>
+							{Array.from({ length: 6 }).map((_, i) => (
+								<EventCardSkeleton key={i} index={i} />
 							))}
 						</div>
 					) : error != null ? (
@@ -152,10 +160,23 @@ const { events, loading, error, total } = useEventsData({
 										: `Showing ${filteredEvents.length} of ${total} events`}
 								</p>
 							</div>
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-								{filteredEvents.map(event => (
-									<EventCard key={event._id} event={event} currentUser={currentUser} />
-								))}
+							<div className="relative">
+								{showRefetchIndicator && (
+									<div className={`pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 z-10 transition-opacity duration-300 ${isRefetching === true ? 'opacity-100' : 'opacity-0'}`}>
+										<div className="px-5 py-2 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-md flex items-center gap-3">
+											<span className="inline-flex gap-3">
+												<span className="w-3.5 h-3.5 rounded-full bg-white animate-bounce [animation-delay:0ms]" />
+												<span className="w-3.5 h-3.5 rounded-full bg-white animate-bounce [animation-delay:140ms]" />
+												<span className="w-3.5 h-3.5 rounded-full bg-white animate-bounce [animation-delay:280ms]" />
+											</span>
+										</div>
+									</div>
+								)}
+								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200" style={{ opacity: isRefetching === true ? 0.65 : 1 }}>
+									{filteredEvents.map(event => (
+										<EventCard key={event._id} event={event} currentUser={currentUser} />
+									))}
+								</div>
 							</div>
 						</>
 					)}

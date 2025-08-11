@@ -70,3 +70,10 @@ body {
 .shake {
     animation: shake 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) both;
 }
+
+@keyframes fade-in-slow {
+	0% { opacity: 0; transform: translateY(4px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-slow { animation: fade-in-slow 0.5s ease forwards; }

@@ -17,7 +17,8 @@ export interface UseEventsDataProps {
 
 export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFilter = 'all', currentUser }: UseEventsDataProps) {
 	const [events, setEvents] = useState<EventType[]>([])
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(true) // true only until first response
+	const [isRefetching, setIsRefetching] = useState(false) // true for subsequent fetches while keeping old data
 	const [error, setError] = useState<string | null>(null)
 	const [total, setTotal] = useState(0)
 
@@ -50,7 +51,12 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFil
 
 	const loadEvents = useCallback(async () => {
 		try {
-			setLoading(true)
+			if (loading) {
+				// initial load
+				setLoading(true)
+			} else {
+				setIsRefetching(true)
+			}
 			setError(null)
 
 			const params = buildQueryParams()
@@ -74,9 +80,12 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFil
 			setEvents([])
 			setTotal(0)
 		} finally {
-			setLoading(false)
+			if (loading) {
+				setLoading(false)
+			}
+			setIsRefetching(false)
 		}
-	}, [buildQueryParams])
+	}, [buildQueryParams, loading])
 
 	useEffect(() => {
 		loadEvents()
@@ -85,6 +94,7 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFil
 	return {
 		events,
 		loading,
+		isRefetching,
 		error,
 		total,
 		refetch: loadEvents
