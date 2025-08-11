@@ -169,20 +169,27 @@ export default function EventDetailPage () {
 						subtitle={event.description}
 					>
 						<div className="flex items-center gap-4 mt-4">
-							<Badge
-								variant={getStatusBadgeVariant(event.status)}
+							{event.status !== 'confirmed' && (
+								<Badge
+									variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
-							>
-								{getStatusIcon(event.status)}
-								<span className="capitalize font-medium">{event.status}</span>
-							</Badge>
-							{event.scheduledTime != null && (
-									<div className="flex items-center gap-2 text-indigo-600 bg-white bg-opacity-20 px-4 py-2 rounded-full border border-white border-opacity-30">
-									<HiOutlineCheckCircle className="h-5 w-5" />
+									title={event.status === 'draft' ? 'Draft: Only creators/admins can view this event' : event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
+								>
+									{getStatusIcon(event.status)}
+									<span className="capitalize font-medium">{event.status}</span>
+								</Badge>
+							)}
+							{event.status === 'confirmed' && event.scheduledTime != null && (
+								<Badge
+									variant="success"
+									className="flex items-center gap-2 text-sm px-4 py-2"
+									title="Confirmed time: This is the final scheduled date and time"
+								>
+									<HiOutlineCheckCircle className="h-4 w-4" />
 									<span className="font-medium">
 										{formatRelativeDateLabel(new Date(event.scheduledTime))}
 									</span>
-								</div>
+								</Badge>
 							)}
 						</div>
 						{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
@@ -256,7 +263,7 @@ export default function EventDetailPage () {
 									</div>
 								</div>
 
-								{event.scheduledTime != null && (
+								{event.status === 'confirmed' && event.scheduledTime != null && (
 									<div>
 										<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
 										<div className="mt-2">
