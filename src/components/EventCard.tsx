@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaClock, FaCalendarAlt, FaCheckCircle, FaTimes, FaClipboardList, FaGlobe } from 'react-icons/fa'
+import { useEffect, useState, useMemo, useRef } from 'react'
+import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaCheckCircle, FaTimes, FaClipboardList, FaGlobe, FaLock, FaExternalLinkAlt } from 'react-icons/fa'
 
 import { Badge, Card, CardContent } from '@/components/ui'
+import { api } from '@/lib/api'
 import { timeSince, timeUntil } from '@/lib/timeUtils'
 import { type EventType } from '@/types/backendDataTypes'
 
@@ -14,20 +16,46 @@ interface EventCardProps {
 }
 
 export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
+	const [creatorNamesState, setCreatorNamesState] = useState<Map<string, string>>(new Map())
+	const [showMoreCreators, setShowMoreCreators] = useState(false)
+	const rootRef = useRef<HTMLDivElement | null>(null)
 	const getUserRole = () => {
 		const member = event.members.find(m => m.userId === currentUser?._id)
 		return member?.role || 'unknown'
 	}
 
-	const getCreator = () => event.members.find(m => m.role === 'creator')
+const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), [event.members])
 
-	const getCreatorName = () => {
-		const creator = getCreator()
-		if (!creator) { return 'Unknown' }
-		if (creator.userId === currentUser?._id) { return 'you' }
-		if (userNames != null && userNames.has(creator.userId)) { return userNames.get(creator.userId) as string }
-		return 'Unknown User'
+	const getCreatorNameImmediate = (id: string) => {
+		if (id === currentUser?._id) { return 'you' }
+		if (userNames && userNames.has(id)) { return userNames.get(id) as string }
+		if (creatorNamesState.has(id)) { return creatorNamesState.get(id) as string }
+		return 'Loading...'
 	}
+
+	useEffect(() => {
+		if (creators.length === 0) { return }
+		const missing = creators.filter(c => !((userNames && userNames.has(c.userId)) || creatorNamesState.has(c.userId)))
+		if (missing.length === 0) { return }
+		let cancelled = false
+		;(async () => {
+			const updates = new Map<string, string>()
+			for (const c of missing) {
+				try {
+					const res = await api.get(`/v1/users/${c.userId}`)
+					if (cancelled) { return }
+					const data = res.data as { username?: string; email?: string }
+					updates.set(c.userId, data.username ?? data.email ?? 'Unknown User')
+				} catch {
+					if (!cancelled) { updates.set(c.userId, 'Unknown User') }
+				}
+			}
+			if (!cancelled && updates.size > 0) {
+				setCreatorNamesState(prev => new Map([...prev, ...Array.from(updates.entries())]))
+			}
+		})()
+		return () => { cancelled = true }
+	}, [creators, creatorNamesState, userNames])
 
 	const getRoleDisplay = (role: string) => {
 		switch (role) {
@@ -44,29 +72,19 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 
 	const getStatusColor = (status: EventType['status']) => {
 		switch (status) {
-			case 'draft':
-				return 'bg-gray-100 text-gray-800'
-			case 'scheduling':
-				return 'bg-yellow-100 text-yellow-800'
-			case 'scheduled':
-				return 'bg-blue-100 text-blue-800'
-			case 'confirmed':
-				return 'bg-green-100 text-green-800'
-			case 'cancelled':
-				return 'bg-red-100 text-red-800'
-			default:
-				return 'bg-gray-100 text-gray-800'
+			case 'draft': return 'bg-gray-100 text-gray-800'
+			case 'confirmed': return 'bg-green-100 text-green-800'
+			case 'cancelled': return 'bg-red-100 text-red-800'
+			default: return 'bg-gray-100 text-gray-400'
 		}
 	}
 
 	const getStatusIcon = (status: EventType['status']) => {
 		switch (status) {
 			case 'draft': return <FaEdit className="text-gray-500" />
-			case 'scheduling': return <FaClock className="text-yellow-500" />
-			case 'scheduled': return <FaCalendarAlt className="text-blue-500" />
 			case 'confirmed': return <FaCheckCircle className="text-green-500" />
 			case 'cancelled': return <FaTimes className="text-red-500" />
-			default: return <FaClipboardList className="text-gray-400" />
+			default: return <FaClipboardList className="text-gray-300" />
 		}
 	}
 
@@ -76,102 +94,175 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 	const isUpcoming = eventTime.getTime() > Date.now()
 	const userRole = getUserRole()
 	const roleDisplay = getRoleDisplay(userRole)
-	const creator = getCreator()
-	const creatorName = getCreatorName()
+	const firstCreatorName = creators.length > 0 ? getCreatorNameImmediate(creators[0].userId) : null
+
+	useEffect(() => {
+		if (!showMoreCreators) { return }
+		const handle = (e: MouseEvent) => {
+			if (!rootRef.current) { return }
+			if (e.target instanceof HTMLElement && rootRef.current.contains(e.target)) {
+				if (e.target.closest('.eventcard-creators-toggle') || e.target.closest('.eventcard-creators-dropdown')) { return }
+			}
+			setShowMoreCreators(false)
+		}
+		document.addEventListener('mousedown', handle)
+		return () => document.removeEventListener('mousedown', handle)
+	}, [showMoreCreators])
 
 	return (
-		<Card className="border-0 shadow-md">
-			<CardContent>
-				<div className="pt-2 mb-4">
-					<div className="flex items-baseline gap-3 mb-2">
-						<h3 className="font-semibold text-gray-900 truncate text-xl">
-							{event.name}
-						</h3>
-						{creator && (
-							<Link
-								href={`/people/${creator.userId}`}
-								className="text-sm text-gray-500 hover:text-indigo-600 transition-colors cursor-pointer flex-shrink-0 underline hover:no-underline"
+		<div
+			ref={rootRef}
+			className="eventcard-root group block h-full focus:outline-none cursor-pointer"
+			onClick={e => {
+				if (showMoreCreators) { setShowMoreCreators(false) }
+				if (e.target instanceof HTMLElement && e.target.closest('.eventcard-user-link,.eventcard-popout')) { return }
+				window.location.href = `/events/${event._id}`
+			}}
+		>
+			<Card className="border-0 shadow-md h-full transition-shadow duration-200 eventcard-card group-hover:shadow-lg">
+				<CardContent className="flex flex-col h-full relative">
+					<button
+						type="button"
+						tabIndex={0}
+						aria-label="View Details"
+						onClick={e => { e.stopPropagation(); e.preventDefault(); window.location.href = `/events/${event._id}` }}
+						className="eventcard-popout absolute top-2 right-2 z-10 p-1 text-gray-400 transition-all cursor-pointer"
+						style={{ background: 'none', border: 'none' }}
+					>
+						<FaExternalLinkAlt size={16} />
+					</button>
+					<style>{`
+										.eventcard-root.group:hover .eventcard-popout {
+											color: #4f46e5;
+										}
+										.eventcard-root.eventcard-nohover .eventcard-popout {
+											color: #9ca3af !important;
+										}
+										.eventcard-root.eventcard-nohover .eventcard-card {
+											box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+										}
+									`}</style>
+					<div className="pt-2 mb-4">
+						<div className="w-full px-0">
+							<h3
+								className="font-semibold text-gray-900 text-xl mb-1 truncate block"
+								style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+								title={event.name}
 							>
-								{'by '}{creatorName}
-							</Link>
-						)}
-					</div>
-					<p className="text-sm text-gray-600 line-clamp-2 mb-4">
-						{event.description}
-					</p>
-					{roleDisplay.showRole && (
-						<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-full mb-2">
-							<span className="text-sm">{roleDisplay.icon}</span>
-							<span className={`text-sm font-medium ${roleDisplay.color}`}>
-								{'You\'re a '}{roleDisplay.text.toLowerCase()}{' of this event'}
-							</span>
+								{event.name}
+							</h3>
 						</div>
-					)}
-				</div>
-
-				<div className="space-y-3 text-sm text-gray-600">
-					{event.scheduledTime !== null && event.scheduledTime !== undefined ? (
-						<div className="flex items-center justify-between">
+						{creators.length > 0 && (
+							<div className="inline-flex items-baseline gap-1 text-sm mb-2 relative z-20 select-none" onClick={e => e.stopPropagation()} onMouseEnter={e => { const card = e.currentTarget.closest('.eventcard-root'); if (card) { card.classList.add('eventcard-nohover') } }} onMouseLeave={e => { const card = e.currentTarget.closest('.eventcard-root'); if (card) { card.classList.remove('eventcard-nohover') } }}>
+								<Link href={`/people/${creators[0].userId}`} className="eventcard-user-link text-gray-500 underline hover:text-indigo-600 hover:decoration-indigo-500 transition-colors cursor-pointer" tabIndex={0}>
+									{'by '}{firstCreatorName}
+								</Link>
+								{creators.length > 1 && (
+									<button
+										type="button"
+										className="eventcard-creators-toggle text-gray-500 hover:text-indigo-600 underline focus:outline-none text-xs leading-snug cursor-pointer active:opacity-70 transition-colors"
+										onClick={e => { e.stopPropagation(); setShowMoreCreators(v => !v) }}
+									>
+										{'and '}{creators.length - 1}{creators.length - 1 === 1 ? ' other' : ' others'}
+									</button>
+								)}
+								{showMoreCreators && creators.length > 1 && (
+									<div className="eventcard-creators-dropdown absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-30 w-48" onClick={e => e.stopPropagation()}>
+										<ul className="space-y-1">
+											{creators.slice(1).map(c => (
+												<li key={c.userId}>
+													<Link
+															href={`/people/${c.userId}`}
+															className="block w-full truncate text-gray-600 hover:text-indigo-600 underline transition-colors"
+															title={getCreatorNameImmediate(c.userId)}
+															onClick={e => e.stopPropagation()}
+														>
+															{getCreatorNameImmediate(c.userId)}
+														</Link>
+												</li>
+											))}
+										</ul>
+									</div>
+								)}
+							</div>
+						)}
+						<p className="text-sm text-gray-600 mb-4 overflow-hidden" style={{ minHeight: '2.5rem', maxHeight: '2.5rem' }}>
+							{event.description}
+						</p>
+					</div>
+					<div className="space-y-3 text-sm text-gray-600 flex-1">
+						{event.status === 'cancelled' && (
 							<div className="flex items-center gap-2">
-								<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
-									{'Scheduled'}
-								</span>
+								<Badge className="bg-red-100 text-red-800 text-xs" title="Cancelled – this event will not take place">
+									{'Cancelled'}
+								</Badge>
+							</div>
+						)}
+						{event.status !== 'cancelled' && event.status === 'confirmed' && event.scheduledTime != null ? (
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-2">
+									<Badge className="bg-green-100 text-green-800 text-xs" title="The date has been confirmed and is visible to all members">
+										{'Confirmed'}
+									</Badge>
+									<span className="font-medium">
+										{new Date(event.scheduledTime).toLocaleDateString()}
+									</span>
+								</div>
+								{isUpcoming && (
+									<span className="text-xs text-gray-500 font-medium">
+										{timeUntil(event.scheduledTime)}
+									</span>
+								)}
+							</div>
+						) : event.status !== 'cancelled' ? (
+							<div className="flex items-center gap-2">
+								<Badge className="bg-gray-100 text-gray-800 text-xs" title="Current availability range – final date not yet confirmed">
+									{'Window'}
+								</Badge>
 								<span className="font-medium">
-									{new Date(event.scheduledTime).toLocaleDateString()}
+									{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
 								</span>
 							</div>
-							{isUpcoming && (
-								<span className="text-xs text-gray-500 font-medium">
-									{timeUntil(event.scheduledTime)}
-								</span>
-							)}
-						</div>
-					) : (
-						<div className="flex items-center gap-2">
-							<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800">
-								{'Window'}
-							</span>
-							<span>
-								{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
-							</span>
-						</div>
-					)}
-
-					<div className="flex items-center gap-2">
-						<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
-							{'Members'}
-						</span>
-						<span>{event.members.length}</span>
-					</div>
-				</div>
-
-				<div className="mt-4 pt-3 border-t border-gray-100">
-					<div className="flex justify-between items-start mb-3">
-						<span className="text-xs text-gray-500">
-							{'Updated '}{timeSince(event.updatedAt)}
-						</span>
-					</div>
-					<div className="flex justify-between items-center">
-						<div className="flex items-center gap-2">
-							{event.public && (
-								<Badge variant="info" className="bg-purple-100 text-purple-800 text-xs">
-									<FaGlobe className="inline mr-1" /> {'Public\r'}
+						) : null}
+						{event.status !== 'cancelled' && (
+							<div className="flex items-center gap-2">
+								<Badge className="bg-gray-100 text-gray-800 text-xs" title="Number of people in this event">
+									{'Members'}
 								</Badge>
-							)}
-							<Badge className={`${getStatusColor(event.status)} text-xs`}>
-								<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
-							</Badge>
-						</div>
-						<Link
-							className="inline-flex items-center px-4 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-300 hover:text-indigo-600 rounded-md transition-all duration-200 shadow-sm"
-							href={`/events/${event._id}`}
-						>
-							{'View Details'}
-						</Link>
+								<span className="font-medium">{event.members.length}</span>
+							</div>
+						)}
 					</div>
-				</div>
-			</CardContent>
-		</Card>
+					<div className="flex-grow" />
+					<div className="mt-4 pt-3 border-t border-gray-100">
+						<div className="flex justify-between items-start mb-3">
+							<span className="text-xs text-gray-500">
+								{'Updated '}{timeSince(event.updatedAt)}
+							</span>
+						</div>
+						<div className="flex justify-between items-center">
+							{event.status !== 'cancelled' && (
+								<div className="flex items-center gap-2 flex-wrap">
+									<Badge className={`text-xs ${event.public ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-700'}`} title={event.public ? 'Visible to anyone browsing events' : 'Only visible to members of this event'}>
+										<span className="inline mr-1">{event.public ? <FaGlobe className="text-blue-500" /> : <FaLock className="text-gray-500" />}</span> {event.public ? 'Public' : 'Members Only'}
+									</Badge>
+									{event.status === 'draft' && (
+										<Badge className={`${getStatusColor(event.status)} text-xs`} title="Draft – only you and admins can see it">
+											<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
+										</Badge>
+									)}
+									{roleDisplay.showRole && (
+										<Badge className="text-xs bg-purple-100 text-purple-800" title={`Your role: ${roleDisplay.text}`}>
+											<span className="inline mr-1">{roleDisplay.icon}</span> {roleDisplay.text}
+										</Badge>
+									)}
+								</div>
+							)}
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
 	)
 }
 
