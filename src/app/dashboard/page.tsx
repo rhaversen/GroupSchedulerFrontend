@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { FaBullseye, FaUsers, FaCheckCircle, FaPlus, FaClock, FaCalendarTimes } from 'react-icons/fa'
 
 import EventCard from '@/components/EventCard'
+import EventCardSkeleton from '@/components/EventCardSkeleton'
 import Navigation from '@/components/Navigation'
 import PageHero from '@/components/PageHero'
 import { Button, Card, CardContent, CardHeader, CardTitle, StatsCard } from '@/components/ui'
@@ -214,7 +215,11 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 								{error != null ? (
 									<div className="text-center py-12"><p className="text-red-600 text-lg">{error}</p></div>
 								) : (loading || userLoading) ? (
-									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">{Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-48 bg-gray-200 rounded-xl animate-pulse" />)}</div>
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+										{Array.from({ length: 6 }).map((_, i) => (
+											<EventCardSkeleton key={i} index={i} />
+										))}
+									</div>
 								) : upcomingEvents.length === 0 ? (
 									<div className="relative overflow-hidden rounded-xl">
 										<div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-10" />
@@ -226,11 +231,11 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 										</div>
 									</div>
 								) : (
-									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-										{upcomingEvents.map(event => (
-											<EventCard key={event._id} event={event} currentUser={currentUser} userNames={userNames} />
-										))}
-									</div>
+										<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-200">
+											{upcomingEvents.map(event => (
+												<EventCard key={event._id} event={event} currentUser={currentUser} userNames={userNames} />
+											))}
+										</div>
 								)}
 								{enrichingNames && !loading && events && events.length > 0 && (
 									<div className="mt-4 text-xs text-gray-400">{'Enhancing member info...'}</div>
