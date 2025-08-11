@@ -74,7 +74,7 @@ export default function MyEventsPage () {
 				<div className="space-y-8">
 					<PageHero
 						title="My Events"
-						subtitle={"All events you're involved in - as creator, admin, or participant."}
+						subtitle={'All events you\'re involved in - as creator, admin, or participant.'}
 					>
 						<EventsFilters
 							searchTerm={searchTerm}
