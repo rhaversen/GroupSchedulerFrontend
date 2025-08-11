@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { FaCalendarCheck, FaGlobe, FaStar, FaCheck, FaRocket, FaPlus } from 'react-icons/fa'
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function EventsPage () {
 	const { currentUser } = useUser()
