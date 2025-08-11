@@ -8,7 +8,7 @@ import { FaCalendarCheck, FaGlobe, FaStar, FaCheck, FaRocket, FaPlus } from 'rea
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
 import PageHero from '@/components/PageHero'
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 
 export default function EventsPage () {
@@ -31,66 +31,34 @@ export default function EventsPage () {
 					<PageHero
 						title="Events"
 						subtitle="Create, manage, and join events."
-						actions={(
-							<>
-								<Link href="/events/new">
-									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
-									</Button>
-								</Link>
-								<Link href="/events/my-events">
-									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'View My Events'}
-									</Button>
-								</Link>
-								<Link href="/events/browse">
-									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'Browse Public Events'}
-									</Button>
-								</Link>
-							</>
-						)}
 					/>
 
-					{/* Event Categories */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-							<CardHeader className="pb-4">
-								<div className="flex items-center gap-3 mb-2">
-									<span className="text-3xl text-blue-500"><FaCalendarCheck /></span>
-									<CardTitle className="text-xl">{'My Events'}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent>
-								<p className="text-gray-600 mb-6">
-									{'Events you created or help manage.'}
-								</p>
-								<Link href="/events/my-events">
-									<Button variant="primary" className="w-full">
-										{'View My Events'}
-									</Button>
-								</Link>
-							</CardContent>
-						</Card>
-
-						<Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-							<CardHeader className="pb-4">
-								<div className="flex items-center gap-3 mb-2">
-									<span className="text-3xl text-green-500"><FaGlobe /></span>
-									<CardTitle className="text-xl">{'Public Events'}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent>
-								<p className="text-gray-600 mb-6">
-									{'Find and join events from the community.'}
-								</p>
-								<Link href="/events/browse">
-									<Button variant="primary" className="w-full">
-										{'Browse Events'}
-									</Button>
-								</Link>
-							</CardContent>
-						</Card>
+					{/* Primary Actions */}
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-2">
+						<Link href="/events/new" className="group rounded-2xl bg-white shadow-md border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-lg transition-shadow">
+							<div className="flex items-center gap-3">
+								<span className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><FaPlus className="text-lg" /></span>
+								<h3 className="font-semibold text-gray-900 text-lg">{'Create Event'}</h3>
+							</div>
+							<p className="text-sm text-gray-600 flex-1">{'Start a new event by defining a time window and inviting others.'}</p>
+							<span className="text-indigo-600 font-medium text-sm inline-flex items-center gap-1 group-hover:underline">{'Create now'}<FaRocket className="text-xs" /></span>
+						</Link>
+						<Link href="/events/my-events" className="group rounded-2xl bg-white shadow-md border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-lg transition-shadow">
+							<div className="flex items-center gap-3">
+								<span className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><FaCalendarCheck className="text-lg" /></span>
+								<h3 className="font-semibold text-gray-900 text-lg">{'My Events'}</h3>
+							</div>
+							<p className="text-sm text-gray-600 flex-1">{'Events you created or help manage. Continue planning or confirm times.'}</p>
+							<span className="text-blue-600 font-medium text-sm group-hover:underline">{'Open list'}{' →'}</span>
+						</Link>
+						<Link href="/events/browse" className="group rounded-2xl bg-white shadow-md border border-gray-100 p-6 flex flex-col gap-4 hover:shadow-lg transition-shadow">
+							<div className="flex items-center gap-3">
+								<span className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><FaGlobe className="text-lg" /></span>
+								<h3 className="font-semibold text-gray-900 text-lg">{'Browse Public'}</h3>
+							</div>
+							<p className="text-sm text-gray-600 flex-1">{'Discover and join public events happening across the community.'}</p>
+							<span className="text-green-600 font-medium text-sm group-hover:underline">{'Explore events'}{' →'}</span>
+						</Link>
 					</div>
 
 					{/* Features Info */}
