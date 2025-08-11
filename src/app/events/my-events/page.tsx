@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { FaLock, FaTimes, FaPlus } from 'react-icons/fa'
+import { FaTimes, FaPlus } from 'react-icons/fa'
 
 import { Navigation, EventsSubNav, EventsFilters } from '@/components'
+import AuthRequiredCard from '@/components/AuthRequiredCard'
 import EventCard from '@/components/EventCard'
 import { Card, CardContent, Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
@@ -34,33 +35,12 @@ export default function MyEventsPage () {
 		currentUser
 	})
 
-	const requiresAuth = true
-	if (requiresAuth && !currentUser) {
+	if (!currentUser) {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-					<Card className="border-0 shadow-lg">
-						<CardContent>
-							<div className="text-center py-12">
-								<div className="flex justify-center mb-6">
-									<FaLock className="text-6xl text-amber-500" />
-								</div>
-								<h3 className="text-xl font-medium text-gray-900 mb-3">
-									{'Authentication Required\r'}
-								</h3>
-								<p className="text-gray-600 mb-6">
-									{'Please log in to view your events.\r'}
-								</p>
-								<Link href="/login">
-									<Button variant="primary">
-										{'Log In\r'}
-									</Button>
-								</Link>
-							</div>
-						</CardContent>
-					</Card>
+					<AuthRequiredCard message="Please log in to view your events." />
 				</div>
 			</div>
 		)
@@ -73,7 +53,7 @@ export default function MyEventsPage () {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			<EventsSubNav />
+			{currentUser !== null ? <EventsSubNav /> : null}
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
 				<div className="space-y-8">
 					{/* Header */}

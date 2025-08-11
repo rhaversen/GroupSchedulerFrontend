@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaUsers, FaCalendarAlt, FaTools, FaClock } from 'react-icons/fa'
@@ -14,7 +15,7 @@ import {
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
 import { formatFullDateLabel, formatRelativeDateLabel, timeUntil } from '@/lib/timeUtils'
@@ -118,7 +119,7 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
+				{currentUser !== null ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 					<div className="animate-pulse">
 						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -134,7 +135,7 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
+				{currentUser !== null ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 					<div className="text-center py-12">
 						<HiOutlineExclamationCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -142,10 +143,13 @@ export default function EventDetailPage () {
 						<p className="text-gray-500 mb-4">
 							{error != null ? error : 'The event you\'re looking for doesn\'t exist or you don\'t have access to it.'}
 						</p>
-						<Button onClick={() => window.history.back()}>
+						<Link
+							href="/events"
+							className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-transparent rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+						>
 							<HiOutlineEye className="h-4 w-4 mr-2" />
 							{'Back to Events'}
-						</Button>
+						</Link>
 					</div>
 				</div>
 			</div>
@@ -155,7 +159,7 @@ export default function EventDetailPage () {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			<EventsSubNav />
+			{currentUser !== null ? <EventsSubNav /> : null}
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
@@ -315,11 +319,10 @@ export default function EventDetailPage () {
 										return (
 											<div
 												key={member.userId}
-												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
-													isCurrentUser
+												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${isCurrentUser
 														? 'bg-indigo-50 border-indigo-200'
 														: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-												}`}
+													}`}
 												onClick={() => !isCurrentUser && handleUserClick(member.userId)}
 											>
 												<div className="flex items-center gap-4">

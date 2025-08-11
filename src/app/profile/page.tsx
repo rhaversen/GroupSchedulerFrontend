@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react'
 import { FaEye, FaUser, FaLock, FaShieldAlt, FaCheck, FaExclamationTriangle, FaTrash, FaArrowRight } from 'react-icons/fa'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
+import AuthRequiredCard from '@/components/AuthRequiredCard'
 import Navigation from '@/components/Navigation'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
@@ -135,9 +136,7 @@ export default function ProfilePage () {
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-					<div className="text-center">
-						<p className="text-gray-600">{'Loading...'}</p>
-					</div>
+					<AuthRequiredCard title="Profile Access" message="Please log in to manage your profile and account settings." />
 				</div>
 			</div>
 		)

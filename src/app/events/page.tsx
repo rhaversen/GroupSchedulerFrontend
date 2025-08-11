@@ -6,12 +6,24 @@ import { FaCalendarCheck, FaGlobe, FaStar, FaCheck, FaRocket, FaPlus } from 'rea
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { useUser } from '@/contexts/UserProvider'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function EventsPage () {
+	const { currentUser } = useUser()
+	const router = useRouter()
+
+	useEffect(() => {
+		if (currentUser === null) {
+			// Redirect unauthenticated users to browse
+			router.replace('/events/browse')
+		}
+	}, [currentUser, router])
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			<EventsSubNav />
+			{currentUser !== null ? <EventsSubNav /> : null}
 
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
 				<div className="space-y-8">

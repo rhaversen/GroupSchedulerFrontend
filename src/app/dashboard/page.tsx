@@ -166,6 +166,54 @@ export default function DashboardPage () {
 		)
 	}
 
+	if (currentUser === null) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<Navigation />
+				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-16 space-y-10">
+					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white shadow-md">
+						<div className="max-w-3xl">
+							<h1 className="text-4xl font-bold mb-4">{'Welcome to RainDate'}</h1>
+							<p className="text-indigo-100 text-lg mb-8">{'Create, discover, and join events without scheduling conflicts. Sign up to start organizing or browse public events right now.'}</p>
+							<div className="flex flex-wrap gap-4">
+								<Link href="/signup">
+									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">{'Sign Up'}</Button>
+								</Link>
+								<Link href="/login">
+									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">{'Log In'}</Button>
+								</Link>
+								<Link href="/events/browse">
+									<Button variant="primary" size="lg" className="px-6 py-3">{'Browse Public Events'}</Button>
+								</Link>
+							</div>
+						</div>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+						<Card className="border-0 shadow-md">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2 text-lg font-semibold"><FaBullseye className="text-indigo-600" />{' Smart Scheduling'}</CardTitle>
+							</CardHeader>
+							<CardContent className="text-gray-600">{'Define flexible time windows and let RainDate find the perfect conflict‑free time.'}</CardContent>
+						</Card>
+						<Card className="border-0 shadow-md">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2 text-lg font-semibold"><FaUsers className="text-blue-600" />{' Seamless Invites'}</CardTitle>
+							</CardHeader>
+							<CardContent className="text-gray-600">{'Invite friends or join public events. Avoid overlap with everything else you care about.'}</CardContent>
+						</Card>
+						<Card className="border-0 shadow-md">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2 text-lg font-semibold"><FaCheckCircle className="text-green-600" />{' Optimized Participation'}</CardTitle>
+							</CardHeader>
+							<CardContent className="text-gray-600">{'Everyone gets to attend the maximum number of events—no manual coordination needed.'}</CardContent>
+						</Card>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />

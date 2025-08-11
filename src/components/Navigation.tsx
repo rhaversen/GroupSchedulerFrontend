@@ -7,35 +7,41 @@ import { type ReactElement, useState } from 'react'
 
 import { Button } from '@/components/ui'
 import UnconfirmedUserBanner from '@/components/UnconfirmedUserBanner'
+import { useUser } from '@/contexts/UserProvider'
 import { useLogout } from '@/hooks/useLogout'
 
 const Navigation = (): ReactElement => {
 	const pathname = usePathname()
+	const { currentUser } = useUser()
 	const { logout } = useLogout()
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
 	const handleLogout = () => {
-		logout('/')
+		logout('/dashboard')
 	}
 
 	const navItems = [
 		{
 			href: '/dashboard',
-			label: 'Dashboard'
+			label: 'Dashboard',
+			show: true
 		},
 		{
-			href: '/events',
-			label: 'Events'
+			href: currentUser !== null ? '/events' : '/events/browse',
+			label: 'Events',
+			show: true
 		},
 		{
 			href: '/people',
-			label: 'People'
+			label: 'People',
+			show: true
 		},
 		{
 			href: '/profile',
-			label: 'My Profile'
+			label: 'My Profile',
+			show: currentUser !== null
 		}
-	]
+	].filter(item => item.show)
 
 	return (
 		<>
@@ -60,9 +66,8 @@ const Navigation = (): ReactElement => {
 							{/* Nav list with responsive text sizing */}
 							<div className="ml-4 flex space-x-4 max-[500px]:hidden">
 								{navItems.map((item) => {
-									const isActive = item.href === '/events'
-										? pathname.startsWith('/events')
-										: pathname === item.href
+									const isEventsItem = item.label === 'Events'
+									const isActive = isEventsItem ? pathname.startsWith('/events') : pathname === item.href
 									return (
 										<Link
 											key={item.href}
@@ -79,14 +84,29 @@ const Navigation = (): ReactElement => {
 							</div>
 						</div>
 						<div className="flex items-center">
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={handleLogout}
-								className="text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400 max-[500px]:hidden"
-							>
-								{'Logout'}
-							</Button>
+							{currentUser !== null ? (
+								<Button
+									variant="secondary"
+									size="sm"
+									onClick={handleLogout}
+									className="text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400 max-[500px]:hidden"
+								>
+									{'Logout'}
+								</Button>
+							) : (
+								<div className="flex items-center gap-2 max-[500px]:hidden">
+									<Link href="/login">
+										<Button variant="secondary" size="sm" className="text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400">
+											{'Log In'}
+										</Button>
+									</Link>
+									<Link href="/signup">
+										<Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+											{'Sign Up'}
+										</Button>
+									</Link>
+								</div>
+							)}
 							<button
 								className="hidden max-[500px]:inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
 								onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -124,9 +144,8 @@ const Navigation = (): ReactElement => {
 					<div>
 						<div className="pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
 							{navItems.map((item) => {
-								const isActive = item.href === '/events'
-									? pathname.startsWith('/events')
-									: pathname === item.href
+								const isEventsItem = item.label === 'Events'
+								const isActive = isEventsItem ? pathname.startsWith('/events') : pathname === item.href
 								return (
 									<Link
 										key={item.href}
@@ -141,16 +160,31 @@ const Navigation = (): ReactElement => {
 									</Link>
 								)
 							})}
-							<div className="pl-3 pr-4 py-2">
-								<Button
-									variant="secondary"
-									size="sm"
-									onClick={handleLogout}
-									className="w-full text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400"
-								>
-									{'Logout'}
-								</Button>
-							</div>
+							{currentUser !== null ? (
+								<div className="pl-3 pr-4 py-2">
+									<Button
+										variant="secondary"
+										size="sm"
+										onClick={handleLogout}
+										className="w-full text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400"
+									>
+										{'Logout'}
+									</Button>
+								</div>
+							) : (
+								<div className="pl-3 pr-4 py-2 flex gap-3">
+									<Link href="/login" onClick={() => setMobileMenuOpen(false)} className="flex-1">
+										<Button variant="secondary" size="sm" className="w-full text-gray-600 hover:text-gray-900 border-gray-300 hover:border-gray-400">
+											{'Log In'}
+										</Button>
+									</Link>
+									<Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="flex-1">
+										<Button size="sm" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+											{'Sign Up'}
+										</Button>
+									</Link>
+								</div>
+							)}
 						</div>
 					</div>
 				)}

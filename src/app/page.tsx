@@ -79,6 +79,15 @@ const Dashboard: React.FC = () => {
 								</div>
 							) : (
 								<div className="flex flex-col items-center gap-6">
+									<Link href="/events/browse">
+										<Button
+											variant="secondary"
+											size="lg"
+											className={`${fredoka.className} text-lg bg-white/20 backdrop-blur-sm text-white border-0 hover:bg-white/30 px-12 py-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold cursor-pointer`}
+										>
+											{'Browse Events'}
+										</Button>
+									</Link>
 									<div className="flex flex-col sm:flex-row gap-4">
 										<Link href="/signup">
 											<Button
