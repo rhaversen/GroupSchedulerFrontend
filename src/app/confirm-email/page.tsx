@@ -116,6 +116,12 @@ const ConfirmEmailInner = (): ReactElement => {
 
 	return (
 		<div className="w-full max-w-md space-y-4">
+			{!isAlreadyConfirmed && !isSuccess && !hasCodeInQuery && (
+				<div className="px-4 py-3 rounded-lg border bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-indigo-200 text-sm text-indigo-900 shadow-sm">
+					<p className="font-medium mb-1">{'Check your email'}</p>
+					<p>{'We\'ve sent you a confirmation code. Paste it below to confirm your email. If you don\'t see it, check spam or request a new one.'}</p>
+				</div>
+			)}
 			{isAlreadyConfirmed && !isSuccess && (
 				<div className="px-4 py-2 rounded border bg-green-50 border-green-200 text-green-800">
 					<p>{'Your email is already confirmed.'}</p>
@@ -205,7 +211,7 @@ const ConfirmEmailInner = (): ReactElement => {
 						className="text-sm text-indigo-600 hover:text-indigo-900 underline cursor-pointer"
 						disabled={isAlreadyConfirmed}
 					>
-						{showResendForm ? 'I have a confirmation code' : 'Resend confirmation email'}
+						{showResendForm ? 'I alrady have a confirmation code' : 'Resend confirmation email'}
 					</button>
 				</div>
 			)}
