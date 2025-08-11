@@ -25,7 +25,7 @@ export default function EventsPage () {
 			<Navigation />
 			{currentUser !== null ? <EventsSubNav /> : null}
 
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
 				<div className="space-y-8">
 					{/* Header */}
 					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
