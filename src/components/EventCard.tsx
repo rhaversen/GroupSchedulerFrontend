@@ -241,23 +241,21 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 							</span>
 						</div>
 						<div className="flex justify-between items-center">
-							{event.status !== 'cancelled' && (
-								<div className="flex items-center gap-2 flex-wrap">
-									<Badge className={`text-xs ${event.public ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-700'}`} title={event.public ? 'Visible to anyone browsing events' : 'Only visible to members of this event'}>
-										<span className="inline mr-1">{event.public ? <FaGlobe className="text-blue-500" /> : <FaLock className="text-gray-500" />}</span> {event.public ? 'Public' : 'Members Only'}
+							<div className="flex items-center gap-2 flex-wrap">
+								<Badge className={`text-xs ${event.public ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-700'}`} title={event.public ? 'Visible to anyone browsing events' : 'Only visible to members of this event'}>
+									<span className="inline mr-1">{event.public ? <FaGlobe className="text-blue-500" /> : <FaLock className="text-gray-500" />}</span> {event.public ? 'Public' : 'Members Only'}
+								</Badge>
+								{event.status === 'draft' && (
+									<Badge className={`${getStatusColor(event.status)} text-xs`} title="Draft – only you and admins can see it">
+										<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
 									</Badge>
-									{event.status === 'draft' && (
-										<Badge className={`${getStatusColor(event.status)} text-xs`} title="Draft – only you and admins can see it">
-											<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
-										</Badge>
-									)}
-									{roleDisplay.showRole && (
-										<Badge className="text-xs bg-purple-100 text-purple-800" title={`Your role: ${roleDisplay.text}`}>
-											<span className="inline mr-1">{roleDisplay.icon}</span> {roleDisplay.text}
-										</Badge>
-									)}
-								</div>
-							)}
+								)}
+								{roleDisplay.showRole && (
+									<Badge className="text-xs bg-purple-100 text-purple-800" title={`Your role: ${roleDisplay.text}`}>
+										<span className="inline mr-1">{roleDisplay.icon}</span> {roleDisplay.text}
+									</Badge>
+								)}
+							</div>
 						</div>
 					</div>
 				</CardContent>
