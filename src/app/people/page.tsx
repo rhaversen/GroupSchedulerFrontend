@@ -82,25 +82,6 @@ export default function PeoplePage () {
 		router.push(`/people/${userId}`)
 	}
 
-	if (loading) {
-		return (
-			<div className="min-h-screen bg-gray-50">
-				<Navigation />
-				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-					<div className="animate-pulse space-y-8">
-						<div className="h-8 bg-gray-200 rounded w-1/4"></div>
-						<div className="h-12 bg-gray-200 rounded"></div>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-							{[...Array(6)].map((_, i) => (
-								<div key={i} className="h-48 bg-gray-200 rounded-lg"></div>
-							))}
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
-
 	if (error != null) {
 		return (
 			<div className="min-h-screen bg-gray-50">
@@ -126,114 +107,82 @@ export default function PeoplePage () {
 		)
 	}
 
-	return (
-		<div className="min-h-screen bg-gray-50">
-			<Navigation />
-
-			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
-							<h1 className="text-4xl font-bold mb-3">
-								{'People'}
-							</h1>
-							<p className="text-indigo-100 text-xl mb-8">
-								{'Discover and connect with other users on the platform.'}
-							</p>
-						</div>
-
-						<div className="relative">
-							<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-								<span className="text-gray-600 text-lg"><FaSearch /></span>
-							</div>
-							<input
-								type="text"
-								placeholder="Search people..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								className="block w-full pl-10 pr-3 py-3 border border-white border-opacity-50 rounded-lg leading-5 bg-white placeholder-gray-600 text-gray-900 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-white"
-							/>
-						</div>
+return (
+	<div className="min-h-screen bg-gray-50">
+		<Navigation />
+		<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
+			<div className="space-y-10">
+				{/* Header (always visible) */}
+				<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
+					<div className="max-w-3xl">
+						<h1 className="text-4xl font-bold mb-3">{'People'}</h1>
+						<p className="text-indigo-100 text-xl mb-8">{'Discover and connect with other users on the platform.'}</p>
 					</div>
+					<div className="relative">
+						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<span className="text-gray-600 text-lg"><FaSearch /></span>
+						</div>
+						<input
+							type="text"
+							placeholder="Search people..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className="block w-full pl-10 pr-3 py-3 border border-white border-opacity-50 rounded-lg leading-5 bg-white placeholder-gray-600 text-gray-900 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-white"
+						/>
+					</div>
+				</div>
 
-					{filteredUsers.length === 0 ? (
-						<Card className="border-0 shadow-md">
-							<CardContent>
-								<div className="text-center py-12">
-									<div className="flex justify-center mb-6">
-										<FaUsers className="text-6xl text-blue-500" />
-									</div>
-									<h3 className="text-xl font-medium text-gray-900 mb-3">
-										{searchTerm ? 'No users found' : 'No users yet'}
-									</h3>
-									<p className="text-gray-600">
-										{searchTerm
-											? `No users match "${searchTerm}". Try a different search term.`
-											: 'Be the first to join the community!'
-										}
-									</p>
-								</div>
-							</CardContent>
-						</Card>
-					) : (
-						<>
-							<div className="flex items-center justify-between">
+				{/* Content area */}
+				{loading ? (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{Array.from({ length: 6 }).map((_, i) => (
+							<div key={i} className="h-48 rounded-xl bg-gray-200 animate-pulse" />
+						))}
+					</div>
+				) : filteredUsers.length === 0 ? (
+					<Card className="border-0 shadow-md">
+						<CardContent>
+							<div className="text-center py-12">
+								<div className="flex justify-center mb-6"><FaUsers className="text-6xl text-blue-500" /></div>
+								<h3 className="text-xl font-medium text-gray-900 mb-3">{searchTerm ? 'No users found' : 'No users yet'}</h3>
 								<p className="text-gray-600">
-									{filteredUsers.length === users.length
-										? `${users.length} ${users.length === 1 ? 'person' : 'people'} in the community`
-										: `${filteredUsers.length} of ${users.length} people`
-									}
+									{searchTerm ? `No users match "${searchTerm}". Try a different search term.` : 'Be the first to join the community!'}
 								</p>
 							</div>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-								{filteredUsers.map((user) => (
-									<Card
-										key={user._id}
-										className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-										onClick={() => handleUserClick(user._id)}
-									>
-										<CardContent className="pt-6">
-											<div className="text-center">
-												<UserAvatar username={user.username} className="mx-auto mb-4" />
-												<h3
-													className="text-lg font-semibold text-gray-900 mb-2 w-full truncate"
-													title={user.username}
-												>
-													{user.username}
-												</h3>
-												<div className="flex items-center justify-center gap-1 text-sm text-gray-500 mb-4">
-													<span><FaCalendarAlt /></span>
-													<span>
-														{timeSince(user.createdAt)}
-													</span>
-												</div>
-												<div className="flex justify-center gap-4 text-xs text-gray-400">
-													<div className="flex items-center gap-1">
-														<span><FaBullseye /></span>
-														<span>{user.eventsCreated ?? 0}{' created'}</span>
-													</div>
-													<div className="flex items-center gap-1">
-														<span><FaCheckCircle /></span>
-														<span>{user.eventsParticipating ?? 0}{' joined'}</span>
-													</div>
-													{isNewUser(user.createdAt) && (
-														<div className="flex items-center gap-1">
-															<span><FaStar /></span>
-															<span>{'New User'}</span>
-														</div>
-													)}
-												</div>
+						</CardContent>
+					</Card>
+				) : (
+					<>
+						<div className="flex items-center justify-between">
+							<p className="text-gray-600">
+								{filteredUsers.length === users.length ? `${users.length} ${users.length === 1 ? 'person' : 'people'} in the community` : `${filteredUsers.length} of ${users.length} people`}
+							</p>
+						</div>
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{filteredUsers.map((user) => (
+								<Card key={user._id} className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleUserClick(user._id)}>
+									<CardContent className="pt-6">
+										<div className="text-center">
+											<UserAvatar username={user.username} className="mx-auto mb-4" />
+											<h3 className="text-lg font-semibold text-gray-900 mb-2 w-full truncate" title={user.username}>{user.username}</h3>
+											<div className="flex items-center justify-center gap-1 text-sm text-gray-500 mb-4">
+												<span><FaCalendarAlt /></span>
+												<span>{timeSince(user.createdAt)}</span>
 											</div>
-										</CardContent>
-									</Card>
-								))}
-							</div>
-						</>
-					)}
-				</div>
+											<div className="flex justify-center gap-4 text-xs text-gray-400">
+												<div className="flex items-center gap-1"><span><FaBullseye /></span><span>{user.eventsCreated ?? 0}{' created'}</span></div>
+												<div className="flex items-center gap-1"><span><FaCheckCircle /></span><span>{user.eventsParticipating ?? 0}{' joined'}</span></div>
+												{isNewUser(user.createdAt) && (<div className="flex items-center gap-1"><span><FaStar /></span><span>{'New User'}</span></div>)}
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							))}
+						</div>
+					</>
+				)}
 			</div>
 		</div>
-	)
+	</div>
+)
 }

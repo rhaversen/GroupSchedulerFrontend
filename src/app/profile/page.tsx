@@ -14,7 +14,7 @@ import { useLogout } from '@/hooks/useLogout'
 import { api } from '@/lib/api'
 
 export default function ProfilePage () {
-	const { currentUser, setCurrentUser } = useUser()
+	const { currentUser, setCurrentUser, userLoading } = useUser()
 	const { logout } = useLogout()
 
 	const [profileData, setProfileData] = useState({
@@ -130,6 +130,25 @@ export default function ProfilePage () {
 			setConfirmingDeletion(false)
 		}
 	}, [deletionCode, logout])
+
+	if (userLoading) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<Navigation />
+				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10 space-y-8">
+					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white animate-pulse">
+						<div className="h-10 bg-white/30 rounded w-1/3 mb-6" />
+						<div className="h-4 bg-white/20 rounded w-2/3" />
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+						{Array.from({ length: 2 }).map((_, i) => (
+							<div key={i} className="h-80 bg-gray-200 rounded-xl animate-pulse" />
+						))}
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	if (!currentUser) {
 		return (

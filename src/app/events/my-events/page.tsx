@@ -11,7 +11,7 @@ import { useUser } from '@/contexts/UserProvider'
 import { useEventsFilters, useEventsData } from '@/hooks'
 
 export default function MyEventsPage () {
-	const { currentUser } = useUser()
+	const { currentUser, userLoading } = useUser()
 
 	const {
 		searchTerm,
@@ -34,6 +34,22 @@ export default function MyEventsPage () {
 		statusFilter,
 		currentUser
 	})
+
+	if (userLoading) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<Navigation />
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+					<div className="animate-pulse space-y-6">
+						<div className="h-48 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl" />
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-48 bg-gray-200 rounded-xl" />)}
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	if (!currentUser) {
 		return (

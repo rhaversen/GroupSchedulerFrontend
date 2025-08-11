@@ -12,7 +12,7 @@ import { useLogout } from '@/hooks/useLogout'
 
 const Navigation = (): ReactElement => {
 	const pathname = usePathname()
-	const { currentUser } = useUser()
+	const { currentUser, userLoading } = useUser()
 	const { logout } = useLogout()
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -84,7 +84,9 @@ const Navigation = (): ReactElement => {
 							</div>
 						</div>
 						<div className="flex items-center">
-							{currentUser !== null ? (
+							{userLoading === true ? (
+								<div className="max-[500px]:hidden w-40 h-9 rounded-md bg-gray-200 animate-pulse" />
+							) : currentUser !== null ? (
 								<Button
 									variant="secondary"
 									size="sm"

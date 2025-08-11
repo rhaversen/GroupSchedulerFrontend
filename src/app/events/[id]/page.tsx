@@ -46,7 +46,7 @@ export default function EventDetailPage () {
 	const params = useParams()
 	const router = useRouter()
 	const eventId = params.id as string
-	const { currentUser } = useUser()
+	const { currentUser, userLoading } = useUser()
 
 	const [event, setEvent] = useState<EventType | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -119,12 +119,12 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				{currentUser !== null ? <EventsSubNav /> : null}
+				{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-					<div className="animate-pulse">
-						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-						<div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-						<div className="h-64 bg-gray-200 rounded"></div>
+					<div className="animate-pulse space-y-6">
+						<div className="h-10 bg-gray-200 rounded w-1/3" />
+						<div className="h-4 bg-gray-200 rounded w-1/2" />
+						<div className="h-64 bg-gray-200 rounded" />
 					</div>
 				</div>
 			</div>
@@ -135,7 +135,7 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				{currentUser !== null ? <EventsSubNav /> : null}
+				{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 					<div className="text-center py-12">
 						<HiOutlineExclamationCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -159,7 +159,7 @@ export default function EventDetailPage () {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			{currentUser !== null ? <EventsSubNav /> : null}
+			{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
@@ -190,8 +190,8 @@ export default function EventDetailPage () {
 								)}
 							</div>
 
-							{/* Current User Role Indicator */}
-							{currentUser != null && getCurrentUserRole() != null && (
+							{/* Current User Role Indicator - only resolved after auth known */}
+							{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
 								<div className="mt-6 flex items-center gap-3">
 									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
 										<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
