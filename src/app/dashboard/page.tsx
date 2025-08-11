@@ -73,11 +73,11 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 			try {
 				const res = await api.get<{ events: EventType[]; total: number }>(`/v1/events?memberOf=${currentUser._id}`)
 				if (cancelled) { return }
-				const evts = res.data.events
-				setEvents(evts)
+				const events = res.data.events
+				setEvents(events)
 				setLoading(false)
 				const ids = new Set<string>()
-				evts.forEach(e => e.members.forEach(m => ids.add(m.userId)))
+				events.forEach(e => e.members.forEach(m => ids.add(m.userId)))
 				if (ids.size > 0) {
 					setEnrichingNames(true)
 					;(async () => {
