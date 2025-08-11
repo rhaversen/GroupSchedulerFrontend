@@ -188,8 +188,11 @@ export default function UserProfilePage () {
 						<div className="max-w-3xl mb-6">
 							<div className="flex items-center gap-6">
 								<UserAvatar username={user.username} variant="white" size="lg" className="shadow-lg" />
-								<div>
-									<h1 className="text-4xl font-bold mb-2">
+								<div className="flex-1 min-w-0">
+									<h1
+										className="text-4xl font-bold mb-2 truncate"
+										title={user.username}
+									>
 										{user.username}
 									</h1>
 									<div className="flex items-center gap-2 text-indigo-100">

@@ -197,7 +197,10 @@ export default function PeoplePage () {
 										<CardContent className="pt-6">
 											<div className="text-center">
 												<UserAvatar username={user.username} className="mx-auto mb-4" />
-												<h3 className="text-lg font-semibold text-gray-900 mb-2">
+												<h3
+													className="text-lg font-semibold text-gray-900 mb-2 w-full truncate"
+													title={user.username}
+												>
 													{user.username}
 												</h3>
 												<div className="flex items-center justify-center gap-1 text-sm text-gray-500 mb-4">
