@@ -55,16 +55,7 @@ export function useEventsFilters () {
 			})
 		}
 
-		// Filter by public/private
-		if (publicFilter !== 'all') {
-			filtered = filtered.filter(event => {
-				if (publicFilter === 'public') {
-					return event.public === true
-				} else {
-					return event.public === false
-				}
-			})
-		}
+		// Visibility now handled server-side
 
 		return filtered
 	}
