@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { FaClipboardList, FaEdit, FaCalendar, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
+import { FaClipboardList, FaEdit, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
 
 import { type EventType } from '@/types/backendDataTypes'
 
@@ -73,8 +73,7 @@ export function useEventsFilters () {
 		return [
 			{ id: '', label: 'All Statuses', icon: <FaClipboardList /> },
 			{ id: 'draft', label: 'Draft', icon: <FaEdit /> },
-			{ id: 'scheduling', label: 'Scheduling', icon: <FaCalendar /> },
-			{ id: 'scheduled', label: 'Scheduled', icon: <FaCalendarAlt /> },
+			{ id: 'pending', label: 'Pending', icon: <FaCalendarAlt /> },
 			{ id: 'confirmed', label: 'Confirmed', icon: <FaCheckCircle /> },
 			{ id: 'cancelled', label: 'Cancelled', icon: <FaTimes /> }
 		]

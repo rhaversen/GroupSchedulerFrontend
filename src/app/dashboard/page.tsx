@@ -17,8 +17,7 @@ interface DashboardStats {
 	myEvents: number
 	participating: number
 	draft: number
-	scheduling: number
-	scheduled: number
+	pending: number // scheduling + scheduled
 	confirmed: number
 	cancelled: number
 }
@@ -111,7 +110,7 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 
 	const stats = useMemo((): DashboardStats => {
 		if (!events || !currentUser) {
-			return { total: 0, myEvents: 0, participating: 0, draft: 0, scheduling: 0, scheduled: 0, confirmed: 0, cancelled: 0 }
+			return { total: 0, myEvents: 0, participating: 0, draft: 0, pending: 0, confirmed: 0, cancelled: 0 }
 		}
 
 		const myEvents = events.filter(e =>
@@ -127,8 +126,7 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 			myEvents: myEvents.length,
 			participating: participating.length,
 			draft: events.filter(e => e.status === 'draft').length,
-			scheduling: events.filter(e => e.status === 'scheduling').length,
-			scheduled: events.filter(e => e.status === 'scheduled').length,
+			pending: events.filter(e => e.status === 'scheduling' || e.status === 'scheduled').length,
 			confirmed: events.filter(e => e.status === 'confirmed').length,
 			cancelled: events.filter(e => e.status === 'cancelled').length
 		}
@@ -188,15 +186,15 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 						)}
 					/>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-						{['My Events','Participating','Upcoming','In Progress'].map((label, idx) => (
+						{['My Events','Participating','Upcoming','Pending'].map((label, idx) => (
 							statsLoading ? (
 								<div key={label} className="h-32 rounded-xl bg-gray-200 animate-pulse" />
 							) : (
 								<StatsCard
 									key={label}
 									title={label}
-									value={label === 'My Events' ? stats.myEvents : label === 'Participating' ? stats.participating : label === 'Upcoming' ? stats.confirmed : stats.scheduling}
-									description={label === 'My Events' ? 'Events I created/manage' : label === 'Participating' ? 'Events I\'m invited to' : label === 'Upcoming' ? 'Ready to go' : 'Currently scheduling'}
+									value={label === 'My Events' ? stats.myEvents : label === 'Participating' ? stats.participating : label === 'Upcoming' ? stats.confirmed : stats.pending}
+									description={label === 'My Events' ? 'Events I created/manage' : label === 'Participating' ? 'Events I\'m invited to' : label === 'Upcoming' ? 'Ready to go' : 'Scheduling events'}
 									icon={idx === 0 ? <FaBullseye className="text-2xl text-indigo-600" /> : idx === 1 ? <FaUsers className="text-2xl text-blue-600" /> : idx === 2 ? <FaCheckCircle className="text-2xl text-green-600" /> : <FaClock className="text-2xl text-yellow-600" />}
 								/>
 							)
