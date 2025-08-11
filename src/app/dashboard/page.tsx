@@ -135,17 +135,12 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 	}, [events, currentUser])
 
 	const upcomingEvents = useMemo(() => {
-		if (!events) {
-			return []
-		}
+		if (!events) { return [] }
 		const now = Date.now()
+		const horizon = now + 14 * 24 * 60 * 60 * 1000 // 14 days
 		return events
-			.filter(e => {
-				const eventTime = e.scheduledTime ?? e.timeWindow.end
-				return eventTime > now
-			})
-			.sort((a, b) => (a.scheduledTime ?? a.timeWindow.start) - (b.scheduledTime ?? b.timeWindow.start))
-			.slice(0, 3)
+			.filter(e => e.status === 'confirmed' && e.scheduledTime != null && e.scheduledTime > now && e.scheduledTime <= horizon)
+			.sort((a, b) => (a.scheduledTime! - b.scheduledTime!))
 	}, [events])
 
 	const showMarketing = !userLoading && !currentUser
@@ -188,7 +183,7 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 						actions={(
 							<>
 								<Link href="/events/new"><Button variant="secondary" size="lg" className={`bg-white text-indigo-600 px-6 py-3 ${(!currentUser || userLoading) ? 'pointer-events-none opacity-70' : 'hover:bg-gray-50 cursor-pointer'}`} disabled={!currentUser || userLoading}><span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span></Button></Link>
-								<Link href="/events/my-events"><Button variant="secondary" size="lg" className={`bg-white text-indigo-600 px-6 py-3 ${(!currentUser) ? 'pointer-events-none opacity-70' : 'hover:bg-gray-50 cursor-pointer'}`} disabled={!currentUser}>{'View My Events'}</Button></Link>
+								<Link href="/events/my-events"><Button variant="secondary" size="lg" className={`bg-white text-indigo-600 px-6 py-3 ${(!currentUser) ? 'pointer-events-none opacity-70' : 'hover:bg-gray-50 cursor-pointer'}`} disabled={!currentUser}>{'View All My Events'}</Button></Link>
 							</>
 						)}
 					/>
