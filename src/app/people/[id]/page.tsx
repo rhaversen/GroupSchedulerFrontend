@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { FaTimes, FaCalendarAlt, FaHandPaper, FaBullseye, FaCheckCircle, FaUser, FaSearch, FaRocket, FaChartBar, FaTrophy, FaChartLine, FaStar, FaArrowRight } from 'react-icons/fa'
+import { FaTimes, FaHandPaper, FaBullseye, FaCheckCircle, FaUser, FaSearch, FaRocket, FaChartBar, FaTrophy, FaChartLine, FaStar, FaArrowRight, FaCalendarAlt } from 'react-icons/fa'
 
 import { EventCard } from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import UserAvatar from '@/components/UserAvatar'
 import { useUser } from '@/contexts/UserProvider'
@@ -183,10 +184,9 @@ export default function UserProfilePage () {
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl mb-6">
-							<div className="flex items-center gap-6">
+					<PageHero
+						title={(
+							<div className="flex items-center gap-4">
 								<UserAvatar username={user.username} variant="white" size="lg" className="shadow-lg" />
 								<div className="flex-1 min-w-0">
 									<h1
@@ -196,14 +196,17 @@ export default function UserProfilePage () {
 										{user.username}
 									</h1>
 									<div className="flex items-center gap-2 text-indigo-100">
-										<span><FaCalendarAlt /></span>
+										<span className="text-sm">
+											<FaCalendarAlt />
+										</span>
 										<span className="text-lg">
 											{timeSince(user.createdAt)}
 										</span>
 									</div>
 								</div>
 							</div>
-						</div>
+						)}
+					>
 						{isCurrentUser && (
 							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
 								<div className="flex items-start gap-4">
@@ -226,7 +229,7 @@ export default function UserProfilePage () {
 								</div>
 							</div>
 						)}
-					</div>
+					</PageHero>
 
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						<Card className="border-0 shadow-md text-center">

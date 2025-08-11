@@ -51,7 +51,7 @@ const Navigation = (): ReactElement => {
 						<div className="flex">
 							<div className="flex-shrink-0 flex items-center">
 								<Link href="/dashboard" className="flex items-center">
-									<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg p-2">
+									<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-lg p-2">
 										<Image
 											src="/svg/raindate-logo.svg"
 											alt="RainDate"

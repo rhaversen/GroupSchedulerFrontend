@@ -15,6 +15,7 @@ import {
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
@@ -163,46 +164,38 @@ export default function EventDetailPage () {
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
-							<h1 className="text-4xl font-bold mb-3">
-								{event.name}
-							</h1>
-							<p className="text-indigo-100 text-xl mb-8">
-								{event.description}
-							</p>
-							<div className="flex items-center gap-4">
-								<Badge
-									variant={getStatusBadgeVariant(event.status)}
+					<PageHero
+						title={event.name}
+						subtitle={event.description}
+					>
+						<div className="flex items-center gap-4 mt-4">
+							<Badge
+								variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
-								>
-									{getStatusIcon(event.status)}
-									<span className="capitalize font-medium">{event.status}</span>
-								</Badge>
-								{event.scheduledTime != null && (
+							>
+								{getStatusIcon(event.status)}
+								<span className="capitalize font-medium">{event.status}</span>
+							</Badge>
+							{event.scheduledTime != null && (
 									<div className="flex items-center gap-2 text-indigo-600 bg-white bg-opacity-20 px-4 py-2 rounded-full border border-white border-opacity-30">
-										<HiOutlineCheckCircle className="h-5 w-5" />
-										<span className="font-medium">
-											{formatRelativeDateLabel(new Date(event.scheduledTime))}
-										</span>
-									</div>
-								)}
-							</div>
-
-							{/* Current User Role Indicator - only resolved after auth known */}
-							{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
-								<div className="mt-6 flex items-center gap-3">
-									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
-										<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
-										<span className="font-medium text-lg text-indigo-600">
-											{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
-										</span>
-									</div>
+									<HiOutlineCheckCircle className="h-5 w-5" />
+									<span className="font-medium">
+										{formatRelativeDateLabel(new Date(event.scheduledTime))}
+									</span>
 								</div>
 							)}
 						</div>
-					</div>
+						{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
+							<div className="mt-6 flex items-center gap-3">
+									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
+									<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
+									<span className="font-medium text-lg text-indigo-600">
+										{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
+									</span>
+								</div>
+							</div>
+						)}
+					</PageHero>
 
 					{/* Stats Grid */}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">

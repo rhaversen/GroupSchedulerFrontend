@@ -7,6 +7,7 @@ import { FaCalendarCheck, FaGlobe, FaStar, FaCheck, FaRocket, FaPlus } from 'rea
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 
@@ -27,16 +28,11 @@ export default function EventsPage () {
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
 				<div className="space-y-8">
-					{/* Header */}
-					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
-						<div className="max-w-4xl">
-							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-								{'Events'}
-							</h1>
-							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
-								{'Create, manage, and join events.'}
-							</p>
-							<div className="flex flex-wrap gap-4">
+					<PageHero
+						title="Events"
+						subtitle="Create, manage, and join events."
+						actions={(
+							<>
 								<Link href="/events/new">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
 										<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
@@ -52,9 +48,9 @@ export default function EventsPage () {
 										{'Browse Public Events'}
 									</Button>
 								</Link>
-							</div>
-						</div>
-					</div>
+							</>
+						)}
+					/>
 
 					{/* Event Categories */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">

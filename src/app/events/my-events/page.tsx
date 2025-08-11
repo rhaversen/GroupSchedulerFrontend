@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { FaTimes, FaPlus } from 'react-icons/fa'
 
-import { Navigation, EventsSubNav, EventsFilters } from '@/components'
+import { Navigation, EventsSubNav, EventsFilters, PageHero } from '@/components'
 import AuthRequiredCard from '@/components/AuthRequiredCard'
 import EventCard from '@/components/EventCard'
 import { Card, CardContent, Button } from '@/components/ui'
@@ -72,17 +72,10 @@ export default function MyEventsPage () {
 			{currentUser !== null ? <EventsSubNav /> : null}
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
 				<div className="space-y-8">
-					{/* Header */}
-					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
-						<div className="max-w-4xl">
-							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-								{'My Events'}
-							</h1>
-							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
-								{'All events you\'re involved in - as creator, admin, or participant.'}
-							</p>
-						</div>
-
+					<PageHero
+						title="My Events"
+						subtitle={"All events you're involved in - as creator, admin, or participant."}
+					>
 						<EventsFilters
 							searchTerm={searchTerm}
 							setSearchTerm={setSearchTerm}
@@ -96,7 +89,7 @@ export default function MyEventsPage () {
 							setPublicFilter={setPublicFilter}
 							statusOptions={statusOptions}
 						/>
-					</div>
+					</PageHero>
 
 					{/* Events Grid */}
 					{loading ? (

@@ -2,6 +2,7 @@
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { useUser } from '@/contexts/UserProvider'
 
 export default function BrowseEventsPage () {
@@ -12,17 +13,11 @@ export default function BrowseEventsPage () {
 			{currentUser !== null ? <EventsSubNav /> : null}
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
 				<div className="space-y-8">
-					{/* Header */}
-					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
-						<div className="max-w-4xl">
-							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-								{'Public Events'}
-							</h1>
-							<p className="text-indigo-100 text-lg sm:text-xl">
-								{'Discover and join events happening in your community.'}
-							</p>
-						</div>
-					</div>
+					<PageHero
+						title="Public Events"
+						subtitle="Discover and join events happening in your community."
+						className="mb-2"
+					/>
 
 					<div className="text-center">
 						<p className="text-gray-600 mb-6">{'Coming soon...'}</p>

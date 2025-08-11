@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { FaTimes, FaSearch, FaUsers, FaCalendarAlt, FaBullseye, FaCheckCircle, FaStar } from 'react-icons/fa'
 
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Card, CardContent } from '@/components/ui'
 import UserAvatar from '@/components/UserAvatar'
 import { api } from '@/lib/api'
@@ -112,13 +113,11 @@ return (
 		<Navigation />
 		<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 			<div className="space-y-10">
-				{/* Header (always visible) */}
-				<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-					<div className="max-w-3xl">
-						<h1 className="text-4xl font-bold mb-3">{'People'}</h1>
-						<p className="text-indigo-100 text-xl mb-8">{'Discover and connect with other users on the platform.'}</p>
-					</div>
-					<div className="relative">
+				<PageHero
+					title="People"
+					subtitle="Discover and connect with other users on the platform."
+				>
+					<div className="relative max-w-3xl">
 						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 							<span className="text-gray-600 text-lg"><FaSearch /></span>
 						</div>
@@ -127,10 +126,10 @@ return (
 							placeholder="Search people..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="block w-full pl-10 pr-3 py-3 border border-white border-opacity-50 rounded-lg leading-5 bg-white placeholder-gray-600 text-gray-900 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-white"
+							className="block w-full pl-10 pr-3 py-3 border border-white/50 rounded-lg leading-5 bg-white placeholder-gray-600 text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/70 focus:border-white"
 						/>
 					</div>
-				</div>
+				</PageHero>
 
 				{/* Content area */}
 				{loading ? (

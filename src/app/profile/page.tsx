@@ -8,6 +8,7 @@ import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
 import AuthRequiredCard from '@/components/AuthRequiredCard'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { useLogout } from '@/hooks/useLogout'
@@ -166,20 +167,10 @@ export default function ProfilePage () {
 			<Navigation />
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl mb-6">
-							<div className="flex items-start justify-between">
-								<div>
-									<h1 className="text-4xl font-bold mb-3">
-										{'Profile Settings'}
-									</h1>
-									<p className="text-indigo-100 text-xl">
-										{'Manage your account settings, security, and preferences.'}
-									</p>
-								</div>
-							</div>
-						</div>
+					<PageHero
+						title="Profile Settings"
+						subtitle="Manage your account settings, security, and preferences."
+					>
 						{currentUser != null && (
 							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
 								<div className="flex items-start gap-4">
@@ -202,7 +193,7 @@ export default function ProfilePage () {
 								</div>
 							</div>
 						)}
-					</div>
+					</PageHero>
 
 					{/* Profile Information */}
 					<Card className="border-0 shadow-lg">
