@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
-import { FaBullseye, FaUsers, FaCheckCircle, FaPlus, FaClock } from 'react-icons/fa'
+import { FaBullseye, FaUsers, FaCheckCircle, FaPlus, FaClock, FaCalendarTimes } from 'react-icons/fa'
 
 import EventCard from '@/components/EventCard'
 import Navigation from '@/components/Navigation'
@@ -187,9 +187,9 @@ export default function DashboardPage () {
 										<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
 									</Button>
 								</Link>
-								<Link href="/events">
+								<Link href="/events/my-events">
 									<Button variant="secondary" size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 px-6 py-3">
-										{'View Events\r'}
+										{'View My Events\r'}
 									</Button>
 								</Link>
 							</div>
@@ -228,14 +228,14 @@ export default function DashboardPage () {
 							<CardHeader className="pb-6">
 								<div className="flex items-center justify-between">
 									<CardTitle className="text-2xl">{'Upcoming Events'}</CardTitle>
-									{events && events.length > 0 && (
-										<Link
-											href="/events"
-											className="inline-flex items-center px-6 py-3 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-										>
-											{'View Events'}
-										</Link>
-									)}
+										{events && events.length > 0 && (
+											<Link
+												href="/events/my-events"
+												className="inline-flex items-center px-6 py-3 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+											>
+												{'View My Events'}
+											</Link>
+										)}
 								</div>
 							</CardHeader>
 							<CardContent className="pt-0">
@@ -244,14 +244,20 @@ export default function DashboardPage () {
 										<p className="text-red-600 text-lg">{error}</p>
 									</div>
 								) : upcomingEvents.length === 0 ? (
-									<div className="text-center py-12">
-										<h3 className="text-xl font-medium text-gray-900 mb-3">{'No upcoming events'}</h3>
-										<p className="text-gray-600 mb-6 text-lg">{'Create an event to get started.'}</p>
-										<Link href="/events/new">
-											<Button variant="primary" size="lg" className="px-8 py-3">
-												<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
-											</Button>
-										</Link>
+									<div className="relative overflow-hidden rounded-xl">
+										<div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-10" />
+										<div className="relative text-center py-14 px-6">
+											<div className="mx-auto mb-8 flex items-center justify-center w-24 h-24 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
+												<FaCalendarTimes className="text-4xl" />
+											</div>
+											<h3 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">{'No upcoming events'}</h3>
+											<p className="text-gray-600 mb-8 text-lg max-w-xl mx-auto leading-relaxed">{'Create an event, ask for an invite, or join public events.'}</p>
+											<Link href="/events/new">
+												<Button variant="primary" size="lg" className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white shadow">
+													<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create New Event'}</span>
+												</Button>
+											</Link>
+										</div>
 									</div>
 								) : (
 									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

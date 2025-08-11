@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FaLock, FaTimes } from 'react-icons/fa'
+import { FaLock, FaTimes, FaPlus } from 'react-icons/fa'
 
 import { Navigation, EventsSubNav, EventsFilters } from '@/components'
 import EventCard from '@/components/EventCard'
@@ -128,12 +128,26 @@ export default function MyEventsPage () {
 							</CardContent>
 						</Card>
 					) : filteredEvents.length === 0 ? (
-						<Card className="border-0 shadow-md">
+						<Card className="border-0 shadow-lg">
 							<CardContent>
-								<div className="text-center py-12">
-									<div className="text-6xl mb-6">{emptyState.icon}</div>
-									<h3 className="text-xl font-medium text-gray-900 mb-3">{emptyState.title}</h3>
-									<p className="text-gray-600">{emptyState.description}</p>
+								<div className="text-center py-14 px-4">
+									<div className="mx-auto mb-8 flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg">
+										<span className="text-5xl">{emptyState.icon}</span>
+									</div>
+									<h3 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">{emptyState.title}</h3>
+									<p className="text-gray-600 mb-8 text-lg max-w-xl mx-auto leading-relaxed">{emptyState.description}</p>
+									<div className="flex flex-wrap items-center justify-center gap-4">
+										<Link href="/events/new">
+											<Button variant="primary" size="lg" className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white shadow">
+												<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create Event'}</span>
+											</Button>
+										</Link>
+										<Link href="/events/browse" className="inline-flex">
+											<Button variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-8 py-3">
+												{'Browse All Events'}
+											</Button>
+										</Link>
+									</div>
 								</div>
 							</CardContent>
 						</Card>

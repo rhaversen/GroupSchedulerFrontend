@@ -10,27 +10,24 @@ interface StatsCardProps {
 
 const StatsCard = ({ title, value, description, icon, className = '' }: StatsCardProps): ReactElement => {
 	return (
-		<div className={`bg-white overflow-hidden shadow rounded-lg ${className}`}>
-			<div className="p-5">
-				<div className="flex items-center">
-					<div className="flex-shrink-0">
-						{icon}
+		<div className={`group relative bg-white overflow-hidden rounded-2xl shadow hover:shadow-lg transition-shadow ${className}`}>
+			<div className="absolute inset-0 opacity-0 group-hover:opacity-5 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 transition-opacity" />
+				<div className="p-5 flex items-start gap-4">
+					<div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 shadow-sm">
+					{icon}
+				</div>
+				<div className="flex-1 min-w-0">
+					<div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+						{title}
 					</div>
-					<div className="ml-5 w-0 flex-1">
-						<dl>
-							<dt className="text-sm font-medium text-gray-500 truncate">
-								{title}
-							</dt>
-							<dd className="text-lg font-medium text-gray-900">
-								{value}
-							</dd>
-							{(description != null) && (
-								<dd className="text-sm text-gray-500">
-									{description}
-								</dd>
-							)}
-						</dl>
+					<div className="text-3xl font-bold text-gray-900 leading-tight mb-1">
+						{value}
 					</div>
+					{(description !== undefined && description !== null && description !== '') && (
+						<p className="text-sm text-gray-500 leading-snug">
+							{description}
+						</p>
+					)}
 				</div>
 			</div>
 		</div>
