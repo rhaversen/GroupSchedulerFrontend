@@ -41,15 +41,16 @@ export interface EventType {
 	 * - 'scheduled': Event has been scheduled by the system, awaiting event admin/creator confirmation
 	 * - 'confirmed': Event is confirmed and finalized
 	 * - 'cancelled': Event has been cancelled
-	 * Note: A 'scheduled' events 'scheduledTime' is subject to change until it is 'confirmed'.
+	 * Note: A event with status 'scheduled' may have its 'scheduledTime' updated until its status changes to 'confirmed'.
 	 */
 	status: 'draft' | 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
 	scheduledTime?: number
 
 	public: boolean
 
-	blackoutPeriods: ITimeRange[]
+	blackoutPeriods?: ITimeRange[]
 	preferredTimes?: ITimeRange[]
+	dailyStartConstraint?: ITimeRange[]
 
 	/** Created at timestamp */
 	createdAt: string
