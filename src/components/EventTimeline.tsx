@@ -10,12 +10,11 @@ export interface EventTimelineProps {
   preferred?: ITimeRange[]
   blackout?: ITimeRange[]
   scheduledTime?: number
-  isConfirmed?: boolean
   className?: string
 }
 
 // Renders a horizontal timeline representing the event scheduling window with preferred and blackout periods.
-export default function EventTimeline ({ windowStart, windowEnd, duration, preferred = [], blackout = [], scheduledTime, isConfirmed = false, className = '' }: EventTimelineProps) {
+export default function EventTimeline ({ windowStart, windowEnd, duration, preferred = [], blackout = [], scheduledTime, className = '' }: EventTimelineProps) {
   const totalMs = windowEnd - windowStart
   const safeTotal = totalMs <= 0 ? 1 : totalMs
 
@@ -214,15 +213,13 @@ export default function EventTimeline ({ windowStart, windowEnd, duration, prefe
         {scheduledRange && (() => {
           const leftPct = Math.max(0, scale(scheduledRange.start))
           const rightPct = Math.min(100, scale(scheduledRange.end))
-          const widthPct = Math.max(0, rightPct - leftPct)
+            const widthPct = Math.max(0, rightPct - leftPct)
           const effectiveDuration = scheduledRange.end - scheduledRange.start
           return (
             <div
-              className={
-                `absolute top-[38px] h-9 shadow-sm cursor-crosshair ${isConfirmed ? 'bg-slate-600' : 'bg-slate-400 border border-slate-600/60'} `
-              }
+              className="absolute top-[38px] h-9 shadow-sm cursor-crosshair bg-slate-400 border border-slate-600/60"
               style={{ left: `${leftPct}%`, width: `${Math.max(2, widthPct)}%` }}
-              title={`${isConfirmed ? 'Confirmed' : 'Tentative'}: ${new Date(scheduledRange.start).toLocaleString()} (${Math.round(effectiveDuration / 60000)} min)`}
+              title={`Scheduled: ${new Date(scheduledRange.start).toLocaleString()} (${Math.round(effectiveDuration / 60000)} min)`}
               onMouseMove={handleOverlayMouseMove}
               onMouseLeave={handleMouseLeave}
             />
@@ -252,16 +249,10 @@ export default function EventTimeline ({ windowStart, windowEnd, duration, prefe
             <span>{item.label}</span>
           </div>
         ))}
-        {scheduledRange && isConfirmed && (
-          <div className="flex items-center gap-1">
-            <span className="inline-block w-6 h-3 rounded bg-slate-600" />
-            <span>{'Confirmed'}</span>
-          </div>
-        )}
-        {scheduledRange && !isConfirmed && (
+        {scheduledRange && (
           <div className="flex items-center gap-1">
             <span className="inline-block w-6 h-3 rounded bg-slate-400 border border-slate-600/60" />
-            <span>{'Tentative'}</span>
+            <span>{'Scheduled'}</span>
           </div>
         )}
       </div>

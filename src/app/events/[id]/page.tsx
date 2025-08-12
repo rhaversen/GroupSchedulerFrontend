@@ -244,79 +244,110 @@ export default function EventDetailPage () {
 
 					{/* Timing Information */}
 					<Card className="border-0 shadow-md">
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2 text-xl">
-								<HiOutlineClock className="h-6 w-6" />
-								{'Event Timing'}
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-8">
-							{/* Explanatory text for new users */}
-							{(() => {
-								let explanation: string | null = null
-								switch (event.status) {
-									case 'draft':
-										explanation = 'Draft: This event is still being set up. Once published the system analyzes everyone\'s availability in the window.'
-										break
-									case 'scheduling':
-										explanation = 'Scheduling: We\'re analyzing member availability inside the time window. A tentative time will appear soon.'
-										break
-									case 'scheduled':
-										explanation = 'Scheduled (Tentative): A time has been picked but it can still change until confirmed by a creator or admin.'
-										break
-									case 'confirmed':
-										explanation = 'Confirmed: The event time is finalized and will not change.'
-										break
-									case 'cancelled':
-										explanation = 'Cancelled: This event will not take place. Timing data is shown for reference only.'
-										break
-								}
-								return (
-									<div className="rounded-md bg-indigo-50 border border-indigo-200 px-4 py-3 text-sm text-indigo-900 leading-relaxed">
-										{explanation && <p className="mb-2">{explanation}</p>}
-										<p className="text-indigo-800">{'The bar below shows the full time window; proposed and confirmed times appear inside it. A scheduled time can shift until the event is confirmed.'}</p>
+						{event.status === 'confirmed' ? (
+							<>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2 text-xl">
+										<HiOutlineClock className="h-6 w-6" />
+										{'Finalized Schedule'}
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-8">
+									<div className="rounded-md bg-green-50 border border-green-200 px-4 py-4 text-sm text-green-900 leading-relaxed">
+										<p className="font-medium mb-1">{'This event has been confirmed.'}</p>
+										<p>{'The time below is final and will not change.'}</p>
 									</div>
-								)
-							})()}
-							{event.status !== 'confirmed' && event.scheduledTime != null && (
-								<div>
-									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Current Scheduled Time'}</label>
-									<div className="mt-2">
-										<p className="text-indigo-700 font-medium text-lg">
-											{formatFullDateLabel(new Date(event.scheduledTime))}
-										</p>
-										<p className="text-xs text-amber-600 font-medium">{'Subject to change'}</p>
-										<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
-									</div>
-								</div>
-							)}
-							{event.status === 'confirmed' && event.scheduledTime != null && (
-								<div>
-									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
-									<div className="mt-2">
-										<p className="text-green-700 font-medium text-lg">
-											{formatFullDateLabel(new Date(event.scheduledTime))}
-										</p>
-										<p className="text-sm text-gray-500">
-											{timeUntil(event.scheduledTime)}
-										</p>
-									</div>
-								</div>
-							)}
-
-							{(event.timeWindow != null) ? (
-								<EventTimeline
-									windowStart={event.timeWindow.start}
-									windowEnd={event.timeWindow.end}
-									duration={event.duration ?? 0}
-									preferred={event.preferredTimes ?? []}
-									blackout={event.blackoutPeriods ?? []}
-									scheduledTime={event.scheduledTime ?? undefined}
-									isConfirmed={event.status === 'confirmed'}
-									className="mt-2"
-								/>
-							) : null}
-						</CardContent>
+									{event.scheduledTime != null && (
+										<div>
+											<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Start'}</label>
+											<div className="mt-2">
+												<p className="text-green-700 font-semibold text-lg">
+													{formatFullDateLabel(new Date(event.scheduledTime))}
+												</p>
+												<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
+											</div>
+										</div>
+									)}
+									{event.scheduledTime != null && event.duration != null && (
+										<div className="grid gap-4 sm:grid-cols-2">
+											<div>
+												<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Duration'}</label>
+												<p className="mt-2 text-gray-800">
+													{Math.round((event.duration || 0) / 60000)}{' min'}
+												</p>
+											</div>
+											<div>
+												<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Ends'}</label>
+												<p className="mt-2 text-gray-800">
+													{formatFullDateLabel(new Date(event.scheduledTime + event.duration))}
+												</p>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</>
+						) : (
+							<>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2 text-xl">
+										<HiOutlineClock className="h-6 w-6" />
+										{'Event Timing'}
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-8">
+									{(() => {
+										let stage: string | null = null
+										switch (event.status) {
+											case 'draft':
+												stage = 'Draft: Define the availability window and preferred times. Once published, availability will be analyzed.'
+												break
+											case 'scheduling':
+												stage = 'Scheduling: Member availability is being analyzed. A tentative start may still adjust.'
+												break
+											case 'scheduled':
+												stage = 'Tentative: A start time has been selected but can still change until confirmed.'
+												break
+											case 'cancelled':
+												stage = 'Cancelled: Event will not occur. Historical timing data shown below.'
+												break
+										}
+										return (
+											<div className="rounded-md bg-indigo-50 border border-indigo-200 px-4 py-3 text-sm text-indigo-900 leading-relaxed">
+												{stage && <p className="mb-2">{stage}</p>}
+												<p className="text-indigo-800">
+													{'Timeline: Gray bar is the full window. Green blocks are preferred periods; red blocks are blackout periods. The scheduled block may shift until confirmed.'}
+												</p>
+											</div>
+										)
+									})()}
+									{event.scheduledTime != null && (
+										<div>
+											<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+												{event.status === 'scheduled' ? 'Tentative Start' : event.status === 'scheduling' ? 'Proposed Start' : 'Current Proposed Start'}
+											</label>
+											<div className="mt-2">
+												<p className="text-indigo-700 font-medium text-lg">
+													{formatFullDateLabel(new Date(event.scheduledTime))}
+												</p>
+												<p className="text-xs text-amber-600 font-medium">{'Subject to change'}</p>
+												<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
+											</div>
+										</div>
+									)}
+									{event.timeWindow != null && (
+										<EventTimeline
+											windowStart={event.timeWindow.start}
+											windowEnd={event.timeWindow.end}
+											duration={event.duration ?? 0}
+											preferred={event.preferredTimes ?? []}
+											blackout={event.blackoutPeriods ?? []}
+											scheduledTime={event.scheduledTime ?? undefined}
+											className="mt-2"
+										/>
+									)}
+								</CardContent>
+							</>
+						)}
 					</Card>
 
 					{/* Members List */}
