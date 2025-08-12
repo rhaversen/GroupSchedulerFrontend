@@ -13,6 +13,7 @@ import {
 	HiOutlineEye
 } from 'react-icons/hi'
 
+import { EventTimeline } from '@/components'
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
 import PageHero from '@/components/PageHero'
@@ -249,34 +250,72 @@ export default function EventDetailPage () {
 								{'Event Timing'}
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<CardContent className="space-y-8">
+							{/* Explanatory text for new users */}
+							{(() => {
+								let explanation: string | null = null
+								switch (event.status) {
+									case 'draft':
+										explanation = 'Draft: This event is still being set up. Once published the system analyzes everyone\'s availability in the window.'
+										break
+									case 'scheduling':
+										explanation = 'Scheduling: We\'re analyzing member availability inside the time window. A tentative time will appear soon.'
+										break
+									case 'scheduled':
+										explanation = 'Scheduled (Tentative): A time has been picked but it can still change until confirmed by a creator or admin.'
+										break
+									case 'confirmed':
+										explanation = 'Confirmed: The event time is finalized and will not change.'
+										break
+									case 'cancelled':
+										explanation = 'Cancelled: This event will not take place. Timing data is shown for reference only.'
+										break
+								}
+								return (
+									<div className="rounded-md bg-indigo-50 border border-indigo-200 px-4 py-3 text-sm text-indigo-900 leading-relaxed">
+										{explanation && <p className="mb-2">{explanation}</p>}
+										<p className="text-indigo-800">{'The bar below shows the full time window; proposed and confirmed times appear inside it. A scheduled time can shift until the event is confirmed.'}</p>
+									</div>
+								)
+							})()}
+							{event.status !== 'confirmed' && event.scheduledTime != null && (
 								<div>
-									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Time Window'}</label>
-									<div className="mt-2 space-y-1">
-										<p className="text-gray-900 font-medium">
-											{formatFullDateLabel(new Date(event.timeWindow.start))}
+									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Current Scheduled Time'}</label>
+									<div className="mt-2">
+										<p className="text-indigo-700 font-medium text-lg">
+											{formatFullDateLabel(new Date(event.scheduledTime))}
 										</p>
-										<p className="text-gray-900 font-medium">
-											{'to '}{formatFullDateLabel(new Date(event.timeWindow.end))}
+										<p className="text-xs text-amber-600 font-medium">{'Subject to change'}</p>
+										<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
+									</div>
+								</div>
+							)}
+							{event.status === 'confirmed' && event.scheduledTime != null && (
+								<div>
+									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
+									<div className="mt-2">
+										<p className="text-green-700 font-medium text-lg">
+											{formatFullDateLabel(new Date(event.scheduledTime))}
+										</p>
+										<p className="text-sm text-gray-500">
+											{timeUntil(event.scheduledTime)}
 										</p>
 									</div>
 								</div>
+							)}
 
-								{event.status === 'confirmed' && event.scheduledTime != null && (
-									<div>
-										<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
-										<div className="mt-2">
-											<p className="text-green-700 font-medium text-lg">
-												{formatFullDateLabel(new Date(event.scheduledTime))}
-											</p>
-											<p className="text-sm text-gray-500">
-												{timeUntil(event.scheduledTime)}
-											</p>
-										</div>
-									</div>
-								)}
-							</div>
+							{(event.timeWindow != null) ? (
+								<EventTimeline
+									windowStart={event.timeWindow.start}
+									windowEnd={event.timeWindow.end}
+									duration={event.duration ?? 0}
+									preferred={event.preferredTimes ?? []}
+									blackout={event.blackoutPeriods ?? []}
+									scheduledTime={event.scheduledTime ?? undefined}
+									isConfirmed={event.status === 'confirmed'}
+									className="mt-2"
+								/>
+							) : null}
 						</CardContent>
 					</Card>
 
