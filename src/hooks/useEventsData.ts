@@ -11,11 +11,11 @@ interface EventsResponse {
 export interface UseEventsDataProps {
 	viewMode?: 'created' | 'admin' | 'participant' | 'both'
 	statusFilter?: string
-	publicFilter?: 'all' | 'public' | 'private'
+	visibilityFilter?: 'all' | 'public' | 'private' | 'draft'
 	currentUser?: { _id: string } | null
 }
 
-export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFilter = 'all', currentUser }: UseEventsDataProps) {
+export function useEventsData ({ viewMode = 'both', statusFilter = '', visibilityFilter = 'all', currentUser }: UseEventsDataProps) {
 	const [events, setEvents] = useState<EventType[]>([])
 	const [loading, setLoading] = useState(true) // true only until first response
 	const [isRefetching, setIsRefetching] = useState(false) // true for subsequent fetches while keeping old data
@@ -42,12 +42,12 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFil
 			params.status = parts.length > 1 ? parts : parts[0]
 		}
 
-		if (publicFilter !== 'all') {
-			params.public = publicFilter === 'public' ? 'true' : 'false'
+		if (visibilityFilter !== 'all') {
+			params.visibility = visibilityFilter
 		}
 
 		return params
-	}, [viewMode, statusFilter, publicFilter, currentUser])
+	}, [viewMode, statusFilter, visibilityFilter, currentUser])
 
 	const loadEvents = useCallback(async () => {
 		try {
@@ -89,7 +89,7 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', publicFil
 
 	useEffect(() => {
 		loadEvents()
-	}, [viewMode, statusFilter, publicFilter, currentUser, loadEvents])
+	}, [viewMode, statusFilter, visibilityFilter, currentUser, loadEvents])
 
 	return {
 		events,

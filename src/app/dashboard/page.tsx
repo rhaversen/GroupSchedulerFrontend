@@ -126,7 +126,7 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 			total: events.length,
 			myEvents: myEvents.length,
 			participating: participating.length,
-			draft: events.filter(e => e.status === 'draft').length,
+			draft: events.filter(e => e.visibility === 'draft').length,
 			pending: events.filter(e => e.status === 'scheduling' || e.status === 'scheduled').length,
 			confirmed: events.filter(e => e.status === 'confirmed').length,
 			cancelled: events.filter(e => e.status === 'cancelled').length

@@ -26,6 +26,7 @@ export interface EventType {
 	members: {
 		userId: string
 		role: 'creator' | 'admin' | 'participant'
+		availabilityStatus: 'available' | 'unavailable' | 'tentative' | 'invited'
 	}[]
 
 	duration: number
@@ -36,21 +37,20 @@ export interface EventType {
 
 	/**
 	 * Status of the event
-	 * - 'draft': Event is being created, not yet published
 	 * - 'scheduling': Event is being scheduled, the system is determining available times
-	 * - 'scheduled': Event has been scheduled by the system, awaiting event admin/creator confirmation
+	 * - 'scheduled': Event has been scheduled by the system, awaiting event admin/creator confirmation. Omitted from future schedule optimizations unless it causes a conflict.
 	 * - 'confirmed': Event is confirmed and finalized
 	 * - 'cancelled': Event has been cancelled
 	 * Note: A event with status 'scheduled' may have its 'scheduledTime' updated until its status changes to 'confirmed'.
 	 */
-	status: 'draft' | 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
+	status: 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
 	scheduledTime?: number
 
-	public: boolean
+	visibility: 'public' | 'private' | 'draft'
 
 	blackoutPeriods?: ITimeRange[]
 	preferredTimes?: ITimeRange[]
-	dailyStartConstraint?: ITimeRange[]
+	dailyStartConstraints?: ITimeRange[]
 
 	/** Created at timestamp */
 	createdAt: string
@@ -66,7 +66,8 @@ export interface UserType {
 	username: string
 	/** Email of the user, null if not the current user */
 	email: string | null
-	/** Expiration date for the user, null if not the current user */
+	// status: Current lifecycle stage of the event: "scheduling", "scheduled", "confirmed", or "cancelled".
+	// Draft state is represented via visibility === 'draft'.
 	expirationDate: string | null
 	/** If the user has confirmed their email, null if not the current user */
 	confirmed: boolean | null

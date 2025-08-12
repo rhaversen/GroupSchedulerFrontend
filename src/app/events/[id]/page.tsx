@@ -25,7 +25,6 @@ import { type EventType, type UserType } from '@/types/backendDataTypes'
 
 const getStatusBadgeVariant = (status: EventType['status']) => {
 	switch (status) {
-		case 'draft': return 'default'
 		case 'scheduling': return 'warning'
 		case 'scheduled': return 'info'
 		case 'confirmed': return 'success'
@@ -174,10 +173,10 @@ export default function EventDetailPage () {
 								<Badge
 									variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
-									title={event.status === 'draft' ? 'Draft: Only creators/admins can view this event' : event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
+									title={event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
 								>
 									{getStatusIcon(event.status)}
-									<span className="capitalize font-medium">{event.status}</span>
+									<span className="capitalize font-medium">{event.visibility === 'draft' ? 'Draft' : event.status}</span>
 								</Badge>
 							)}
 							{event.status === 'confirmed' && event.scheduledTime != null && (
@@ -298,9 +297,6 @@ export default function EventDetailPage () {
 									{(() => {
 										let stage: string | null = null
 										switch (event.status) {
-											case 'draft':
-												stage = 'Draft: Define the availability window and preferred times. Once published, availability will be analyzed.'
-												break
 											case 'scheduling':
 												stage = 'Scheduling: Member availability is being analyzed. A tentative start may still adjust.'
 												break

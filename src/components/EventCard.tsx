@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useMemo, useRef } from 'react'
-import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaCheckCircle, FaTimes, FaClipboardList, FaGlobe, FaLock, FaExternalLinkAlt } from 'react-icons/fa'
+import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaGlobe, FaLock, FaExternalLinkAlt } from 'react-icons/fa'
 
 import { Badge, Card, CardContent } from '@/components/ui'
 import { api } from '@/lib/api'
@@ -67,24 +67,6 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 				return { text: 'Participant', color: 'text-green-600', icon: <FaUser />, showRole: false }
 			default:
 				return { text: 'Unknown', color: 'text-gray-600', icon: <FaQuestionCircle />, showRole: false }
-		}
-	}
-
-	const getStatusColor = (status: EventType['status']) => {
-		switch (status) {
-			case 'draft': return 'bg-gray-100 text-gray-800'
-			case 'confirmed': return 'bg-green-100 text-green-800'
-			case 'cancelled': return 'bg-red-100 text-red-800'
-			default: return 'bg-gray-100 text-gray-400'
-		}
-	}
-
-	const getStatusIcon = (status: EventType['status']) => {
-		switch (status) {
-			case 'draft': return <FaEdit className="text-gray-500" />
-			case 'confirmed': return <FaCheckCircle className="text-green-500" />
-			case 'cancelled': return <FaTimes className="text-red-500" />
-			default: return <FaClipboardList className="text-gray-300" />
 		}
 	}
 
@@ -242,12 +224,9 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 						</div>
 						<div className="flex justify-between items-center">
 							<div className="flex items-center gap-2 flex-wrap">
-								<Badge className={`text-xs ${event.public ? 'bg-blue-100 text-blue-800' : 'bg-gray-200 text-gray-700'}`} title={event.public ? 'Visible to anyone browsing events' : 'Only visible to members of this event'}>
-									<span className="inline mr-1">{event.public ? <FaGlobe className="text-blue-500" /> : <FaLock className="text-gray-500" />}</span> {event.public ? 'Public' : 'Members Only'}
-								</Badge>
-								{event.status === 'draft' && (
-									<Badge className={`${getStatusColor(event.status)} text-xs`} title="Draft – only you and admins can see it">
-										<span className="inline mr-1">{getStatusIcon(event.status)}</span> {event.status}
+								{event.visibility && (
+									<Badge className={`text-xs ${event.visibility === 'public' ? 'bg-blue-100 text-blue-800' : event.visibility === 'private' ? 'bg-gray-200 text-gray-700' : 'bg-amber-100 text-amber-700'}`} title={event.visibility === 'public' ? 'Visible to anyone browsing events' : event.visibility === 'private' ? 'Only visible to members of this event' : 'Draft – only creators/admins can see it'}>
+										<span className="inline mr-1">{event.visibility === 'public' ? <FaGlobe className="text-blue-500" /> : event.visibility === 'private' ? <FaLock className="text-gray-500" /> : <FaEdit className="text-amber-500" />}</span> {event.visibility === 'draft' ? 'Draft' : event.visibility === 'public' ? 'Public' : 'Private'}
 									</Badge>
 								)}
 								{roleDisplay.showRole && (

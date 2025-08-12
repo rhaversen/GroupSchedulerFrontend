@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { FaClipboardList, FaEdit, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
+import { FaClipboardList, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
 
 import { type EventType } from '@/types/backendDataTypes'
 
@@ -8,7 +8,7 @@ export interface FilterOptions {
 	statusFilter: string
 	viewTab: 'upcoming' | 'past'
 	viewMode: 'created' | 'admin' | 'participant' | 'both'
-	publicFilter: 'all' | 'public' | 'private'
+	visibilityFilter: 'all' | 'public' | 'private' | 'draft'
 }
 
 export interface StatusOption {
@@ -28,7 +28,7 @@ export function useEventsFilters () {
 	const [statusFilter, setStatusFilter] = useState<string>('')
 	const [viewTab, setViewTab] = useState<'upcoming' | 'past'>('upcoming')
 	const [viewMode, setViewMode] = useState<'created' | 'admin' | 'participant' | 'both'>('both')
-	const [publicFilter, setPublicFilter] = useState<'all' | 'public' | 'private'>('all')
+	const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private' | 'draft'>('all')
 
 	const filterEvents = (events: EventType[]) => {
 		let filtered = events
@@ -55,15 +55,12 @@ export function useEventsFilters () {
 			})
 		}
 
-		// Visibility now handled server-side
-
 		return filtered
 	}
 
 	const getStatusOptions = (): StatusOption[] => {
 		return [
 			{ id: '', label: 'All Statuses', icon: <FaClipboardList /> },
-			{ id: 'draft', label: 'Draft', icon: <FaEdit /> },
 			{ id: 'pending', label: 'Pending', icon: <FaCalendarAlt /> },
 			{ id: 'confirmed', label: 'Confirmed', icon: <FaCheckCircle /> },
 			{ id: 'cancelled', label: 'Cancelled', icon: <FaTimes /> }
@@ -101,8 +98,8 @@ export function useEventsFilters () {
 		setViewTab,
 		viewMode,
 		setViewMode,
-		publicFilter,
-		setPublicFilter,
+		visibilityFilter,
+		setVisibilityFilter,
 		filterEvents,
 		getStatusOptions,
 		getEmptyState

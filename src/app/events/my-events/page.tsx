@@ -23,8 +23,8 @@ export default function MyEventsPage () {
 		setViewTab,
 		viewMode,
 		setViewMode,
-		publicFilter,
-		setPublicFilter,
+		visibilityFilter,
+		setVisibilityFilter,
 		filterEvents,
 		getStatusOptions,
 		getEmptyState
@@ -35,7 +35,7 @@ const effectiveStatusFilter = statusFilter === 'pending' ? 'scheduling,scheduled
 const { events, loading, isRefetching, error, total } = useEventsData({
 	viewMode,
 	statusFilter: effectiveStatusFilter,
-	publicFilter,
+	visibilityFilter,
 	currentUser
 })
 
@@ -102,8 +102,8 @@ useEffect(() => {
 							setViewTab={setViewTab}
 							viewMode={viewMode}
 							setViewMode={setViewMode}
-							publicFilter={publicFilter}
-							setPublicFilter={setPublicFilter}
+							visibilityFilter={visibilityFilter}
+							setVisibilityFilter={setVisibilityFilter}
 							statusOptions={statusOptions}
 						/>
 					</PageHero>
