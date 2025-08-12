@@ -18,13 +18,15 @@ interface EventCardProps {
 export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
 	const [creatorNamesState, setCreatorNamesState] = useState<Map<string, string>>(new Map())
 	const [showMoreCreators, setShowMoreCreators] = useState(false)
+	const [creatorsHover, setCreatorsHover] = useState(false)
 	const rootRef = useRef<HTMLDivElement | null>(null)
+
 	const getUserRole = () => {
 		const member = event.members.find(m => m.userId === currentUser?._id)
 		return member?.role || 'unknown'
 	}
 
-const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), [event.members])
+	const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), [event.members])
 
 	const getCreatorNameImmediate = (id: string) => {
 		if (id === currentUser?._id) { return 'you' }
@@ -83,7 +85,7 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 		const handle = (e: MouseEvent) => {
 			if (!rootRef.current) { return }
 			if (e.target instanceof HTMLElement && rootRef.current.contains(e.target)) {
-				if (e.target.closest('.eventcard-creators-toggle') || e.target.closest('.eventcard-creators-dropdown')) { return }
+				if (e.target.closest('.eventCard-creators-toggle') || e.target.closest('.eventCard-creators-dropdown')) { return }
 			}
 			setShowMoreCreators(false)
 		}
@@ -94,36 +96,25 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 	return (
 		<div
 			ref={rootRef}
-			className="eventcard-root group block h-full focus:outline-none cursor-pointer"
+			className="eventCard-root group block h-full focus:outline-none cursor-pointer"
 			onClick={e => {
 				if (showMoreCreators) { setShowMoreCreators(false) }
-				if (e.target instanceof HTMLElement && e.target.closest('.eventcard-user-link,.eventcard-popout')) { return }
+				if (e.target instanceof HTMLElement && e.target.closest('.eventCard-user-link,.eventCard-popOut')) { return }
 				window.location.href = `/events/${event._id}`
 			}}
 		>
-			<Card className="border-0 shadow-md h-full transition-shadow duration-200 eventcard-card group-hover:shadow-lg">
+			<Card className={`border-0 shadow-md h-full transition-shadow duration-200 ${!creatorsHover ? 'group-hover:shadow-lg' : ''}`}>
 				<CardContent className="flex flex-col h-full relative">
 					<button
 						type="button"
 						tabIndex={0}
 						aria-label="View Details"
 						onClick={e => { e.stopPropagation(); e.preventDefault(); window.location.href = `/events/${event._id}` }}
-						className="eventcard-popout absolute top-2 right-2 z-10 p-1 text-gray-400 transition-all cursor-pointer"
+						className={`eventCard-popOut absolute top-2 right-2 z-10 p-1 transition-colors cursor-pointer ${!creatorsHover ? 'text-gray-400 group-hover:text-indigo-600' : 'text-gray-400'}`}
 						style={{ background: 'none', border: 'none' }}
 					>
 						<FaExternalLinkAlt size={16} />
 					</button>
-					<style>{`
-										.eventcard-root.group:hover .eventcard-popout {
-											color: #4f46e5;
-										}
-										.eventcard-root.eventcard-nohover .eventcard-popout {
-											color: #9ca3af !important;
-										}
-										.eventcard-root.eventcard-nohover .eventcard-card {
-											box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-										}
-									`}</style>
 					<div className="pt-2 mb-4">
 						<div className="w-full px-0">
 							<h3
@@ -135,32 +126,37 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 							</h3>
 						</div>
 						{creators.length > 0 && (
-							<div className="inline-flex items-baseline gap-1 text-sm mb-2 relative z-20 select-none" onClick={e => e.stopPropagation()} onMouseEnter={e => { const card = e.currentTarget.closest('.eventcard-root'); if (card) { card.classList.add('eventcard-nohover') } }} onMouseLeave={e => { const card = e.currentTarget.closest('.eventcard-root'); if (card) { card.classList.remove('eventcard-nohover') } }}>
-								<Link href={`/people/${creators[0].userId}`} className="eventcard-user-link text-gray-500 underline hover:text-indigo-600 hover:decoration-indigo-500 transition-colors cursor-pointer" tabIndex={0}>
+							<div
+								className="inline-flex items-baseline gap-1 text-sm mb-2 relative z-20 select-none"
+								onClick={e => e.stopPropagation()}
+								onMouseEnter={() => setCreatorsHover(true)}
+								onMouseLeave={() => setCreatorsHover(false)}
+							>
+								<Link href={`/people/${creators[0].userId}`} className="eventCard-user-link text-gray-500 underline hover:text-indigo-600 hover:decoration-indigo-500 transition-colors cursor-pointer" tabIndex={0}>
 									{'by '}{firstCreatorName}
 								</Link>
 								{creators.length > 1 && (
 									<button
 										type="button"
-										className="eventcard-creators-toggle text-gray-500 hover:text-indigo-600 underline focus:outline-none text-xs leading-snug cursor-pointer active:opacity-70 transition-colors"
+										className="eventCard-creators-toggle text-gray-500 hover:text-indigo-600 underline focus:outline-none text-xs leading-snug cursor-pointer active:opacity-70 transition-colors"
 										onClick={e => { e.stopPropagation(); setShowMoreCreators(v => !v) }}
 									>
 										{'and '}{creators.length - 1}{creators.length - 1 === 1 ? ' other' : ' others'}
 									</button>
 								)}
 								{showMoreCreators && creators.length > 1 && (
-									<div className="eventcard-creators-dropdown absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-30 w-48" onClick={e => e.stopPropagation()}>
+									<div className="eventCard-creators-dropdown absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-30 w-48" onClick={e => e.stopPropagation()}>
 										<ul className="space-y-1">
 											{creators.slice(1).map(c => (
 												<li key={c.userId}>
 													<Link
-															href={`/people/${c.userId}`}
-															className="block w-full truncate text-gray-600 hover:text-indigo-600 underline transition-colors"
-															title={getCreatorNameImmediate(c.userId)}
-															onClick={e => e.stopPropagation()}
-														>
-															{getCreatorNameImmediate(c.userId)}
-														</Link>
+														href={`/people/${c.userId}`}
+														className="block w-full truncate text-gray-600 hover:text-indigo-600 underline transition-colors"
+														title={getCreatorNameImmediate(c.userId)}
+														onClick={e => e.stopPropagation()}
+													>
+														{getCreatorNameImmediate(c.userId)}
+													</Link>
 												</li>
 											))}
 										</ul>
