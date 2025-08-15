@@ -11,17 +11,19 @@ interface EventsResponse {
 export interface UseEventsDataProps {
 	viewMode?: 'created' | 'admin' | 'participant' | 'both'
 	statusFilter?: string
+	visibilityFilter?: 'all' | 'public' | 'private' | 'draft'
 	currentUser?: { _id: string } | null
 }
 
-export function useEventsData ({ viewMode = 'both', statusFilter = '', currentUser }: UseEventsDataProps) {
+export function useEventsData ({ viewMode = 'both', statusFilter = '', visibilityFilter = 'all', currentUser }: UseEventsDataProps) {
 	const [events, setEvents] = useState<EventType[]>([])
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(true) // true only until first response
+	const [isRefetching, setIsRefetching] = useState(false) // true for subsequent fetches while keeping old data
 	const [error, setError] = useState<string | null>(null)
 	const [total, setTotal] = useState(0)
 
 	const buildQueryParams = useCallback(() => {
-		const params: Record<string, string> = {}
+		const params: Record<string, string | string[]> = {}
 
 		if (currentUser) {
 			if (viewMode === 'created') {
@@ -31,25 +33,41 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', currentUs
 			} else if (viewMode === 'participant') {
 				params.participantOf = currentUser._id
 			} else {
-				// 'both' mode - get all events user is involved in
 				params.memberOf = currentUser._id
 			}
 		}
 
 		if (statusFilter) {
-			params.status = statusFilter
+			const parts = statusFilter.split(',').map(s => s.trim()).filter(Boolean)
+			params.status = parts.length > 1 ? parts : parts[0]
+		}
+
+		if (visibilityFilter !== 'all') {
+			params.visibility = visibilityFilter
 		}
 
 		return params
-	}, [viewMode, statusFilter, currentUser])
+	}, [viewMode, statusFilter, visibilityFilter, currentUser])
 
 	const loadEvents = useCallback(async () => {
 		try {
-			setLoading(true)
+			if (loading) {
+				// initial load
+				setLoading(true)
+			} else {
+				setIsRefetching(true)
+			}
 			setError(null)
 
 			const params = buildQueryParams()
-			const searchParams = new URLSearchParams(params)
+			const searchParams = new URLSearchParams()
+			Object.entries(params).forEach(([key, value]) => {
+				if (Array.isArray(value)) {
+					value.forEach(v => searchParams.append(key, v))
+				} else if (value !== undefined) {
+					searchParams.append(key, value)
+				}
+			})
 			const queryString = searchParams.toString()
 			const url = queryString ? `/v1/events?${queryString}` : '/v1/events'
 
@@ -62,17 +80,21 @@ export function useEventsData ({ viewMode = 'both', statusFilter = '', currentUs
 			setEvents([])
 			setTotal(0)
 		} finally {
-			setLoading(false)
+			if (loading) {
+				setLoading(false)
+			}
+			setIsRefetching(false)
 		}
-	}, [buildQueryParams])
+	}, [buildQueryParams, loading])
 
 	useEffect(() => {
 		loadEvents()
-	}, [viewMode, statusFilter, currentUser, loadEvents])
+	}, [viewMode, statusFilter, visibilityFilter, currentUser, loadEvents])
 
 	return {
 		events,
 		loading,
+		isRefetching,
 		error,
 		total,
 		refetch: loadEvents
