@@ -2,21 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { type ReactElement } from 'react'
+import { type ReactElement, useMemo } from 'react'
+
+import { useUser } from '@/contexts/UserProvider'
 
 const EventsSubNav = (): ReactElement => {
 	const pathname = usePathname()
+	const { currentUser } = useUser()
 
-	const subNavItems = [
-		{
-			href: '/events/my-events',
-			label: 'My Events'
-		},
-		{
-			href: '/events/browse',
-			label: 'Public Events'
+	const subNavItems = useMemo(() => {
+		const base = [
+			{ href: '/events/my-events', label: 'My Events' },
+			{ href: '/events/browse', label: 'Public Events' }
+		]
+		if (currentUser) {
+			base.unshift({ href: '/events/new', label: 'Create Event' })
 		}
-	]
+		return base
+	}, [currentUser])
 
 	return (
 		<div className="bg-gray-50 border-b border-gray-200">

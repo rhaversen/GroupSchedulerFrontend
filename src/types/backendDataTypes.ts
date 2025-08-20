@@ -20,42 +20,66 @@ export interface SessionType {
 // Event types
 export interface EventType {
 	_id: string
+
+	/** Name of the event */
 	name: string
-	description: string
+	/** Description of the event */
+	description?: string
 
 	members: {
 		userId: string
 		role: 'creator' | 'admin' | 'participant'
-		availabilityStatus: 'available' | 'unavailable' | 'tentative' | 'invited'
+		availabilityStatus: 'available' | 'unavailable' | 'invited'
 	}[]
 
-	duration: number
-	timeWindow: {
-		start: number
-		end: number
-	}
+	schedulingMethod: 'fixed' | 'flexible'
 
-	/**
-	 * Status of the event
-	 * - 'scheduling': Event is being scheduled, the system is determining available times
-	 * - 'scheduled': Event has been scheduled by the system, awaiting event admin/creator confirmation. Omitted from future schedule optimizations unless it causes a conflict.
-	 * - 'confirmed': Event is confirmed and finalized
-	 * - 'cancelled': Event has been cancelled
-	 * Note: A event with status 'scheduled' may have its 'scheduledTime' updated until its status changes to 'confirmed'.
-	 */
-	status: 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
+	/** Amount of days the event lasts */
+	duration: number
+	/** Possible times when the event can be scheduled */
+	timeWindow?: ITimeRange
+
+	/** Lifecycle status of the event
+	 * - 'scheduling': Event is being scheduled. It may or may not have a tentative scheduled time.
+	 * - 'confirmed': Event has been confirmed with a scheduled time.
+	 * - 'cancelled': Event has been cancelled and will not occur.
+	*/
+	status: 'scheduling' | 'confirmed' | 'cancelled'
+	/** The current scheduled time for the event, if any */
 	scheduledTime?: number
 
-	visibility: 'public' | 'private' | 'draft'
+	/** Visibility of the event */
+	visibility: 'draft' | 'public' | 'private'
 
+	/** Blackout periods where the event cannot be scheduled */
 	blackoutPeriods?: ITimeRange[]
+	/** Preferred times for the event */
 	preferredTimes?: ITimeRange[]
+	/** Intra-day start constraint for the event, in minutes of the day */
 	dailyStartConstraints?: ITimeRange[]
 
 	/** Created at timestamp */
 	createdAt: string
 	/** Updated at timestamp */
 	updatedAt: string
+}
+
+// Event creation payload allowed from client
+export interface EventPostType {
+	name: string
+	description?: string
+	members: Array<{
+		userId: string
+		role: 'creator' | 'admin' | 'participant'
+	}>,
+	timeWindow?: ITimeRange
+	duration: number
+	schedulingMethod: 'fixed' | 'flexible'
+	scheduledTime?: number
+	visibility: 'draft' | 'public' | 'private'
+	blackoutPeriods?: ITimeRange[]
+	preferredTimes?: ITimeRange[]
+	dailyStartConstraints?: ITimeRange[]
 }
 
 // User types

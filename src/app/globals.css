@@ -23,6 +23,10 @@ body {
 	font-family: Geist;
 }
 
+html {
+	scroll-behavior: smooth;
+}
+
 @keyframes bounceOrig {
 	0%,
 	100% {

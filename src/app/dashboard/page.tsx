@@ -18,7 +18,7 @@ interface DashboardStats {
 	myEvents: number
 	participating: number
 	draft: number
-	pending: number // scheduling + scheduled
+	pending: number // scheduling
 	confirmed: number
 	cancelled: number
 }
@@ -127,7 +127,7 @@ const [enrichingNames, setEnrichingNames] = useState(false)
 			myEvents: myEvents.length,
 			participating: participating.length,
 			draft: events.filter(e => e.visibility === 'draft').length,
-			pending: events.filter(e => e.status === 'scheduling' || e.status === 'scheduled').length,
+			pending: events.filter(e => e.status === 'scheduling').length,
 			confirmed: events.filter(e => e.status === 'confirmed').length,
 			cancelled: events.filter(e => e.status === 'cancelled').length
 		}
