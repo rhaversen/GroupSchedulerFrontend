@@ -71,7 +71,7 @@ export interface EventType {
 	/**
 	 * Scheduling method for the event
 	 * - `fixed` Event has a fixed time and cannot be changed.
-	 * - `flexible` Event willl be scheduled at any time within the specified time window, subject to constraints.
+	 * - `flexible` Event will be scheduled at any time within the specified time window, subject to constraints.
 	 */
 	schedulingMethod: 'fixed' | 'flexible'
 
