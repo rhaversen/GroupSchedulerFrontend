@@ -74,7 +74,7 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 
 	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
 		? new Date(event.scheduledTime)
-		: new Date(event.timeWindow.end)
+		: new Date(event.timeWindow?.end ?? Date.now())
 	const isUpcoming = eventTime.getTime() > Date.now()
 	const userRole = getUserRole()
 	const roleDisplay = getRoleDisplay(userRole)
@@ -193,14 +193,16 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 								)}
 							</div>
 						) : event.status !== 'cancelled' ? (
-							<div className="flex items-center gap-2">
-								<Badge className="bg-gray-100 text-gray-800 text-xs" title="Current availability range – final date not yet confirmed">
-									{'Window'}
-								</Badge>
-								<span className="font-medium">
-									{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
-								</span>
-							</div>
+							event.timeWindow ? (
+								<div className="flex items-center gap-2">
+									<Badge className="bg-gray-100 text-gray-800 text-xs" title="Current availability range – final date not yet confirmed">
+										{'Window'}
+									</Badge>
+									<span className="font-medium">
+										{new Date(event.timeWindow.start).toLocaleDateString()}{' - '}{new Date(event.timeWindow.end).toLocaleDateString()}
+									</span>
+								</div>
+							) : null
 						) : null}
 						{event.status !== 'cancelled' && (
 							<div className="flex items-center gap-2">
