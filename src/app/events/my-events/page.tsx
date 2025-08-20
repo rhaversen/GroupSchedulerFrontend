@@ -31,10 +31,9 @@ export default function MyEventsPage () {
 	} = useEventsFilters()
 
 // Map combined pending filter to underlying statuses for data hook using comma separation
-const effectiveStatusFilter = statusFilter === 'pending' ? 'scheduling,scheduled' : statusFilter
 const { events, loading, isRefetching, error, total } = useEventsData({
 	viewMode,
-	statusFilter: effectiveStatusFilter,
+	statusFilter,
 	visibilityFilter,
 	currentUser
 })

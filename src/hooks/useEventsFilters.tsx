@@ -37,7 +37,7 @@ export function useEventsFilters () {
 			const term = searchTerm.toLowerCase()
 			filtered = filtered.filter(event =>
 				event.name.toLowerCase().includes(term) ||
-				event.description.toLowerCase().includes(term)
+				(event.description?.toLowerCase().includes(term) ?? false)
 			)
 		}
 
@@ -45,13 +45,13 @@ export function useEventsFilters () {
 		const now = Date.now()
 		if (viewTab === 'upcoming') {
 			filtered = filtered.filter(event => {
-				const eventTime = event.scheduledTime ?? event.timeWindow.end
-				return eventTime > now
+				const eventTime = event.scheduledTime ?? event.timeWindow?.end
+				return eventTime != null && eventTime > now
 			})
 		} else if (viewTab === 'past') {
 			filtered = filtered.filter(event => {
-				const eventTime = event.scheduledTime ?? event.timeWindow.end
-				return eventTime <= now
+				const eventTime = event.scheduledTime ?? event.timeWindow?.end
+				return eventTime != null && eventTime <= now
 			})
 		}
 
@@ -61,7 +61,7 @@ export function useEventsFilters () {
 	const getStatusOptions = (): StatusOption[] => {
 		return [
 			{ id: '', label: 'All Statuses', icon: <FaClipboardList /> },
-			{ id: 'pending', label: 'Pending', icon: <FaCalendarAlt /> },
+			{ id: 'scheduling', label: 'Pending', icon: <FaCalendarAlt /> },
 			{ id: 'confirmed', label: 'Confirmed', icon: <FaCheckCircle /> },
 			{ id: 'cancelled', label: 'Cancelled', icon: <FaTimes /> }
 		]

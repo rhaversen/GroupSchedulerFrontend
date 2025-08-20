@@ -25,8 +25,7 @@ import { type EventType, type UserType } from '@/types/backendDataTypes'
 
 const getStatusBadgeVariant = (status: EventType['status']) => {
 	switch (status) {
-		case 'scheduling': return 'warning'
-		case 'scheduled': return 'info'
+		case 'scheduling': return 'info'
 		case 'confirmed': return 'success'
 		case 'cancelled': return 'danger'
 		default: return 'default'
@@ -36,8 +35,7 @@ const getStatusBadgeVariant = (status: EventType['status']) => {
 const getStatusIcon = (status: EventType['status']) => {
 	switch (status) {
 		case 'confirmed': return <HiOutlineCheckCircle className="h-4 w-4" />
-		case 'scheduling': return <HiOutlineClock className="h-4 w-4" />
-		case 'scheduled': return <HiOutlineCalendar className="h-4 w-4" />
+		case 'scheduling': return <HiOutlineCalendar className="h-4 w-4" />
 		case 'cancelled': return <HiOutlineExclamationCircle className="h-4 w-4" />
 		default: return <HiOutlineCalendar className="h-4 w-4" />
 	}
@@ -173,7 +171,7 @@ export default function EventDetailPage () {
 								<Badge
 									variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
-									title={event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
+									title={event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
 								>
 									{getStatusIcon(event.status)}
 									<span className="capitalize font-medium">{event.visibility === 'draft' ? 'Draft' : event.status}</span>
@@ -298,10 +296,7 @@ export default function EventDetailPage () {
 										let stage: string | null = null
 										switch (event.status) {
 											case 'scheduling':
-												stage = 'Scheduling: Member availability is being analyzed. A tentative start may still adjust.'
-												break
-											case 'scheduled':
-												stage = 'Tentative: A start time has been selected but can still change until confirmed.'
+												stage = 'Scheduling: Member availability is being analyzed.'
 												break
 											case 'cancelled':
 												stage = 'Cancelled: Event will not occur. Historical timing data shown below.'
@@ -309,7 +304,7 @@ export default function EventDetailPage () {
 										}
 										return (
 											<div className="rounded-md bg-indigo-50 border border-indigo-200 px-4 py-3 text-sm text-indigo-900 leading-relaxed">
-												{stage && <p className="mb-2">{stage}</p>}
+												{(stage != null) && <p className="mb-2">{stage}</p>}
 												<p className="text-indigo-800">
 													{'Timeline: Gray bar is the full window. Green blocks are preferred periods; red blocks are blackout periods. The scheduled block may shift until confirmed.'}
 												</p>
@@ -319,7 +314,7 @@ export default function EventDetailPage () {
 									{event.scheduledTime != null && (
 										<div>
 											<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-												{event.status === 'scheduled' ? 'Tentative Start' : event.status === 'scheduling' ? 'Proposed Start' : 'Current Proposed Start'}
+												{event.status === 'scheduling' ? 'Proposed Start' : 'Current Proposed Start'}
 											</label>
 											<div className="mt-2">
 												<p className="text-indigo-700 font-medium text-lg">
