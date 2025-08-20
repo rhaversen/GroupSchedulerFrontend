@@ -40,22 +40,22 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 		const missing = creators.filter(c => !((userNames && userNames.has(c.userId)) || creatorNamesState.has(c.userId)))
 		if (missing.length === 0) { return }
 		let cancelled = false
-		;(async () => {
-			const updates = new Map<string, string>()
-			for (const c of missing) {
-				try {
-					const res = await api.get(`/v1/users/${c.userId}`)
-					if (cancelled) { return }
-					const data = res.data as { username?: string; email?: string }
-					updates.set(c.userId, data.username ?? data.email ?? 'Unknown User')
-				} catch {
-					if (!cancelled) { updates.set(c.userId, 'Unknown User') }
+			; (async () => {
+				const updates = new Map<string, string>()
+				for (const c of missing) {
+					try {
+						const res = await api.get(`/v1/users/${c.userId}`)
+						if (cancelled) { return }
+						const data = res.data as { username?: string; email?: string }
+						updates.set(c.userId, data.username ?? data.email ?? 'Unknown User')
+					} catch {
+						if (!cancelled) { updates.set(c.userId, 'Unknown User') }
+					}
 				}
-			}
-			if (!cancelled && updates.size > 0) {
-				setCreatorNamesState(prev => new Map([...prev, ...Array.from(updates.entries())]))
-			}
-		})()
+				if (!cancelled && updates.size > 0) {
+					setCreatorNamesState(prev => new Map([...prev, ...Array.from(updates.entries())]))
+				}
+			})()
 		return () => { cancelled = true }
 	}, [creators, creatorNamesState, userNames])
 
