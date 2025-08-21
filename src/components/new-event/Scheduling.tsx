@@ -42,9 +42,12 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	const [scheduleMode, setScheduleMode] = useState<ScheduleMode>('dynamic')
 	const [scheduledTime, setScheduledTime] = useState('')
 	const [scheduledEnd, setScheduledEnd] = useState('')
-	const [durationDays, setDurationDays] = useState(0)
-	const [durationHours, setDurationHours] = useState(1)
-	const [durationMinutes, setDurationMinutes] = useState(0)
+	const [dynDurationDays, setDynDurationDays] = useState(0)
+	const [dynDurationHours, setDynDurationHours] = useState(1)
+	const [dynDurationMinutes, setDynDurationMinutes] = useState(0)
+	const [fixDurationDays, setFixDurationDays] = useState(0)
+	const [fixDurationHours, setFixDurationHours] = useState(1)
+	const [fixDurationMinutes, setFixDurationMinutes] = useState(0)
 	const [timeWindowStart, setTimeWindowStart] = useState('')
 	const [timeWindowEnd, setTimeWindowEnd] = useState('')
 	const [preferredTimes, setPreferredTimes] = useState<TimeRange[]>([])
@@ -53,24 +56,28 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	const [showAdvanced, setShowAdvanced] = useState(false)
 
 	const prevModeRef = useRef<ScheduleMode>(scheduleMode)
-	const totalDurationMinutes = (durationDays * 24 * 60) + (durationHours * 60) + durationMinutes
-	const prevDurationRef = useRef<number>(totalDurationMinutes)
+	const totalDynamicDurationMinutes = (dynDurationDays * 24 * 60) + (dynDurationHours * 60) + dynDurationMinutes
+	const totalFixedDurationMinutes = (fixDurationDays * 24 * 60) + (fixDurationHours * 60) + fixDurationMinutes
+	const prevFixedDurationRef = useRef<number>(totalFixedDurationMinutes)
 	const initializedRef = useRef(false)
 
 	useImperativeHandle(ref, () => ({
-		getFormData: () => ({
-			scheduleMode,
-			scheduledTime,
-			scheduledEnd,
-			durationDays,
-			durationHours,
-			durationMinutes,
-			timeWindowStart,
-			timeWindowEnd,
-			preferredTimes,
-			blackoutPeriods,
-			dailyConstraints
-		})
+		getFormData: () => {
+			const useDyn = scheduleMode === 'dynamic'
+			return {
+				scheduleMode,
+				scheduledTime,
+				scheduledEnd,
+				durationDays: useDyn ? dynDurationDays : fixDurationDays,
+				durationHours: useDyn ? dynDurationHours : fixDurationHours,
+				durationMinutes: useDyn ? dynDurationMinutes : fixDurationMinutes,
+				timeWindowStart,
+				timeWindowEnd,
+				preferredTimes,
+				blackoutPeriods,
+				dailyConstraints
+			}
+		}
 	}))
 
 	useEffect(() => {
@@ -87,21 +94,21 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 		initializedRef.current = true
 	}, [timeWindowStart, timeWindowEnd, scheduledTime, scheduledEnd, dailyConstraints.length, setTimeWindowStart, setTimeWindowEnd, setScheduledTime, setScheduledEnd, setDailyConstraints])
 
-	// Fixed mode: only modify end when duration changes (or when toggling into fixed with no valid end).
+	// Fixed mode: update end only when fixed duration changes, or initializing on entering fixed with no valid end.
 	useEffect(() => {
 		const modeChangedToFixed = prevModeRef.current !== 'fixed' && scheduleMode === 'fixed'
-		const durationChanged = prevDurationRef.current !== totalDurationMinutes
+		const durationChanged = prevFixedDurationRef.current !== totalFixedDurationMinutes
 
 		if (scheduleMode === 'fixed') {
 			const start = parseDateTime(scheduledTime)
 			const currentEnd = scheduledEnd ? parseDateTime(scheduledEnd) : null
 
 			if (start != null) {
-				if (durationChanged && totalDurationMinutes > 0) {
-					const targetEnd = roundMsTo30Min(start + totalDurationMinutes * 60000)
+				if (durationChanged && totalFixedDurationMinutes > 0) {
+					const targetEnd = roundMsTo30Min(start + totalFixedDurationMinutes * 60000)
 					const endStr = formatLocalDateTime(targetEnd)
 					if (scheduledEnd !== endStr) { setScheduledEnd(endStr) }
-				} else if (modeChangedToFixed && (currentEnd == null || currentEnd <= start) && totalDurationMinutes === 0) {
+				} else if (modeChangedToFixed && (currentEnd == null || currentEnd <= start) && totalFixedDurationMinutes === 0) {
 					const targetEnd = roundMsTo30Min(start + 60 * 60000)
 					const endStr = formatLocalDateTime(targetEnd)
 					if (scheduledEnd !== endStr) { setScheduledEnd(endStr) }
@@ -109,11 +116,11 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 			}
 		}
 
-		prevDurationRef.current = totalDurationMinutes
+		prevFixedDurationRef.current = totalFixedDurationMinutes
 		prevModeRef.current = scheduleMode
-	}, [scheduleMode, scheduledTime, scheduledEnd, totalDurationMinutes, setScheduledEnd])
+	}, [scheduleMode, scheduledTime, scheduledEnd, totalFixedDurationMinutes, setScheduledEnd])
 
-	// Keep duration UI in sync when user edits the end directly in fixed mode.
+	// Keep fixed duration in sync when user edits the fixed end directly.
 	useEffect(() => {
 		if (scheduleMode !== 'fixed') { return }
 		const s = parseDateTime(scheduledTime)
@@ -124,9 +131,9 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 		const rem = diffMin % (24 * 60)
 		const newHours = Math.floor(rem / 60)
 		const newMinutes = rem % 60
-		if (newDays !== durationDays) { setDurationDays(newDays) }
-		if (newHours !== durationHours) { setDurationHours(newHours) }
-		if (newMinutes !== durationMinutes) { setDurationMinutes(newMinutes) }
+		if (newDays !== fixDurationDays) { setFixDurationDays(newDays) }
+		if (newHours !== fixDurationHours) { setFixDurationHours(newHours) }
+		if (newMinutes !== fixDurationMinutes) { setFixDurationMinutes(newMinutes) }
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [scheduleMode, scheduledTime, scheduledEnd])
 
@@ -135,7 +142,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	const startMs = useMemo(() => parseDateTime(timeWindowStart), [timeWindowStart])
 	const endMs = useMemo(() => parseDateTime(timeWindowEnd), [timeWindowEnd])
 	// const minEndLocal = useMemo(() => formatLocalDateTime(Math.max(Date.now(), startMs ?? 0)), [startMs])
-	const showTimeline = Boolean(startMs != null && endMs != null && endMs > startMs && totalDurationMinutes > 0)
+	const showTimeline = Boolean(startMs != null && endMs != null && endMs > startMs && totalDynamicDurationMinutes > 0)
 	// Half-hour values are generated inline where needed
 
 	const addTimeRange = (setter: (ranges: TimeRange[]) => void, ranges: TimeRange[]) => setter([...ranges, { start: null, end: null }])
@@ -295,11 +302,25 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 					<label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">{'Event duration'}</label>
 					<div className="mt-1 flex items-end gap-4">
 						<div className="flex flex-col w-20">
-							<input id="duration-days" type="number" value={durationDays} onChange={(e) => setDurationDays(Math.max(0, Math.min(30, parseInt(e.target.value) || 0)))} min={0} max={30} className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Duration in days" />
+							<input
+								id="duration-days"
+								type="number"
+								value={dynDurationDays}
+								onChange={(e) => setDynDurationDays(Math.max(0, Math.min(30, parseInt(e.target.value) || 0)))}
+								min={0}
+								max={30}
+								className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+								aria-label="Duration in days"
+							/>
 							<span className="mt-1 text-xs uppercase tracking-wide text-gray-400">{'Days'}</span>
 						</div>
 						<div className="flex flex-col">
-							<select value={formatTime(durationHours * 60 + durationMinutes)} onChange={(e) => { const totalMins = parseTime(e.target.value); setDurationHours(Math.floor(totalMins / 60)); setDurationMinutes(totalMins % 60) }} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Duration in hours and minutes">
+							<select
+								value={formatTime(dynDurationHours * 60 + dynDurationMinutes)}
+								onChange={(e) => { const totalMins = parseTime(e.target.value); setDynDurationHours(Math.floor(totalMins / 60)); setDynDurationMinutes(totalMins % 60) }}
+								className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+								aria-label="Duration in hours and minutes"
+							>
 								{Array.from({ length: 48 }).map((_, i) => { const total = i * 30; const h = Math.floor(total / 60); const m = total % 60; const v = formatTime(total); const label = `${h} h, ${m} m`; return (<option key={v} value={v}>{label}</option>) })}
 							</select>
 							<span className="mt-1 text-xs uppercase tracking-wide text-gray-400">{'HH, MM'}</span>
@@ -367,8 +388,52 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 				<div>
 					<label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">{'End'}</label>
 					<div className="mt-1 flex gap-2">
-						<input id="scheduled-end-date" type="date" value={getDatePart(scheduledEnd)} onChange={(e) => { const dateStr = e.target.value; const timeStr = getTimePart(scheduledEnd) || '00:00'; const ms = combineLocal(dateStr, timeStr); const rounded = ms != null ? roundMsTo30Min(ms) : null; setScheduledEnd(rounded != null ? formatLocalDateTime(rounded) : ''); const s = parseDateTime(scheduledTime); if (s != null && rounded != null && rounded > s) { const diffMin = Math.floor((rounded - s) / 60000); const newDays = Math.floor(diffMin / (24 * 60)); const rem = diffMin % (24 * 60); const newHours = Math.floor(rem / 60); const newMinutes = rem % 60; setDurationDays(newDays); setDurationHours(newHours); setDurationMinutes(newMinutes) } }} className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Scheduled end date" />
-						<select id="scheduled-end-time" value={getTimePart(scheduledEnd)} onChange={(e) => { const timeStr = e.target.value; const dateStr = getDatePart(scheduledEnd); const ms = combineLocal(dateStr, timeStr); const rounded = ms != null ? roundMsTo30Min(ms) : null; setScheduledEnd(rounded != null ? formatLocalDateTime(rounded) : ''); const s = parseDateTime(scheduledTime); if (s != null && rounded != null && rounded > s) { const diffMin = Math.floor((rounded - s) / 60000); const newDays = Math.floor(diffMin / (24 * 60)); const rem = diffMin % (24 * 60); const newHours = Math.floor(rem / 60); const newMinutes = rem % 60; setDurationDays(newDays); setDurationHours(newHours); setDurationMinutes(newMinutes) } }} className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Scheduled end time" disabled={!getDatePart(scheduledEnd)}>
+						<input
+							id="scheduled-end-date"
+							type="date"
+							value={getDatePart(scheduledEnd)}
+							onChange={(e) => {
+								const dateStr = e.target.value
+								const timeStr = getTimePart(scheduledEnd) || '00:00'
+								const ms = combineLocal(dateStr, timeStr)
+								const rounded = ms != null ? roundMsTo30Min(ms) : null
+								setScheduledEnd(rounded != null ? formatLocalDateTime(rounded) : '')
+								const s = parseDateTime(scheduledTime)
+								if (s != null && rounded != null && rounded > s) {
+									const diffMin = Math.floor((rounded - s) / 60000)
+									const newDays = Math.floor(diffMin / (24 * 60))
+									const rem = diffMin % (24 * 60)
+									const newHours = Math.floor(rem / 60)
+									const newMinutes = rem % 60
+									setFixDurationDays(newDays); setFixDurationHours(newHours); setFixDurationMinutes(newMinutes)
+								}
+							}}
+							className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							aria-label="Scheduled end date"
+						/>
+						<select
+							id="scheduled-end-time"
+							value={getTimePart(scheduledEnd)}
+							onChange={(e) => {
+								const timeStr = e.target.value
+								const dateStr = getDatePart(scheduledEnd)
+								const ms = combineLocal(dateStr, timeStr)
+								const rounded = ms != null ? roundMsTo30Min(ms) : null
+								setScheduledEnd(rounded != null ? formatLocalDateTime(rounded) : '')
+								const s = parseDateTime(scheduledTime)
+								if (s != null && rounded != null && rounded > s) {
+									const diffMin = Math.floor((rounded - s) / 60000)
+									const newDays = Math.floor(diffMin / (24 * 60))
+									const rem = diffMin % (24 * 60)
+									const newHours = Math.floor(rem / 60)
+									const newMinutes = rem % 60
+									setFixDurationDays(newDays); setFixDurationHours(newHours); setFixDurationMinutes(newMinutes)
+								}
+							}}
+							className="w-32 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							aria-label="Scheduled end time"
+							disabled={!getDatePart(scheduledEnd)}
+						>
 							<option value="" disabled hidden>{'--:--'}</option>
 							{Array.from({ length: 48 }).map((_, i) => { const m = i * 30; const v = formatTime(m); return (<option key={v} value={v}>{v}</option>) })}
 						</select>
@@ -379,11 +444,25 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 				<label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">{'Duration'}</label>
 				<div className="mt-1 flex items-end gap-4">
 					<div className="flex flex-col w-20">
-						<input id="fixed-duration-days" type="number" value={durationDays} onChange={(e) => setDurationDays(Math.max(0, Math.min(30, parseInt(e.target.value) || 0)))} min={0} max={30} className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Fixed duration in days" />
+						<input
+							id="fixed-duration-days"
+							type="number"
+							value={fixDurationDays}
+							onChange={(e) => setFixDurationDays(Math.max(0, Math.min(30, parseInt(e.target.value) || 0)))}
+							min={0}
+							max={30}
+							className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							aria-label="Fixed duration in days"
+						/>
 						<span className="mt-1 text-xs uppercase tracking-wide text-gray-400">{'Days'}</span>
 					</div>
 					<div className="flex flex-col">
-						<select value={formatTime(durationHours * 60 + durationMinutes)} onChange={(e) => { const totalMins = parseTime(e.target.value); setDurationHours(Math.floor(totalMins / 60)); setDurationMinutes(totalMins % 60) }} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30" aria-label="Fixed duration in hours and minutes">
+						<select
+							value={formatTime(fixDurationHours * 60 + fixDurationMinutes)}
+							onChange={(e) => { const totalMins = parseTime(e.target.value); setFixDurationHours(Math.floor(totalMins / 60)); setFixDurationMinutes(totalMins % 60) }}
+							className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							aria-label="Fixed duration in hours and minutes"
+						>
 							{Array.from({ length: 48 }).map((_, i) => { const total = i * 30; const h = Math.floor(total / 60); const m = total % 60; const v = formatTime(total); const label = `${h} h, ${m} m`; return (<option key={v} value={v}>{label}</option>) })}
 						</select>
 						<span className="mt-1 text-xs uppercase tracking-wide text-gray-400">{'HH, MM'}</span>
@@ -438,7 +517,14 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 										{showTimeline && (
 											<div>
 												<h4 className="text-sm font-medium text-gray-700 mb-2">{'Timeline preview'}</h4>
-												<EventTimeline windowStart={startMs!} windowEnd={endMs!} duration={totalDurationMinutes * 60000} preferred={preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null)} blackout={blackoutPeriods.filter((b): b is ITimeRange => b.start != null && b.end != null)} scheduledTime={undefined} />
+												<EventTimeline
+													windowStart={startMs!}
+													windowEnd={endMs!}
+													duration={totalDynamicDurationMinutes * 60000}
+													preferred={preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null)}
+													blackout={blackoutPeriods.filter((b): b is ITimeRange => b.start != null && b.end != null)}
+													scheduledTime={undefined}
+												/>
 											</div>
 										)}
 									</div>
