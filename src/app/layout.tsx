@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { type ReactElement } from 'react'
 
+import BrandHighlighter from '@/components/BrandHighlighter'
 import ErrorProvider from '@/contexts/ErrorProvider'
 import UserProvider from '@/contexts/UserProvider'
 import { geistMono, geistSans } from '@/lib/fonts'
@@ -35,6 +36,7 @@ export default function RootLayout ({
 				<ErrorProvider>
 					<UserProvider>
 						{children}
+						<BrandHighlighter />
 					</UserProvider>
 				</ErrorProvider>
 			</body>
