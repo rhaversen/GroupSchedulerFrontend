@@ -123,7 +123,7 @@ export default function NewEventPage () {
 
 	if (!currentUser) {
 		return (
-			<div className="min-h-screen bg-gray-50">
+			<div className="min-h-screen bg-slate-50">
 				<Navigation />
 				<div className="max-w-3xl mx-auto px-6 sm:px-8 lg:px-10 pt-10 pb-16">
 					<AuthRequiredCard
@@ -143,12 +143,17 @@ export default function NewEventPage () {
 			<EventsSubNav />
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-16">
-				<PageHero title="Create Event" subtitle="Define an availability window, invite members, and schedule." />
-				<div className="mt-6">
+				<PageHero title="Design Your Event" subtitle="Craft the perfect gathering by setting the details and schedule." />
+				<div className="mt-8">
 					<form onSubmit={handleSubmit} className="space-y-10">
-						<BasicDetails ref={basicDetailsRef} />
-
-						<Scheduling ref={schedulingRef} />
+						<div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+							<div className="lg:col-span-2">
+								<BasicDetails ref={basicDetailsRef} />
+							</div>
+							<div className="lg:col-span-3">
+								<Scheduling ref={schedulingRef} />
+							</div>
+						</div>
 
 						<Members
 							ref={membersRef}

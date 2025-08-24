@@ -29,7 +29,7 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 	const visOptions = ['draft', 'private', 'public'] as const
 	const visLabel: Record<typeof visOptions[number], string> = {
 		draft: 'Draft',
-		private: 'Members only',
+		private: 'Members',
 		public: 'Public'
 	}
 	const visHelp: Record<typeof visOptions[number], string> = {
@@ -39,54 +39,57 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 	}
 
 	return (
-		<Card className="border-0 shadow-md scroll-mt-24" id="basic-details-section">
+		<Card className="bg-white/60 backdrop-blur-sm border-0 shadow-lg shadow-indigo-200/30 scroll-mt-24" id="basic-details-section">
 			<CardHeader>
-				<CardTitle className="flex items-center gap-2 text-xl">
-					<FaCalendarAlt /> {'Basic details'}
+				<CardTitle className="flex items-center gap-3 text-3xl font-bold text-gray-800">
+					<FaCalendarAlt /> <span>{'Event Details'}</span>
 				</CardTitle>
+				<p className="text-sm text-gray-500 pt-1">{'Start with the basics. Give your event a name and set its visibility.'}</p>
 			</CardHeader>
-			<CardContent>
-				<div className="grid gap-6 lg:grid-cols-2">
+			<CardContent className="pt-4">
+				<div className="space-y-6">
 					<div>
-						<label className="block text-sm font-medium text-gray-700" htmlFor="event-name">{'Event Name'}</label>
+						<label className="block text-base font-semibold text-gray-700 mb-2" htmlFor="event-name">{'Event Name'}</label>
 						<input
 							id="event-name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							placeholder="e.g., Team Offsite, Project Kick-off"
+							className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-4 py-3 text-base shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
 						/>
 					</div>
 					<div>
-						<span className="block text-sm font-medium text-gray-700">{'Visibility'}</span>
-						<div className="mt-1 flex justify-start">
-							<div className="inline-flex items-center rounded-lg gap-1 border border-gray-300 bg-white px-1 py-0 shadow-sm overflow-hidden">
+						<span className="block text-base font-semibold text-gray-700 mb-2">{'Visibility'}</span>
+						<div className="flex justify-start">
+							<div className="inline-flex items-center rounded-xl gap-1 border border-gray-200 bg-gray-100/60 p-1 shadow-inner overflow-hidden">
 								{visOptions.map((v) => (
 									<button
 										key={v}
 										type="button"
 										onClick={() => setVisibility(v)}
-										className={`flex items-center gap-2 px-3 py-1 my-1 text-sm rounded-lg transition ${visibility === v ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-gray-50'}`}
+										className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${visibility === v ? 'bg-white text-indigo-700 shadow-md' : 'text-gray-500 hover:bg-white/50 hover:text-gray-800'}`}
 										aria-label={`${visLabel[v]} visibility`}
 									>
-										{v === 'draft' && <FaEdit className="text-xs" />}
-										{v === 'public' && <FaGlobe className="text-xs" />}
-										{v === 'private' && <FaUsers className="text-xs" />}
+										{v === 'draft' && <FaEdit className="text-base" />}
+										{v === 'public' && <FaGlobe className="text-base" />}
+										{v === 'private' && <FaUsers className="text-base" />}
 										{visLabel[v]}
 									</button>
 								))}
 							</div>
 						</div>
-						<p className="mt-1 text-xs text-gray-500">{visHelp[visibility]}</p>
+						<p className="mt-2 text-xs text-gray-500 h-4">{visHelp[visibility]}</p>
 					</div>
 
 					<div className="md:col-span-2">
-						<label className="block text-sm font-medium text-gray-700" htmlFor="event-description">{'Description'}</label>
+						<label className="block text-base font-semibold text-gray-700 mb-2" htmlFor="event-description">{'Description'}</label>
 						<textarea
 							id="event-description"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
-							rows={8}
-							className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400/30"
+							rows={6}
+							placeholder="Add a brief description or agenda for your event..."
+							className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-4 py-3 text-base shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
 						/>
 					</div>
 				</div>
