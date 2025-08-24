@@ -33,9 +33,9 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 		public: 'Public'
 	}
 	const visHelp: Record<typeof visOptions[number], string> = {
-		draft: 'Only visible to creators and admins',
-		private: 'Only visible to invited members',
-		public: 'Visible to the entire internet'
+		draft: 'Only you, creators and admins can view this',
+		private: 'Only invited members can view this',
+		public: 'Visible to everyone on the internet'
 	}
 
 	return (
@@ -44,7 +44,6 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 				<CardTitle className="flex items-center gap-3 text-3xl font-bold text-gray-800">
 					<FaCalendarAlt /> <span>{'Event Details'}</span>
 				</CardTitle>
-				<p className="text-sm text-gray-500 pt-1">{'Start with the basics. Give your event a name and set its visibility.'}</p>
 			</CardHeader>
 			<CardContent className="pt-4">
 				<div className="space-y-6">
@@ -54,7 +53,7 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 							id="event-name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder="e.g., Team Offsite, Project Kick-off"
+							placeholder="My Creatively-Named Event"
 							className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-4 py-3 text-base shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
 						/>
 					</div>
@@ -88,7 +87,7 @@ const BasicDetails = forwardRef<BasicDetailsRef>((props, ref) => {
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 							rows={6}
-							placeholder="Add a brief description or agenda for your event..."
+							placeholder="Make all your guests excited!"
 							className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-4 py-3 text-base shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
 						/>
 					</div>

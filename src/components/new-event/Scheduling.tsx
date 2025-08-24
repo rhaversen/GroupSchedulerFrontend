@@ -74,8 +74,6 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	const [dailyStartFromMin, setDailyStartFromMin] = useState(9 * 60)
 	const [dailyEndToMin, setDailyEndToMin] = useState(17 * 60)
 
-	// Conventional from/to dates (removed toDate as it's no longer needed)
-
 	// Time window
 	const [rangeStartDate, setRangeStartDate] = useState('')
 	const [rangeEndDate, setRangeEndDate] = useState('')
@@ -405,13 +403,34 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 		}
 	}, [targetDate, rangeStartDate, rangeEndDate, todayDateStr])
 
+	// Helper text for Date section
+	let dateSectionHelp = 'Pick a date to schedule your event.'
+	if (targetDate) {
+		if (rangeStartDate || rangeEndDate) {
+			dateSectionHelp = 'Preferred date set! RainDate will use your window if this date isn’t available to everyone.'
+		} else {
+			dateSectionHelp = 'Date set! Your event will be scheduled for this day.'
+		}
+	} else if (rangeStartDate || rangeEndDate) {
+		dateSectionHelp = 'No date set. Add one to prefer a specific date within your window.'
+	}
+
+	// Helper text for Window section
+	let windowSectionHelp = 'Set a time window for RainDate to find the best slot for everyone.'
+	if (rangeStartDate || rangeEndDate) {
+		windowSectionHelp = targetDate
+			? 'Window set! It will be used only if your preferred date isn’t available to everyone.'
+			: 'Window set! RainDate will pick the best time within this range.'
+	} else if (targetDate) {
+		windowSectionHelp = 'No window set. Add one to ensure everyone can make it to your event.'
+	}
+
 	return (
 		<Card className="bg-white/60 backdrop-blur-sm border-0 shadow-lg shadow-indigo-200/30 scroll-mt-24" id="scheduling-section">
 			<CardHeader>
 				<CardTitle className="flex items-center gap-3 text-3xl font-bold text-gray-800">
 					<FaClock /> <span>{'Scheduling'}</span>
 				</CardTitle>
-				<p className="text-sm text-gray-500 pt-1">{'Define when your event can take place. Use a flexible window to let RainDate automatically find the best time based on member availability, set a fixed date, or combine both.'}</p>
 			</CardHeader>
 			<CardContent className="space-y-8 pt-4">
 				<div className="space-y-6">
@@ -419,7 +438,6 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
 							<div className="md:col-span-3">
 								<h4 className="text-base font-semibold text-gray-700 mb-2">{'Time & Duration'}</h4>
-								<p className="text-xs text-gray-500">{'What time is the event and how long will it last?'}</p>
 							</div>
 							<div>
 								<label className="block text-xs font-semibold uppercase tracking-wide text-gray-600" htmlFor="start-time">{'Start Time'}</label>
@@ -450,42 +468,44 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 
 						<div className="space-y-4">
 							<h4 className="text-base font-semibold text-gray-700">{'Date'}</h4>
-							<p className="text-xs text-gray-500">{'Set your ideal date and optionally define a flexible window. The flexible window lets RainDate automatically schedule based on when your members are available - this is the recommended approach for most events.'}</p>
-
 							{/* Preferred Date */}
-							<div className="bg-gray-50/50 p-4 rounded-lg border border-gray-100 space-y-4">
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="md:col-span-2">
-										<label className="block text-xs font-semibold uppercase tracking-wide text-gray-600" htmlFor="target-date">
-											{'Event Date'} <span className="font-normal normal-case text-gray-500">{'(optional)'}</span>
-										</label>
-										<div className="flex items-center gap-2 mt-1">
-											<input id="target-date" type="date" value={targetDate} onChange={(e) => handleTargetDateChange(e.target.value)} min={schedulingConstraints.targetDateMin} max={schedulingConstraints.targetDateMax} className="w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50" />
-											{targetDate && (
-												<button type="button" onClick={() => setTargetDate('')} className="h-9 w-9 min-w-[2.25rem] inline-flex items-center justify-center rounded-md border border-amber-200 bg-white text-amber-600 hover:bg-amber-50" aria-label="Clear event date">
-													<FaMinus className="text-xs" />
-												</button>
-											)}
-										</div>
-									</div>
+							<div className={`p-4 rounded-lg ${targetDate ? 'ring-1 ring-indigo-200' : 'border-gray-200'}`}>
+								<div className="flex items-center justify-between mb-2">
+									<label className="text-sm font-semibold text-gray-700 tracking-wide" htmlFor="target-date">
+										<span className="uppercase mr-1">{'Event Date'}</span>
+										<span className="font-normal text-gray-500">{'(Optional)'}</span>
+									</label>
+									{targetDate && (
+										<button type="button" onClick={() => setTargetDate('')} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 text-xs text-amber-700 hover:bg-amber-100" aria-label="Clear date">
+											<FaMinus /> {'Clear Date'}
+										</button>
+									)}
 								</div>
+								<input
+									id="target-date"
+									type="date"
+									value={targetDate}
+									onChange={(e) => handleTargetDateChange(e.target.value)}
+									min={schedulingConstraints.targetDateMin}
+									max={schedulingConstraints.targetDateMax}
+									className="w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+								/>
+								<p className="text-sm italic text-gray-700 mt-2">{dateSectionHelp}</p>
 							</div>
 
 							{/* Window Definition */}
-							<div className="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100 space-y-4">
-								<div className="flex items-center justify-between">
+							<div className={`p-4 rounded-lg ${rangeStartDate || rangeEndDate ? 'ring-1 ring-green-200' : 'border-gray-200'}`}>
+								<div className="flex items-center justify-between mb-2">
 									<div>
 										<h5 className="text-sm font-semibold uppercase tracking-wide text-indigo-800/80">{'Smart Scheduling Window'} <span className="text-xs font-normal normal-case text-indigo-600/80">{'(Recommended)'}</span></h5>
-										<p className="text-xs text-indigo-700/70 mt-0.5">{'Let RainDate automatically find the best time based on member availability'}</p>
 									</div>
 									{(rangeStartDate || rangeEndDate) && (
-										<button type="button" onClick={clearSchedulingWindow} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-700 hover:bg-amber-100" aria-label="Clear scheduling window">
+										<button type="button" onClick={clearSchedulingWindow} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 text-xs text-amber-700 hover:bg-amber-100" aria-label="Clear scheduling window">
 											<FaMinus /> {'Clear Window'}
 										</button>
 									)}
 								</div>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-									{/* Explicit Window */}
 									<div>
 										<label className="block text-xs font-semibold uppercase tracking-wide text-indigo-800/80" htmlFor="range-start-date">{'Earliest Date'}</label>
 										<div className="flex items-center gap-1 mt-1">
@@ -502,6 +522,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 											)}
 										</div>
 										{targetDate && <p className="text-xs text-indigo-700/80 mt-1.5">{`-${flexibilityDaysBefore} days`}</p>}
+										{!targetDate && <p className="text-xs mt-1.5" style={{ visibility: 'hidden' }}>{'-'}</p>}
 									</div>
 									<div>
 										<label className="block text-xs font-semibold uppercase tracking-wide text-indigo-800/80" htmlFor="range-end-date">{'Latest Date'}</label>
@@ -519,8 +540,10 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 											)}
 										</div>
 										{targetDate && <p className="text-xs text-indigo-700/80 mt-1.5">{`+${flexibilityDaysAfter} days`}</p>}
+										{!targetDate && <p className="text-xs mt-1.5" style={{ visibility: 'hidden' }}>{'+'}</p>}
 									</div>
 								</div>
+								<p className="text-sm italic text-gray-700 mt-2">{windowSectionHelp}</p>
 							</div>
 						</div>
 					</div>

@@ -143,7 +143,7 @@ export default function NewEventPage () {
 			<EventsSubNav />
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-16">
-				<PageHero title="Design Your Event" subtitle="Craft the perfect gathering by setting the details and schedule." />
+				<PageHero title="Create Your Event" subtitle="Make it happen" />
 				<div className="mt-8">
 					<form onSubmit={handleSubmit} className="space-y-10">
 						<div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
