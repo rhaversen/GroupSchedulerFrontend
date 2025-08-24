@@ -134,9 +134,7 @@ const Dashboard: React.FC = () => {
 							{'Perfect scheduling for everyone'}
 						</h2>
 						<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-							{'Whether you\'re creating events or joining them, '}
-							<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
-							{' ensures you never have scheduling conflicts. Do everything you want to do.'}
+							{'Whether you\'re creating events or joining them, RainDate ensures you never have scheduling conflicts. Do everything you want to do.'}
 						</p>
 					</div>
 
@@ -147,9 +145,7 @@ const Dashboard: React.FC = () => {
 								{'Join without conflicts'}
 							</h3>
 							<p className="text-gray-600 leading-relaxed">
-								{'Accept event invitations knowing they\'ll never overlap with your other commitments. '}
-								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
-								{' keeps your schedule perfectly organized.'}
+								{'Accept event invitations knowing they\'ll never overlap with your other commitments. RainDate keeps your schedule perfectly organized.'}
 							</p>
 						</div>
 
@@ -159,9 +155,7 @@ const Dashboard: React.FC = () => {
 								{'Create smart events'}
 							</h3>
 							<p className="text-gray-600 leading-relaxed">
-								{'Set flexible time windows and let '}
-								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
-								{' find the perfect slot when all your guests are free. No more back-and-forth coordination.'}
+								{'Set flexible time windows and let RainDate find the perfect slot when all your guests are free. No more back-and-forth coordination.'}
 							</p>
 						</div>
 
@@ -171,8 +165,7 @@ const Dashboard: React.FC = () => {
 								{'Automatic optimization'}
 							</h3>
 							<p className="text-gray-600 leading-relaxed">
-								<span className="text-yellow-500 font-semibold">{'RainDate'}</span>
-								{' ensures everyone can attend everything they want to. No compromises, no missed opportunities.'}
+								{'RainDate ensures everyone can attend everything they want to. No compromises, no missed opportunities.'}
 							</p>
 						</div>
 					</div>
