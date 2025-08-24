@@ -1,5 +1,8 @@
+
 'use client'
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/en'
 import Link from 'next/link'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaEdit, FaGlobe, FaLock, FaExternalLinkAlt } from 'react-icons/fa'
@@ -16,6 +19,7 @@ interface EventCardProps {
 }
 
 export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
+	dayjs.locale('en')
 	const [creatorNamesState, setCreatorNamesState] = useState<Map<string, string>>(new Map())
 	const [showMoreCreators, setShowMoreCreators] = useState(false)
 	const [creatorsHover, setCreatorsHover] = useState(false)
@@ -178,13 +182,46 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 						)}
 						{event.status !== 'cancelled' && event.status === 'confirmed' && event.scheduledTime != null ? (
 							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-2">
+												<div className="flex items-center gap-2">
 									<Badge className="bg-green-100 text-green-800 text-xs" title="The date has been confirmed and is visible to all members">
 										{'Confirmed'}
 									</Badge>
-									<span className="font-medium">
-										{new Date(event.scheduledTime).toLocaleDateString()}
-									</span>
+													{(() => {
+														const formatDuration = (totalMinutes: number) => {
+															const days = Math.floor(totalMinutes / (60 * 24))
+															const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
+															const minutes = totalMinutes % 60
+															const parts: string[] = []
+															if (days) { parts.push(`${days}d`) }
+															if (hours) { parts.push(`${hours}h`) }
+															if (minutes || parts.length === 0) { parts.push(`${minutes}m`) }
+															return parts.join(' ')
+														}
+														const durationStr = formatDuration(event.duration)
+														const start = dayjs(event.scheduledTime)
+														const end = start.add(event.duration, 'minute')
+														if (end.isSame(start, 'day')) {
+															// Same-day: show date + compact time range
+															return (
+																<span className="font-medium">{start.format('D MMM YYYY')} {'•'} {start.format('HH:mm')} {'–'} {end.format('HH:mm')} {'•'} {durationStr}</span>
+															)
+														}
+														// Multi-day: show human-friendly date range without times
+														const sameYear = start.isSame(end, 'year')
+														const sameMonth = sameYear && start.isSame(end, 'month')
+														let rangeLabel: string
+														if (!sameYear) {
+															// Default different years
+															rangeLabel = `${start.format('D MMM YYYY')} – ${end.format('D MMM YYYY')}`
+														} else if (sameMonth) {
+															// Same year and month
+															rangeLabel = `${start.format('D')} – ${end.format('D MMM YYYY')}`
+														} else {
+															// Same year, different months
+															rangeLabel = `${start.format('D MMM')} – ${end.format('D MMM YYYY')}`
+														}
+														return (<span className="font-medium">{rangeLabel} {'•'} {durationStr}</span>)
+													})()}
 								</div>
 								{isUpcoming && (
 									<span className="text-xs text-gray-500 font-medium">
