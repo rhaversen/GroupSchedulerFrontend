@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { FaClipboardList, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
+import { FaList, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
 
 import { type EventType } from '@/types/backendDataTypes'
 
@@ -60,7 +60,7 @@ export function useEventsFilters () {
 
 	const getStatusOptions = (): StatusOption[] => {
 		return [
-			{ id: '', label: 'All Statuses', icon: <FaClipboardList /> },
+			{ id: '', label: 'All Statuses', icon: <FaList /> },
 			{ id: 'scheduling', label: 'Pending', icon: <FaCalendarAlt /> },
 			{ id: 'confirmed', label: 'Confirmed', icon: <FaCheckCircle /> },
 			{ id: 'cancelled', label: 'Cancelled', icon: <FaTimes /> }

@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useImperativeHandle, useState, useMemo, useEffect } from 'react'
-import { FaUsers, FaUserPlus, FaUserMinus, FaTrash, FaSort, FaDivide, FaCheck, FaTimes } from 'react-icons/fa'
+import { FaUsers, FaUserPlus, FaUserMinus, FaTrash, FaSort, FaDivide, FaCheck, FaTimes, FaPlusCircle, FaUserShield, FaHandPaper } from 'react-icons/fa'
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import UserAvatar from '@/components/UserAvatar'
@@ -234,11 +234,14 @@ const Members = forwardRef<MembersRef, {
 												key={roleOption}
 												type="button"
 												onClick={() => updateMemberRole(userId, roleOption)}
-												className={`text-sm px-3 py-1.5 rounded border transition ${role === roleOption
+												className={`text-sm px-3 py-1.5 rounded border transition flex items-center gap-2 ${role === roleOption
 													? 'bg-indigo-600 text-white border-indigo-600'
 													: 'bg-white text-gray-600 border-gray-300 hover:bg-indigo-50'
 													}`}
 											>
+												{roleOption === 'creator' && <FaPlusCircle className="text-xs" />}
+												{roleOption === 'admin' && <FaUserShield className="text-xs" />}
+												{roleOption === 'participant' && <FaHandPaper className="text-xs" />}
 												{roleOption.charAt(0).toUpperCase() + roleOption.slice(1)}
 											</button>
 										))}
