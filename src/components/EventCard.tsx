@@ -186,20 +186,21 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 									<Badge className="bg-green-100 text-green-800 text-xs" title="The date has been confirmed and is visible to all members">
 										{'Confirmed'}
 									</Badge>
-													{(() => {
-														const formatDuration = (totalMinutes: number) => {
-															const days = Math.floor(totalMinutes / (60 * 24))
-															const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
-															const minutes = totalMinutes % 60
-															const parts: string[] = []
-															if (days) { parts.push(`${days}d`) }
-															if (hours) { parts.push(`${hours}h`) }
-															if (minutes || parts.length === 0) { parts.push(`${minutes}m`) }
-															return parts.join(' ')
-														}
-														const durationStr = formatDuration(event.duration)
-														const start = dayjs(event.scheduledTime)
-														const end = start.add(event.duration, 'minute')
+																	{(() => {
+																		const formatDurationFromMs = (totalMs: number) => {
+																			const totalMinutes = Math.round(totalMs / 60000)
+																			const days = Math.floor(totalMinutes / (60 * 24))
+																			const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
+																			const minutes = totalMinutes % 60
+																			const parts: string[] = []
+																			if (days) { parts.push(`${days}d`) }
+																			if (hours) { parts.push(`${hours}h`) }
+																			if (minutes || parts.length === 0) { parts.push(`${minutes}m`) }
+																			return parts.join(' ')
+																		}
+																		const durationStr = formatDurationFromMs(event.duration)
+																		const start = dayjs(event.scheduledTime)
+																		const end = dayjs(event.scheduledTime + event.duration)
 														if (end.isSame(start, 'day')) {
 															// Same-day: show date + compact time range
 															return (
@@ -220,8 +221,8 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 															// Same year, different months
 															rangeLabel = `${start.format('D MMM')} – ${end.format('D MMM YYYY')}`
 														}
-														return (<span className="font-medium">{rangeLabel} {'•'} {durationStr}</span>)
-													})()}
+																							return (<span className="font-medium">{rangeLabel} {'•'} {durationStr}</span>)
+																		})()}
 								</div>
 								{isUpcoming && (
 									<span className="text-xs text-gray-500 font-medium">

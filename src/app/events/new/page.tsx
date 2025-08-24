@@ -101,7 +101,7 @@ export default function NewEventPage () {
 			if (dailyConstraints.length > 0) {
 				const completeConstraints = dailyConstraints.map(constraint => ({
 					start: constraint.start,
-					end: constraint.end ?? constraint.start
+					end: (constraint.end ?? constraint.start)
 				}))
 				baseData.dailyStartConstraints = completeConstraints
 			}

@@ -21,20 +21,17 @@ export default function EventTimeline ({ windowStart, windowEnd, duration, prefe
 	// Hover state for timeline tooltip
 	const [hoverPosition, setHoverPosition] = useState<{ x: number, timestamp: number } | null>(null)
 
-	// Normalize duration: backend may supply minutes (e.g. 180) instead of ms (e.g. 10800000)
-	const normalizedDuration = duration < 60000 ? duration * 60000 : duration
-
 	const scheduledRange: ITimeRange | null = useMemo(() => {
 		if (scheduledTime == null) {
 			return null
 		}
 		const start = Math.max(windowStart, scheduledTime)
-		const end = Math.min(windowEnd, scheduledTime + normalizedDuration)
+		const end = Math.min(windowEnd, scheduledTime + duration)
 		if (end <= start) {
 			return null
 		}
 		return { start, end }
-	}, [scheduledTime, normalizedDuration, windowStart, windowEnd])
+	}, [scheduledTime, duration, windowStart, windowEnd])
 
 	const scale = (ms: number) => ((ms - windowStart) / safeTotal) * 100
 

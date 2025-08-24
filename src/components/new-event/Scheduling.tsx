@@ -9,12 +9,12 @@ import { ITimeRange } from '@/types/backendDataTypes'
 import { type DailyConstraint, type ScheduleMode, type TimeRange } from '@/types/newEvent'
 
 function pad2 (n: number): string { return n < 10 ? `0${n}` : `${n}` }
-function formatTime (minutes: number): string { const h = Math.floor(minutes / 60); const m = minutes % 60; return `${pad2(h)}:${pad2(m)}` }
-function parseTime (timeStr: string): number { const [h, m] = timeStr.split(':').map(x => parseInt(x, 10) || 0); return (h * 60) + m }
+function formatTimeOfDay (msOfDay: number): string { const h = Math.floor(msOfDay / 3600000); const m = Math.floor((msOfDay % 3600000) / 60000); return `${pad2(h)}:${pad2(m)}` }
+function parseTimeToMs (timeStr: string): number { const [h, m] = timeStr.split(':').map(x => parseInt(x, 10) || 0); return ((h * 60) + m) * 60000 }
 function parseDateTime (value: string): number | null { if (!value) { return null } const ms = new Date(value).getTime(); return Number.isNaN(ms) ? null : ms }
 function formatLocalDateTime (ms: number): string { const d = new Date(ms); const yyyy = d.getFullYear(); const mm = pad2(d.getMonth() + 1); const dd = pad2(d.getDate()); const hh = pad2(d.getHours()); const mi = pad2(d.getMinutes()); return `${yyyy}-${mm}-${dd}T${hh}:${mi}` }
 function roundMsTo30Min (ms: number): number { const step = 30 * 60 * 1000; return Math.round(ms / step) * step }
-function roundMinutesTo30 (mins: number): number { const v = Math.round(mins / 30) * 30; return Math.min(23 * 60 + 30, Math.max(0, v)) }
+function roundMsOfDayTo30 (ms: number): number { const step = 30 * 60 * 1000; const clamped = Math.min(23.5 * 3600000, Math.max(0, ms)); return Math.round(clamped / step) * step }
 function formatLocalDate (ms: number): string { const d = new Date(ms); const yyyy = d.getFullYear(); const mm = pad2(d.getMonth() + 1); const dd = pad2(d.getDate()); return `${yyyy}-${mm}-${dd}` }
 function formatLocalTimeOnly (ms: number): string { const d = new Date(ms); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}` }
 
@@ -70,9 +70,9 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 
 	const [targetDate, setTargetDate] = useState('')
 
-	// Core time-of-day
-	const [dailyStartFromMin, setDailyStartFromMin] = useState(9 * 60)
-	const [dailyEndToMin, setDailyEndToMin] = useState(17 * 60)
+	// Core time-of-day (ms-of-day)
+	const [dailyStartFromMs, setDailyStartFromMs] = useState(9 * 60 * 60000)
+	const [dailyEndToMs, setDailyEndToMs] = useState(17 * 60 * 60000)
 
 	// Time window
 	const [rangeStartDate, setRangeStartDate] = useState('')
@@ -81,14 +81,17 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	// Constraints
 	const [preferredTimes, setPreferredTimes] = useState<TimeRange[]>([])
 	const [blackoutPeriods, setBlackoutPeriods] = useState<TimeRange[]>([])
-	const [dailyConstraints] = useState<DailyConstraint[]>([{ start: 8 * 60, end: 20 * 60 }])
+	const [dailyConstraints] = useState<DailyConstraint[]>([{ start: 8 * 60 * 60000, end: 20 * 60 * 60000 }])
 	const [showAdvanced, setShowAdvanced] = useState(false)
 
-	// Duration controls (explicit)
+	// Duration: derived from start/end time-of-day plus whole-day count
 	const [durDays, setDurDays] = useState(0)
-	const durHours = 1 // Fixed at 1 hour
-	const durMinutes = 0 // Fixed at 0 minutes
-	const totalDurationMinutes = useMemo(() => (durDays * 24 * 60) + (durHours * 60) + durMinutes, [durDays])
+	const withinDayMs = useMemo(() => {
+		let diff = dailyEndToMs - dailyStartFromMs
+		if (diff < 0) { diff += 24 * 60 * 60 * 1000 }
+		return diff
+	}, [dailyEndToMs, dailyStartFromMs])
+	const totalDurationMinutes = useMemo(() => (durDays * 24 * 60) + Math.round(withinDayMs / 60000), [durDays, withinDayMs])
 
 	// Derived window from optional range dates; if one side missing, default to 7 days span
 	const windowStartMs = useMemo(() => {
@@ -122,19 +125,23 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	// Derived fixed schedule when no window and anchor is set
 	const scheduledStartMs = useMemo(() => {
 		if (!targetDate || hasWindow) { return null }
-		const ms = localDateAt(targetDate, Math.floor(dailyStartFromMin / 60), dailyStartFromMin % 60)
+		const hours = Math.floor(dailyStartFromMs / 3600000)
+		const minutes = Math.floor((dailyStartFromMs % 3600000) / 60000)
+		const ms = localDateAt(targetDate, hours, minutes)
 		return Number.isNaN(ms) ? null : roundMsTo30Min(ms)
-	}, [targetDate, hasWindow, dailyStartFromMin])
+	}, [targetDate, hasWindow, dailyStartFromMs])
 
 	const showTimeline = hasWindow && windowStartMs != null && windowEndMs != null
 
 	// Preferred time derived from target date
 	const targetPreferredRange = useMemo<ITimeRange | null>(() => {
 		if (!targetDate) { return null }
-		const start = roundMsTo30Min(localDateAt(targetDate, Math.floor(dailyStartFromMin / 60), dailyStartFromMin % 60))
+		const hours = Math.floor(dailyStartFromMs / 3600000)
+		const minutes = Math.floor((dailyStartFromMs % 3600000) / 60000)
+		const start = roundMsTo30Min(localDateAt(targetDate, hours, minutes))
 		const end = start + totalDurationMinutes * 60000
 		return { start, end }
-	}, [targetDate, dailyStartFromMin, totalDurationMinutes])
+	}, [targetDate, dailyStartFromMs, totalDurationMinutes])
 
 	// Expose data
 	useImperativeHandle(ref, () => ({
@@ -144,18 +151,21 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 			const timeWindowEnd = hasWindow && windowEndMs != null ? formatLocalDateTime(windowEndMs) : ''
 			const scheduledTime = !hasWindow && scheduledStartMs != null ? formatLocalDateTime(scheduledStartMs) : ''
 			const scheduledEnd = !hasWindow && scheduledStartMs != null ? formatLocalDateTime(scheduledStartMs + totalDurationMinutes * 60000) : ''
+			const withinMinutes = Math.round(withinDayMs / 60000)
+			const dHours = Math.floor(withinMinutes / 60)
+			const dMinutes = withinMinutes % 60
 			return {
 				scheduleMode: mode,
 				scheduledTime,
 				scheduledEnd,
 				durationDays: durDays,
-				durationHours: durHours,
-				durationMinutes: durMinutes,
+				durationHours: dHours,
+				durationMinutes: dMinutes,
 				timeWindowStart,
 				timeWindowEnd,
 				preferredTimes,
 				blackoutPeriods: blackoutPeriods,
-				dailyConstraints: showAdvanced ? dailyConstraints : [{ start: dailyStartFromMin, end: dailyEndToMin }]
+				dailyConstraints: showAdvanced ? dailyConstraints : [{ start: dailyStartFromMs, end: dailyEndToMs }]
 			}
 		}
 	}))
@@ -220,7 +230,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 									title="Start time"
 								>
 									<option value="" disabled hidden>{'--:--'}</option>
-									{Array.from({ length: 48 }).map((_, i) => { const m = i * 30; const v = formatTime(m); return (<option key={v} value={v}>{v}</option>) })}
+									{Array.from({ length: 48 }).map((_, i) => { const ms = i * 30 * 60000; const v = formatTimeOfDay(ms); return (<option key={v} value={v}>{v}</option>) })}
 								</select>
 							</div>
 						</div>
@@ -255,7 +265,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 									title="End time"
 								>
 									<option value="" disabled hidden>{'--:--'}</option>
-									{Array.from({ length: 48 }).map((_, i) => { const m = i * 30; const v = formatTime(m); return (<option key={v} value={v}>{v}</option>) })}
+									{Array.from({ length: 48 }).map((_, i) => { const ms = i * 30 * 60000; const v = formatTimeOfDay(ms); return (<option key={v} value={v}>{v}</option>) })}
 								</select>
 							</div>
 						</div>
@@ -441,27 +451,23 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 							</div>
 							<div>
 								<label className="block text-xs font-semibold uppercase tracking-wide text-gray-600" htmlFor="start-time">{'Start Time'}</label>
-								<input id="start-time" type="time" value={formatTime(dailyStartFromMin)} onChange={(e) => { setDailyStartFromMin(roundMinutesTo30(parseTime(e.target.value))) }} step={1800} className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50" />
+								<input id="start-time" type="time" value={formatTimeOfDay(dailyStartFromMs)} onChange={(e) => { setDailyStartFromMs(roundMsOfDayTo30(parseTimeToMs(e.target.value))) }} step={1800} className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50" />
 							</div>
 							<div>
 								<label className="block text-xs font-semibold uppercase tracking-wide text-gray-600" htmlFor="end-time">{'End Time'}</label>
-								<input id="end-time" type="time" value={formatTime(dailyEndToMin)} onChange={(e) => {
-									const newEndTime = roundMinutesTo30(parseTime(e.target.value))
-									setDailyEndToMin(newEndTime)
-									// If end time is earlier than start time and duration days is 0, set it to 1
-									if (newEndTime < dailyStartFromMin && durDays === 0) {
-										setDurDays(1)
-									}
+								<input id="end-time" type="time" value={formatTimeOfDay(dailyEndToMs)} onChange={(e) => {
+									const newEndTime = roundMsOfDayTo30(parseTimeToMs(e.target.value))
+									setDailyEndToMs(newEndTime)
 								}} step={1800} className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50" />
 							</div>
 							<div>
 								<label className="block text-xs font-semibold uppercase tracking-wide text-gray-600" htmlFor="dur-days">{'Duration (Days)'}</label>
-								<input aria-label="Duration in days" id="dur-days" type="number" min={dailyEndToMin < dailyStartFromMin ? 1 : 0} value={durDays} onChange={(e) => {
-									const minValue = dailyEndToMin < dailyStartFromMin ? 1 : 0
+								<input aria-label="Duration in days" id="dur-days" type="number" min={0} value={durDays} onChange={(e) => {
 									const inputValue = parseInt(e.target.value) || 0
-									setDurDays(Math.max(minValue, inputValue))
+									setDurDays(Math.max(0, inputValue))
 								}} className="mt-1 w-full rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50" />
 							</div>
+							{/* Duration hours/minutes are derived from start/end times */}
 						</div>
 
 						<div className="border-t border-gray-200/80" />
@@ -549,7 +555,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 					</div>
 
 					{(() => {
-						const summaryText = humanizeWindow(windowStartMs, windowEndMs, scheduledStartMs, formatTime(dailyStartFromMin), formatTime(dailyEndToMin), totalDurationMinutes)
+						const summaryText = humanizeWindow(windowStartMs, windowEndMs, scheduledStartMs, formatTimeOfDay(dailyStartFromMs), formatTimeOfDay(dailyEndToMs), totalDurationMinutes)
 						return summaryText && (
 							<div className="text-center py-3 px-4 rounded-lg bg-gray-100 border border-gray-200/80 shadow-inner">
 								<p className="text-sm font-semibold text-gray-800">{'Scheduling Summary'}</p>

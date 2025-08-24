@@ -76,7 +76,7 @@ export interface EventType {
 	schedulingMethod: 'fixed' | 'flexible'
 
 	/**
-	 * Duration of the event in minutes
+	 * Duration of the event in ms
 	 * - This is used to determine how long the event will last.
 	 * - If the schedulingMethod is 'flexible', this will be used to determine available times for the event.
 	 * - If the schedulingMethod is 'fixed', this will be used to determine the end time of the event. It should be calculated as the difference between the start time and a "virtual" end time UI element of the event.
@@ -138,7 +138,7 @@ export interface EventType {
 	preferredTimes?: ITimeRange[]
 
 	/**
-	 * Intra-day start constraint for the event, in minutes of the day
+	 * Intra-day start constraint for the event, in ms of the day
 	 * - `dailyStartConstraints.start` Start time of the constraint in milliseconds since epoch.
 	 * - `dailyStartConstraints.end` End time of the constraint in milliseconds since epoch.
 	 * - This is used to prevent scheduling the event outside of these times. This only applies to the start time of the event.
@@ -179,8 +179,7 @@ export interface UserType {
 	username: string
 	/** Email of the user, null if not the current user */
 	email: string | null
-	// status: Current lifecycle stage of the event: "scheduling", "scheduled", "confirmed", or "cancelled".
-	// Draft state is represented via visibility === 'draft'.
+	/** If the user is not confirmed, the expiration date will be set */
 	expirationDate: string | null
 	/** If the user has confirmed their email, null if not the current user */
 	confirmed: boolean | null
