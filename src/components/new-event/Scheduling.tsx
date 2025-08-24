@@ -416,7 +416,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 	}
 
 	// Helper text for Window section
-	let windowSectionHelp = 'Set a time window for RainDate to find the best slot for everyone.'
+	let windowSectionHelp = 'Set a time window to let RainDate find the best slot for everyone.'
 	if (rangeStartDate || rangeEndDate) {
 		windowSectionHelp = targetDate
 			? 'Window set! It will be used only if your preferred date isn’t available to everyone.'
