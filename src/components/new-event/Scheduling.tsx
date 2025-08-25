@@ -135,10 +135,12 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 			const schedulingMethod: 'fixed' | 'flexible' = hasWindow ? 'flexible' : 'fixed'
 			const duration = durationMs
 
-			const preferred = preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null)
+			const preferred = preferredTimes
+				.filter((p): p is ITimeRange => p.start != null && p.end != null)
+				.concat(schedulingMethod === 'flexible' && targetPreferredRange ? [targetPreferredRange] : [])
 			const blackout = blackoutPeriods.filter((b): b is ITimeRange => b.start != null && b.end != null)
 			const constraintsSrc: DailyConstraint[] = showAdvanced ? dailyConstraints : [{ start: dailyStartFromMs, end: dailyEndToMs }]
-			const dailyStartConstraints = constraintsSrc.map(c => ({ start: c.start, end: c.end ?? c.start }))
+			const dailyStartConstraints = constraintsSrc.map(c => ({ start: c.start, end: c.start }))
 
 			const out: Partial<EventPostType> = { schedulingMethod, duration }
 
