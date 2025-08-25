@@ -5,14 +5,13 @@ import { FaClock, FaMinus, FaPlus } from 'react-icons/fa'
 
 import EventTimeline from '@/components/EventTimeline'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
-import { ITimeRange } from '@/types/backendDataTypes'
-import { type DailyConstraint, type ScheduleMode, type TimeRange } from '@/types/newEvent'
+import { ITimeRange, type EventPostType } from '@/types/backendDataTypes'
+import { type DailyConstraint, type TimeRange } from '@/types/newEvent'
 
 function pad2 (n: number): string { return n < 10 ? `0${n}` : `${n}` }
 function formatTimeOfDay (msOfDay: number): string { const h = Math.floor(msOfDay / 3600000); const m = Math.floor((msOfDay % 3600000) / 60000); return `${pad2(h)}:${pad2(m)}` }
 function parseTimeToMs (timeStr: string): number { const [h, m] = timeStr.split(':').map(x => parseInt(x, 10) || 0); return ((h * 60) + m) * 60000 }
 function parseDateTime (value: string): number | null { if (!value) { return null } const ms = new Date(value).getTime(); return Number.isNaN(ms) ? null : ms }
-function formatLocalDateTime (ms: number): string { const d = new Date(ms); const yyyy = d.getFullYear(); const mm = pad2(d.getMonth() + 1); const dd = pad2(d.getDate()); const hh = pad2(d.getHours()); const mi = pad2(d.getMinutes()); return `${yyyy}-${mm}-${dd}T${hh}:${mi}` }
 function roundMsTo30Min (ms: number): number { const step = 30 * 60 * 1000; return Math.round(ms / step) * step }
 function roundMsOfDayTo30 (ms: number): number { const step = 30 * 60 * 1000; const clamped = Math.min(23.5 * 3600000, Math.max(0, ms)); return Math.round(clamped / step) * step }
 function formatLocalDate (ms: number): string { const d = new Date(ms); const yyyy = d.getFullYear(); const mm = pad2(d.getMonth() + 1); const dd = pad2(d.getDate()); return `${yyyy}-${mm}-${dd}` }
@@ -25,14 +24,14 @@ function localDateAt (dateStr: string, hours = 0, minutes = 0): number {
 function shortDate (ms: number): string {
 	return new Date(ms).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
 }
-function humanizeWindow (startMs?: number | null, endMs?: number | null, scheduledMs?: number | null, startLabel?: string, endLabel?: string, durationMinutes?: number): string {
+function humanizeWindow (startMs?: number | null, endMs?: number | null, scheduledMs?: number | null, startLabel?: string, endLabel?: string, durationMs?: number): string {
 	const now = Date.now()
 	if (scheduledMs != null) {
 		const diffDays = Math.round((scheduledMs - now) / (24 * 60 * 60 * 1000))
 		const when = diffDays <= 0 ? 'soon' : diffDays === 1 ? 'tomorrow' : diffDays < 14 ? `in ${diffDays} days` : `in about ${Math.round(diffDays / 7)} weeks`
-		const endDate = scheduledMs + (durationMinutes ?? 0) * 60000
+		const endDate = scheduledMs + (durationMs ?? 0)
 		const endDateObj = new Date(endDate)
-		const endDateStr = (durationMinutes != null) && durationMinutes >= 1440
+		const endDateStr = (durationMs != null) && durationMs >= (24 * 60 * 60 * 1000)
 			? `${shortDate(endDate)} at ${endLabel ?? endDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
 			: endLabel ?? endDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 		return `Scheduled for ${shortDate(scheduledMs)} at ${startLabel ?? new Date(scheduledMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (${when}), ending ${endDateStr}`
@@ -43,26 +42,14 @@ function humanizeWindow (startMs?: number | null, endMs?: number | null, schedul
 		const d1 = Math.max(0, Math.round((startMs - now) / (24 * 60 * 60 * 1000)))
 		const d2 = Math.max(0, Math.round((endMs - now) / (24 * 60 * 60 * 1000)))
 		const span = d2 <= d1 ? '' : d2 - d1 < 14 ? ` (~${d1}–${d2} days from now)` : ` (~${Math.round(d1 / 7)}–${Math.round(d2 / 7)} weeks from now)`
-		const durationDays = durationMinutes != null ? Math.floor(durationMinutes / 60 / 24) : 0
+		const durationDays = durationMs != null ? Math.floor(durationMs / (24 * 60 * 60 * 1000)) : 0
 		return `Anytime between ${from} and ${to}${span}${(startLabel != null) && (endLabel != null) ? `, starting at ${startLabel} and ending ${(durationDays == 1) ? 'the day after' : `${durationDays > 1 ? `${durationDays} days later` : ''}`} at ${endLabel}` : ''}`
 	}
 	return ''
 }
 
 export interface SchedulingRef {
-	getFormData: () => {
-		scheduleMode: ScheduleMode
-		scheduledTime: string
-		scheduledEnd: string
-		durationDays: number
-		durationHours: number
-		durationMinutes: number
-		timeWindowStart: string
-		timeWindowEnd: string
-		preferredTimes: TimeRange[]
-		blackoutPeriods: TimeRange[]
-		dailyConstraints: DailyConstraint[]
-	}
+	getFormData: () => Partial<EventPostType>
 }
 
 const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
@@ -91,7 +78,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 		if (diff < 0) { diff += 24 * 60 * 60 * 1000 }
 		return diff
 	}, [dailyEndToMs, dailyStartFromMs])
-	const totalDurationMinutes = useMemo(() => (durDays * 24 * 60) + Math.round(withinDayMs / 60000), [durDays, withinDayMs])
+	const durationMs = useMemo(() => (durDays * 24 * 60 * 60 * 1000) + withinDayMs, [durDays, withinDayMs])
 
 	// Derived window from optional range dates; if one side missing, default to 7 days span
 	const windowStartMs = useMemo(() => {
@@ -139,34 +126,33 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 		const hours = Math.floor(dailyStartFromMs / 3600000)
 		const minutes = Math.floor((dailyStartFromMs % 3600000) / 60000)
 		const start = roundMsTo30Min(localDateAt(targetDate, hours, minutes))
-		const end = start + totalDurationMinutes * 60000
+		const end = start + durationMs
 		return { start, end }
-	}, [targetDate, dailyStartFromMs, totalDurationMinutes])
+	}, [targetDate, dailyStartFromMs, durationMs])
 
-	// Expose data
 	useImperativeHandle(ref, () => ({
 		getFormData: () => {
-			const mode: ScheduleMode = hasWindow ? 'dynamic' : 'fixed'
-			const timeWindowStart = hasWindow && windowStartMs != null ? formatLocalDateTime(windowStartMs) : ''
-			const timeWindowEnd = hasWindow && windowEndMs != null ? formatLocalDateTime(windowEndMs) : ''
-			const scheduledTime = !hasWindow && scheduledStartMs != null ? formatLocalDateTime(scheduledStartMs) : ''
-			const scheduledEnd = !hasWindow && scheduledStartMs != null ? formatLocalDateTime(scheduledStartMs + totalDurationMinutes * 60000) : ''
-			const withinMinutes = Math.round(withinDayMs / 60000)
-			const dHours = Math.floor(withinMinutes / 60)
-			const dMinutes = withinMinutes % 60
-			return {
-				scheduleMode: mode,
-				scheduledTime,
-				scheduledEnd,
-				durationDays: durDays,
-				durationHours: dHours,
-				durationMinutes: dMinutes,
-				timeWindowStart,
-				timeWindowEnd,
-				preferredTimes,
-				blackoutPeriods: blackoutPeriods,
-				dailyConstraints: showAdvanced ? dailyConstraints : [{ start: dailyStartFromMs, end: dailyEndToMs }]
+			const schedulingMethod: 'fixed' | 'flexible' = hasWindow ? 'flexible' : 'fixed'
+			const duration = durationMs
+
+			const preferred = preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null)
+			const blackout = blackoutPeriods.filter((b): b is ITimeRange => b.start != null && b.end != null)
+			const constraintsSrc: DailyConstraint[] = showAdvanced ? dailyConstraints : [{ start: dailyStartFromMs, end: dailyEndToMs }]
+			const dailyStartConstraints = constraintsSrc.map(c => ({ start: c.start, end: c.end ?? c.start }))
+
+			const out: Partial<EventPostType> = { schedulingMethod, duration }
+
+			if (schedulingMethod === 'fixed' && scheduledStartMs != null) {
+				out.scheduledTime = scheduledStartMs
 			}
+			if (schedulingMethod === 'flexible' && windowStartMs != null && windowEndMs != null) {
+				out.timeWindow = { start: windowStartMs, end: windowEndMs }
+			}
+			if (preferred.length > 0) { out.preferredTimes = preferred }
+			if (blackout.length > 0) { out.blackoutPeriods = blackout }
+			if (dailyStartConstraints.length > 0) { out.dailyStartConstraints = dailyStartConstraints }
+
+			return out
 		}
 	}))
 
@@ -555,7 +541,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 					</div>
 
 					{(() => {
-						const summaryText = humanizeWindow(windowStartMs, windowEndMs, scheduledStartMs, formatTimeOfDay(dailyStartFromMs), formatTimeOfDay(dailyEndToMs), totalDurationMinutes)
+						const summaryText = humanizeWindow(windowStartMs, windowEndMs, scheduledStartMs, formatTimeOfDay(dailyStartFromMs), formatTimeOfDay(dailyEndToMs), durationMs)
 						return summaryText && (
 							<div className="text-center py-3 px-4 rounded-lg bg-gray-100 border border-gray-200/80 shadow-inner">
 								<p className="text-sm font-semibold text-gray-800">{'Scheduling Summary'}</p>
@@ -570,7 +556,7 @@ const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
 							<EventTimeline
 								windowStart={windowStartMs!}
 								windowEnd={windowEndMs!}
-								duration={totalDurationMinutes * 60000}
+								duration={durationMs}
 								preferred={[
 									...preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null),
 									...(targetPreferredRange ? [targetPreferredRange] : [])

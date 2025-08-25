@@ -14,13 +14,7 @@ import PageHero from '@/components/PageHero'
 import { Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
-import { type EventPostType, type UserType, type ITimeRange } from '@/types/backendDataTypes'
-
-function parseDateTime (value: string): number | null {
-	if (!value) { return null }
-	const ms = new Date(value).getTime()
-	return Number.isNaN(ms) ? null : ms
-}
+import { type EventPostType, type UserType } from '@/types/backendDataTypes'
 
 export default function NewEventPage () {
 	const { currentUser } = useUser()
@@ -60,50 +54,39 @@ export default function NewEventPage () {
 			}
 
 			const { name, description, visibility } = basicData
-			const {
-				scheduleMode, scheduledTime, scheduledEnd, durationDays, durationHours, durationMinutes,
-				timeWindowStart, timeWindowEnd, preferredTimes, blackoutPeriods, dailyConstraints
-			} = schedulingData
+			const { duration, schedulingMethod, scheduledTime, timeWindow, preferredTimes, blackoutPeriods, dailyStartConstraints } = schedulingData
 			const { members } = membersData
 
-			const dynamicTotalMinutes = (durationDays * 24 * 60) + (durationHours * 60) + durationMinutes
-			const dynamicDurationMs = dynamicTotalMinutes * 60000
-			const startMs = parseDateTime(timeWindowStart)
-			const endMs = parseDateTime(timeWindowEnd)
-			const scheduledTimeValue = scheduleMode === 'fixed' ? parseDateTime(scheduledTime) : undefined
-			const scheduledEndValue = scheduleMode === 'fixed' ? parseDateTime(scheduledEnd) : undefined
-
-			const completePreferred = preferredTimes.filter((p): p is ITimeRange => p.start != null && p.end != null)
-			const completeBlackout = blackoutPeriods.filter((b): b is ITimeRange => b.start != null && b.end != null)
+			if ((duration == null) || (schedulingMethod == null)) {
+				throw new Error('Duration and scheduling method are required')
+			}
 
 			const baseData: EventPostType = {
 				name: name.trim(),
-				duration: scheduleMode === 'fixed' && scheduledTimeValue != null && scheduledEndValue != null && scheduledEndValue > scheduledTimeValue
-					? (scheduledEndValue - scheduledTimeValue)
-					: dynamicDurationMs,
+				duration,
 				visibility,
 				members: members.map(m => ({ userId: m.userId, role: m.role })),
-				schedulingMethod: scheduleMode === 'fixed' ? 'fixed' : 'flexible'
+				schedulingMethod
 			}
 
 			if (description.trim()) {
 				baseData.description = description.trim()
 			}
 
-			if (scheduleMode === 'fixed' && scheduledTimeValue != null) {
-				baseData.scheduledTime = scheduledTimeValue
-			} else if (startMs != null && endMs != null) {
-				baseData.timeWindow = { start: startMs, end: endMs }
+			if (scheduledTime != null) {
+				baseData.scheduledTime = scheduledTime
 			}
-
-			if (completePreferred.length > 0) { baseData.preferredTimes = completePreferred }
-			if (completeBlackout.length > 0) { baseData.blackoutPeriods = completeBlackout }
-			if (dailyConstraints.length > 0) {
-				const completeConstraints = dailyConstraints.map(constraint => ({
-					start: constraint.start,
-					end: (constraint.end ?? constraint.start)
-				}))
-				baseData.dailyStartConstraints = completeConstraints
+			if (timeWindow) {
+				baseData.timeWindow = timeWindow
+			}
+			if (preferredTimes && preferredTimes.length > 0) {
+				baseData.preferredTimes = preferredTimes
+			}
+			if (blackoutPeriods && blackoutPeriods.length > 0) {
+				baseData.blackoutPeriods = blackoutPeriods
+			}
+			if (dailyStartConstraints && dailyStartConstraints.length > 0) {
+				baseData.dailyStartConstraints = dailyStartConstraints
 			}
 
 			const response = await api.post('/v1/events', baseData)
