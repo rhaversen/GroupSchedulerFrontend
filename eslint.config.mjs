@@ -62,7 +62,7 @@ const eslintConfig = [
 			semi: ['error', 'never'],
 			'no-extra-semi': 'error',
 			quotes: ['error', 'single'],
-			'@typescript-eslint/no-unused-vars': 'warn',
+			'@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 			'no-tabs': 'off',
 			indent: 'off',
 			'react/jsx-curly-brace-presence': [
@@ -139,11 +139,34 @@ const eslintConfig = [
 		}
 	},
 	{
-		files: ['eslint.config.mjs'],
+		files: ['eslint.config.mjs', 'postcss.config.mjs', 'tailwind.config.ts'],
 		rules: {
 			'n/no-extraneous-import': 'off',
 			'n/no-unpublished-import': 'off'
 		}
+	},
+	{
+		files: ['**/*.test.ts', '**/*.test.tsx', 'jest.setup.ts'],
+		rules: {
+			'n/no-unpublished-import': ['error', {
+				allowModules: ['@testing-library/react', '@testing-library/jest-dom']
+			}]
+		}
+	},
+	{
+		files: ['postcss.config.mjs'],
+		languageOptions: {
+			parser: undefined,
+			parserOptions: {}
+		}
+	},
+	{
+		rules: {
+			'react-hooks/set-state-in-effect': 'off'
+		}
+	},
+	{
+		ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'postcss.config.mjs']
 	}
 ]
 
