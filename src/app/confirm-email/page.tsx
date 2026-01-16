@@ -211,7 +211,7 @@ const ConfirmEmailInner = (): ReactElement => {
 						className="text-sm text-indigo-600 hover:text-indigo-900 underline cursor-pointer"
 						disabled={isAlreadyConfirmed}
 					>
-						{showResendForm ? 'I alrady have a confirmation code' : 'Resend confirmation email'}
+						{showResendForm ? 'I already have a confirmation code' : 'Resend confirmation email'}
 					</button>
 				</div>
 			)}
