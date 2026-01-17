@@ -6,14 +6,16 @@ import { useCallback, useState } from 'react'
 import { FaEye, FaUser, FaLock, FaShieldAlt, FaCheck, FaExclamationTriangle, FaTrash, FaArrowRight } from 'react-icons/fa'
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi'
 
+import AuthRequiredCard from '@/components/AuthRequiredCard'
 import Navigation from '@/components/Navigation'
+import PageHero from '@/components/PageHero'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { useLogout } from '@/hooks/useLogout'
 import { api } from '@/lib/api'
 
 export default function ProfilePage () {
-	const { currentUser, setCurrentUser } = useUser()
+	const { currentUser, setCurrentUser, userLoading } = useUser()
 	const { logout } = useLogout()
 
 	const [profileData, setProfileData] = useState({
@@ -130,14 +132,31 @@ export default function ProfilePage () {
 		}
 	}, [deletionCode, logout])
 
+	if (userLoading) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<Navigation />
+				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10 space-y-8">
+					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white animate-pulse">
+						<div className="h-10 bg-white/30 rounded w-1/3 mb-6" />
+						<div className="h-4 bg-white/20 rounded w-2/3" />
+					</div>
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+						{Array.from({ length: 2 }).map((_, i) => (
+							<div key={i} className="h-80 bg-gray-200 rounded-xl animate-pulse" />
+						))}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	if (!currentUser) {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-					<div className="text-center">
-						<p className="text-gray-600">{'Loading...'}</p>
-					</div>
+					<AuthRequiredCard title="Profile Access" message="Please log in to manage your profile and account settings." />
 				</div>
 			</div>
 		)
@@ -148,20 +167,10 @@ export default function ProfilePage () {
 			<Navigation />
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl mb-6">
-							<div className="flex items-start justify-between">
-								<div>
-									<h1 className="text-4xl font-bold mb-3">
-										{'Profile Settings'}
-									</h1>
-									<p className="text-indigo-100 text-xl">
-										{'Manage your account settings, security, and preferences.'}
-									</p>
-								</div>
-							</div>
-						</div>
+					<PageHero
+						title="Profile Settings"
+						subtitle="Manage your account settings, security, and preferences."
+					>
 						{currentUser != null && (
 							<div className="bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-6 border border-white border-opacity-50 shadow-lg">
 								<div className="flex items-start gap-4">
@@ -184,7 +193,7 @@ export default function ProfilePage () {
 								</div>
 							</div>
 						)}
-					</div>
+					</PageHero>
 
 					{/* Profile Information */}
 					<Card className="border-0 shadow-lg">

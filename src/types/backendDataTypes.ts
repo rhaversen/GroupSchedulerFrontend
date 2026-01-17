@@ -34,6 +34,15 @@ export interface EventType {
 		end: number
 	}
 
+	/**
+	 * Status of the event
+	 * - 'draft': Event is being created, not yet published
+	 * - 'scheduling': Event is being scheduled, the system is determining available times
+	 * - 'scheduled': Event has been scheduled by the system, awaiting event admin/creator confirmation
+	 * - 'confirmed': Event is confirmed and finalized
+	 * - 'cancelled': Event has been cancelled
+	 * Note: A 'scheduled' events 'scheduledTime' is subject to change until it is 'confirmed'.
+	 */
 	status: 'draft' | 'scheduling' | 'scheduled' | 'confirmed' | 'cancelled'
 	scheduledTime?: number
 

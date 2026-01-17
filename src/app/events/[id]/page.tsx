@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FaUserTie, FaCog, FaUser, FaQuestionCircle, FaUsers, FaCalendarAlt, FaTools, FaClock } from 'react-icons/fa'
@@ -14,7 +15,8 @@ import {
 
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import PageHero from '@/components/PageHero'
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { api } from '@/lib/api'
 import { formatFullDateLabel, formatRelativeDateLabel, timeUntil } from '@/lib/timeUtils'
@@ -45,7 +47,7 @@ export default function EventDetailPage () {
 	const params = useParams()
 	const router = useRouter()
 	const eventId = params.id as string
-	const { currentUser } = useUser()
+	const { currentUser, userLoading } = useUser()
 
 	const [event, setEvent] = useState<EventType | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -118,12 +120,12 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
+				{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
-					<div className="animate-pulse">
-						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-						<div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-						<div className="h-64 bg-gray-200 rounded"></div>
+					<div className="animate-pulse space-y-6">
+						<div className="h-10 bg-gray-200 rounded w-1/3" />
+						<div className="h-4 bg-gray-200 rounded w-1/2" />
+						<div className="h-64 bg-gray-200 rounded" />
 					</div>
 				</div>
 			</div>
@@ -134,7 +136,7 @@ export default function EventDetailPage () {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
+				{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 				<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 					<div className="text-center py-12">
 						<HiOutlineExclamationCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -142,10 +144,13 @@ export default function EventDetailPage () {
 						<p className="text-gray-500 mb-4">
 							{error != null ? error : 'The event you\'re looking for doesn\'t exist or you don\'t have access to it.'}
 						</p>
-						<Button onClick={() => window.history.back()}>
+						<Link
+							href="/events"
+							className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-transparent rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+						>
 							<HiOutlineEye className="h-4 w-4 mr-2" />
 							{'Back to Events'}
-						</Button>
+						</Link>
 					</div>
 				</div>
 			</div>
@@ -155,50 +160,49 @@ export default function EventDetailPage () {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			<EventsSubNav />
+			{(userLoading === false && currentUser !== null) ? <EventsSubNav /> : null}
 
 			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-8 pb-10">
 				<div className="space-y-10">
-					{/* Header */}
-					<div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-10 text-white">
-						<div className="max-w-3xl">
-							<h1 className="text-4xl font-bold mb-3">
-								{event.name}
-							</h1>
-							<p className="text-indigo-100 text-xl mb-8">
-								{event.description}
-							</p>
-							<div className="flex items-center gap-4">
+					<PageHero
+						title={event.name}
+						subtitle={event.description}
+					>
+						<div className="flex items-center gap-4 mt-4">
+							{event.status !== 'confirmed' && (
 								<Badge
 									variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
+									title={event.status === 'draft' ? 'Draft: Only creators/admins can view this event' : event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
 								>
 									{getStatusIcon(event.status)}
 									<span className="capitalize font-medium">{event.status}</span>
 								</Badge>
-								{event.scheduledTime != null && (
-									<div className="flex items-center gap-2 text-indigo-600 bg-white bg-opacity-20 px-4 py-2 rounded-full border border-white border-opacity-30">
-										<HiOutlineCheckCircle className="h-5 w-5" />
-										<span className="font-medium">
-											{formatRelativeDateLabel(new Date(event.scheduledTime))}
-										</span>
-									</div>
-								)}
-							</div>
-
-							{/* Current User Role Indicator */}
-							{currentUser != null && getCurrentUserRole() != null && (
-								<div className="mt-6 flex items-center gap-3">
-									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
-										<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
-										<span className="font-medium text-lg text-indigo-600">
-											{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
-										</span>
-									</div>
-								</div>
+							)}
+							{event.status === 'confirmed' && event.scheduledTime != null && (
+								<Badge
+									variant="success"
+									className="flex items-center gap-2 text-sm px-4 py-2"
+									title="Confirmed time: This is the final scheduled date and time"
+								>
+									<HiOutlineCheckCircle className="h-4 w-4" />
+									<span className="font-medium">
+										{formatRelativeDateLabel(new Date(event.scheduledTime))}
+									</span>
+								</Badge>
 							)}
 						</div>
-					</div>
+						{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
+							<div className="mt-6 flex items-center gap-3">
+								<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
+									<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
+									<span className="font-medium text-lg text-indigo-600">
+										{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
+									</span>
+								</div>
+							</div>
+						)}
+					</PageHero>
 
 					{/* Stats Grid */}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -259,7 +263,7 @@ export default function EventDetailPage () {
 									</div>
 								</div>
 
-								{event.scheduledTime != null && (
+								{event.status === 'confirmed' && event.scheduledTime != null && (
 									<div>
 										<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
 										<div className="mt-2">
@@ -315,10 +319,9 @@ export default function EventDetailPage () {
 										return (
 											<div
 												key={member.userId}
-												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
-													isCurrentUser
-														? 'bg-indigo-50 border-indigo-200'
-														: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
+												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${isCurrentUser
+													? 'bg-indigo-50 border-indigo-200'
+													: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
 												}`}
 												onClick={() => !isCurrentUser && handleUserClick(member.userId)}
 											>
