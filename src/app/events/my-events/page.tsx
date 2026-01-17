@@ -1,16 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { FaLock, FaTimes } from 'react-icons/fa'
+import { FaTimes, FaPlus } from 'react-icons/fa'
 
-import { Navigation, EventsSubNav, EventsFilters } from '@/components'
+import { Navigation, EventsSubNav, EventsFilters, PageHero } from '@/components'
+import AuthRequiredCard from '@/components/AuthRequiredCard'
 import EventCard from '@/components/EventCard'
 import { Card, CardContent, Button } from '@/components/ui'
 import { useUser } from '@/contexts/UserProvider'
 import { useEventsFilters, useEventsData } from '@/hooks'
 
 export default function MyEventsPage () {
-	const { currentUser } = useUser()
+	const { currentUser, userLoading } = useUser()
 
 	const {
 		searchTerm,
@@ -34,33 +35,28 @@ export default function MyEventsPage () {
 		currentUser
 	})
 
-	const requiresAuth = true
-	if (requiresAuth && !currentUser) {
+	if (userLoading) {
 		return (
 			<div className="min-h-screen bg-gray-50">
 				<Navigation />
-				<EventsSubNav />
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-					<Card className="border-0 shadow-lg">
-						<CardContent>
-							<div className="text-center py-12">
-								<div className="flex justify-center mb-6">
-									<FaLock className="text-6xl text-amber-500" />
-								</div>
-								<h3 className="text-xl font-medium text-gray-900 mb-3">
-									{'Authentication Required\r'}
-								</h3>
-								<p className="text-gray-600 mb-6">
-									{'Please log in to view your events.\r'}
-								</p>
-								<Link href="/login">
-									<Button variant="primary">
-										{'Log In\r'}
-									</Button>
-								</Link>
-							</div>
-						</CardContent>
-					</Card>
+					<div className="animate-pulse space-y-6">
+						<div className="h-48 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl" />
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-48 bg-gray-200 rounded-xl" />)}
+						</div>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
+	if (!currentUser) {
+		return (
+			<div className="min-h-screen bg-gray-50">
+				<Navigation />
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+					<AuthRequiredCard message="Please log in to view your events." />
 				</div>
 			</div>
 		)
@@ -73,20 +69,13 @@ export default function MyEventsPage () {
 	return (
 		<div className="min-h-screen bg-gray-50">
 			<Navigation />
-			<EventsSubNav />
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10">
+			{currentUser !== null ? <EventsSubNav /> : null}
+			<div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 pt-6 pb-10">
 				<div className="space-y-8">
-					{/* Header */}
-					<div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl p-6 sm:p-8 lg:p-10 text-white shadow-xl">
-						<div className="max-w-4xl">
-							<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-								{'My Events'}
-							</h1>
-							<p className="text-indigo-100 text-lg sm:text-xl mb-6 sm:mb-8">
-								{'All events you\'re involved in - as creator, admin, or participant.'}
-							</p>
-						</div>
-
+					<PageHero
+						title="My Events"
+						subtitle={'All events you\'re involved in - as creator, admin, or participant.'}
+					>
 						<EventsFilters
 							searchTerm={searchTerm}
 							setSearchTerm={setSearchTerm}
@@ -100,7 +89,7 @@ export default function MyEventsPage () {
 							setPublicFilter={setPublicFilter}
 							statusOptions={statusOptions}
 						/>
-					</div>
+					</PageHero>
 
 					{/* Events Grid */}
 					{loading ? (
@@ -128,12 +117,26 @@ export default function MyEventsPage () {
 							</CardContent>
 						</Card>
 					) : filteredEvents.length === 0 ? (
-						<Card className="border-0 shadow-md">
+						<Card className="border-0 shadow-lg">
 							<CardContent>
-								<div className="text-center py-12">
-									<div className="text-6xl mb-6">{emptyState.icon}</div>
-									<h3 className="text-xl font-medium text-gray-900 mb-3">{emptyState.title}</h3>
-									<p className="text-gray-600">{emptyState.description}</p>
+								<div className="text-center py-14 px-4">
+									<div className="mx-auto mb-8 flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg">
+										<span className="text-5xl">{emptyState.icon}</span>
+									</div>
+									<h3 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">{emptyState.title}</h3>
+									<p className="text-gray-600 mb-8 text-lg max-w-xl mx-auto leading-relaxed">{emptyState.description}</p>
+									<div className="flex flex-wrap items-center justify-center gap-4">
+										<Link href="/events/new">
+											<Button variant="primary" size="lg" className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white shadow">
+												<span className="flex items-center gap-2"><FaPlus className="text-sm" />{' Create Event'}</span>
+											</Button>
+										</Link>
+										<Link href="/events/browse" className="inline-flex">
+											<Button variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-8 py-3">
+												{'Browse All Events'}
+											</Button>
+										</Link>
+									</div>
 								</div>
 							</CardContent>
 						</Card>
