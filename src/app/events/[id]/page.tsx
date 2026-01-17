@@ -194,7 +194,7 @@ export default function EventDetailPage () {
 						</div>
 						{(userLoading === false && currentUser != null && getCurrentUserRole() != null) && (
 							<div className="mt-6 flex items-center gap-3">
-									<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
+								<div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30">
 									<span className="text-xl text-indigo-600">{getRoleDisplay(getCurrentUserRole()!).icon}</span>
 									<span className="font-medium text-lg text-indigo-600">
 										{'You are a '}{getRoleDisplay(getCurrentUserRole()!).text.toLowerCase()}{' in this event'}
@@ -320,9 +320,9 @@ export default function EventDetailPage () {
 											<div
 												key={member.userId}
 												className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${isCurrentUser
-														? 'bg-indigo-50 border-indigo-200'
-														: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
-													}`}
+													? 'bg-indigo-50 border-indigo-200'
+													: 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm cursor-pointer'
+												}`}
 												onClick={() => !isCurrentUser && handleUserClick(member.userId)}
 											>
 												<div className="flex items-center gap-4">
