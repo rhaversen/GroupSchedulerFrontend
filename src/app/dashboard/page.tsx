@@ -55,11 +55,11 @@ export default function DashboardPage () {
 		return result
 	}, [currentUser?.username])
 
-const [events, setEvents] = useState<EventType[] | null>(null)
-const [loading, setLoading] = useState(true)
-const [error, setError] = useState<string | null>(null)
-const [userNames, setUserNames] = useState<Map<string, string>>(new Map())
-const [enrichingNames, setEnrichingNames] = useState(false)
+	const [events, setEvents] = useState<EventType[] | null>(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
+	const [userNames, setUserNames] = useState<Map<string, string>>(new Map())
+	const [enrichingNames, setEnrichingNames] = useState(false)
 
 	useEffect(() => {
 		let cancelled = false

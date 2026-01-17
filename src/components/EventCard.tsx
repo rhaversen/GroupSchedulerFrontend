@@ -18,13 +18,15 @@ interface EventCardProps {
 export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
 	const [creatorNamesState, setCreatorNamesState] = useState<Map<string, string>>(new Map())
 	const [showMoreCreators, setShowMoreCreators] = useState(false)
-	const rootRef = useRef<HTMLDivElement | null>(null)
+	const [currentTime] = useState(() => Date.now())
+	const rootRef = useRef<HTMLDivElement>(null)
+
 	const getUserRole = () => {
 		const member = event.members.find(m => m.userId === currentUser?._id)
 		return member?.role || 'unknown'
 	}
 
-const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), [event.members])
+	const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), [event.members])
 
 	const getCreatorNameImmediate = (id: string) => {
 		if (id === currentUser?._id) { return 'you' }
@@ -91,7 +93,7 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
 		? new Date(event.scheduledTime)
 		: new Date(event.timeWindow.end)
-	const isUpcoming = eventTime.getTime() > Date.now()
+	const isUpcoming = eventTime.getTime() > currentTime
 	const userRole = getUserRole()
 	const roleDisplay = getRoleDisplay(userRole)
 	const firstCreatorName = creators.length > 0 ? getCreatorNameImmediate(creators[0].userId) : null
@@ -172,13 +174,13 @@ const creators = useMemo(() => event.members.filter(m => m.role === 'creator'), 
 											{creators.slice(1).map(c => (
 												<li key={c.userId}>
 													<Link
-															href={`/people/${c.userId}`}
-															className="block w-full truncate text-gray-600 hover:text-indigo-600 underline transition-colors"
-															title={getCreatorNameImmediate(c.userId)}
-															onClick={e => e.stopPropagation()}
-														>
-															{getCreatorNameImmediate(c.userId)}
-														</Link>
+														href={`/people/${c.userId}`}
+														className="block w-full truncate text-gray-600 hover:text-indigo-600 underline transition-colors"
+														title={getCreatorNameImmediate(c.userId)}
+														onClick={e => e.stopPropagation()}
+													>
+														{getCreatorNameImmediate(c.userId)}
+													</Link>
 												</li>
 											))}
 										</ul>
