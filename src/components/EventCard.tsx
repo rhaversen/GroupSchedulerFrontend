@@ -18,7 +18,9 @@ interface EventCardProps {
 export function EventCard ({ event, currentUser = null, userNames }: EventCardProps) {
 	const [creatorNamesState, setCreatorNamesState] = useState<Map<string, string>>(new Map())
 	const [showMoreCreators, setShowMoreCreators] = useState(false)
-	const rootRef = useRef<HTMLDivElement | null>(null)
+	const [currentTime] = useState(() => Date.now())
+	const rootRef = useRef<HTMLDivElement>(null)
+
 	const getUserRole = () => {
 		const member = event.members.find(m => m.userId === currentUser?._id)
 		return member?.role || 'unknown'
@@ -91,7 +93,7 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
 		? new Date(event.scheduledTime)
 		: new Date(event.timeWindow.end)
-	const isUpcoming = eventTime.getTime() > Date.now()
+	const isUpcoming = eventTime.getTime() > currentTime
 	const userRole = getUserRole()
 	const roleDisplay = getRoleDisplay(userRole)
 	const firstCreatorName = creators.length > 0 ? getCreatorNameImmediate(creators[0].userId) : null
