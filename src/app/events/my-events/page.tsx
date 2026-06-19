@@ -30,24 +30,24 @@ export default function MyEventsPage () {
 		getEmptyState
 	} = useEventsFilters()
 
-// Map combined pending filter to underlying statuses for data hook using comma separation
-const { events, loading, isRefetching, error, total } = useEventsData({
-	viewMode,
-	statusFilter,
-	visibilityFilter,
-	currentUser
-})
+	// Map combined pending filter to underlying statuses for data hook using comma separation
+	const { events, loading, isRefetching, error, total } = useEventsData({
+		viewMode,
+		statusFilter,
+		visibilityFilter,
+		currentUser
+	})
 
-// Handle refetch indicator visibility with fade-out
-const [showRefetchIndicator, setShowRefetchIndicator] = useState(false)
-useEffect(() => {
-	if (isRefetching === true) {
-		setShowRefetchIndicator(true)
-	} else if (showRefetchIndicator === true) {
-		const t = setTimeout(() => setShowRefetchIndicator(false), 300)
-		return () => clearTimeout(t)
-	}
-}, [isRefetching, showRefetchIndicator])
+	// Handle refetch indicator visibility with fade-out
+	const [showRefetchIndicator, setShowRefetchIndicator] = useState(false)
+	useEffect(() => {
+		if (isRefetching === true) {
+			setShowRefetchIndicator(true)
+		} else if (showRefetchIndicator === true) {
+			const t = setTimeout(() => setShowRefetchIndicator(false), 300)
+			return () => clearTimeout(t)
+		}
+	}, [isRefetching, showRefetchIndicator])
 
 	if (userLoading) {
 		return (

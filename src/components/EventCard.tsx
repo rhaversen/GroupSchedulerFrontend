@@ -26,7 +26,6 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 	const [currentTime] = useState(() => Date.now())
 	const rootRef = useRef<HTMLDivElement>(null)
 
-
 	const getUserRole = () => {
 		const member = event.members.find(m => m.userId === currentUser?._id)
 		return member?.role || 'unknown'
@@ -47,21 +46,21 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 		if (missing.length === 0) { return }
 		let cancelled = false
 			; (async () => {
-				const updates = new Map<string, string>()
-				for (const c of missing) {
-					try {
-						const res = await api.get(`/v1/users/${c.userId}`)
-						if (cancelled) { return }
-						const data = res.data as { username?: string; email?: string }
-						updates.set(c.userId, data.username ?? data.email ?? 'Unknown User')
-					} catch {
-						if (!cancelled) { updates.set(c.userId, 'Unknown User') }
-					}
+			const updates = new Map<string, string>()
+			for (const c of missing) {
+				try {
+					const res = await api.get(`/v1/users/${c.userId}`)
+					if (cancelled) { return }
+					const data = res.data as { username?: string; email?: string }
+					updates.set(c.userId, data.username ?? data.email ?? 'Unknown User')
+				} catch {
+					if (!cancelled) { updates.set(c.userId, 'Unknown User') }
 				}
-				if (!cancelled && updates.size > 0) {
-					setCreatorNamesState(prev => new Map([...prev, ...Array.from(updates.entries())]))
-				}
-			})()
+			}
+			if (!cancelled && updates.size > 0) {
+				setCreatorNamesState(prev => new Map([...prev, ...Array.from(updates.entries())]))
+			}
+		})()
 		return () => { cancelled = true }
 	}, [creators, creatorNamesState, userNames])
 
@@ -184,47 +183,47 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 						)}
 						{event.status !== 'cancelled' && event.status === 'confirmed' && event.scheduledTime != null ? (
 							<div className="flex items-center justify-between">
-												<div className="flex items-center gap-2">
+								<div className="flex items-center gap-2">
 									<Badge className="bg-green-100 text-green-800 text-xs" title="The date has been confirmed and is visible to all members">
 										{'Confirmed'}
 									</Badge>
-																	{(() => {
-																		const formatDurationFromMs = (totalMs: number) => {
-																			const totalMinutes = Math.round(totalMs / 60000)
-																			const days = Math.floor(totalMinutes / (60 * 24))
-																			const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
-																			const minutes = totalMinutes % 60
-																			const parts: string[] = []
-																			if (days) { parts.push(`${days}d`) }
-																			if (hours) { parts.push(`${hours}h`) }
-																			if (minutes || parts.length === 0) { parts.push(`${minutes}m`) }
-																			return parts.join(' ')
-																		}
-																		const durationStr = formatDurationFromMs(event.duration)
-																		const start = dayjs(event.scheduledTime)
-																		const end = dayjs(event.scheduledTime + event.duration)
-														if (end.isSame(start, 'day')) {
-															// Same-day: show date + compact time range
-															return (
-																<span className="font-medium">{start.format('D MMM YYYY')} {'•'} {start.format('HH:mm')} {'–'} {end.format('HH:mm')} {'•'} {durationStr}</span>
-															)
-														}
-														// Multi-day: show human-friendly date range without times
-														const sameYear = start.isSame(end, 'year')
-														const sameMonth = sameYear && start.isSame(end, 'month')
-														let rangeLabel: string
-														if (!sameYear) {
-															// Default different years
-															rangeLabel = `${start.format('D MMM YYYY')} – ${end.format('D MMM YYYY')}`
-														} else if (sameMonth) {
-															// Same year and month
-															rangeLabel = `${start.format('D')} – ${end.format('D MMM YYYY')}`
-														} else {
-															// Same year, different months
-															rangeLabel = `${start.format('D MMM')} – ${end.format('D MMM YYYY')}`
-														}
-																							return (<span className="font-medium">{rangeLabel} {'•'} {durationStr}</span>)
-																		})()}
+									{(() => {
+										const formatDurationFromMs = (totalMs: number) => {
+											const totalMinutes = Math.round(totalMs / 60000)
+											const days = Math.floor(totalMinutes / (60 * 24))
+											const hours = Math.floor((totalMinutes % (60 * 24)) / 60)
+											const minutes = totalMinutes % 60
+											const parts: string[] = []
+											if (days) { parts.push(`${days}d`) }
+											if (hours) { parts.push(`${hours}h`) }
+											if (minutes || parts.length === 0) { parts.push(`${minutes}m`) }
+											return parts.join(' ')
+										}
+										const durationStr = formatDurationFromMs(event.duration)
+										const start = dayjs(event.scheduledTime)
+										const end = dayjs(event.scheduledTime + event.duration)
+										if (end.isSame(start, 'day')) {
+											// Same-day: show date + compact time range
+											return (
+												<span className="font-medium">{start.format('D MMM YYYY')} {'•'} {start.format('HH:mm')} {'–'} {end.format('HH:mm')} {'•'} {durationStr}</span>
+											)
+										}
+										// Multi-day: show human-friendly date range without times
+										const sameYear = start.isSame(end, 'year')
+										const sameMonth = sameYear && start.isSame(end, 'month')
+										let rangeLabel: string
+										if (!sameYear) {
+											// Default different years
+											rangeLabel = `${start.format('D MMM YYYY')} – ${end.format('D MMM YYYY')}`
+										} else if (sameMonth) {
+											// Same year and month
+											rangeLabel = `${start.format('D')} – ${end.format('D MMM YYYY')}`
+										} else {
+											// Same year, different months
+											rangeLabel = `${start.format('D MMM')} – ${end.format('D MMM YYYY')}`
+										}
+										return (<span className="font-medium">{rangeLabel} {'•'} {durationStr}</span>)
+									})()}
 								</div>
 								{isUpcoming && (
 									<span className="text-xs text-gray-500 font-medium">

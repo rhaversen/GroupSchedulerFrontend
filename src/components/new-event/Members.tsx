@@ -128,7 +128,7 @@ const Members = forwardRef<MembersRef, {
 									className={`group text-left px-3 py-2 rounded-lg text-sm border flex items-center gap-2 transition shadow-sm ${inMembers
 										? 'border-indigo-300 bg-indigo-50/70 text-indigo-700'
 										: 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-md hover:bg-indigo-50/60'
-										}`}
+									}`}
 									aria-label={`${inMembers ? 'Remove' : 'Add'} ${user.username} as member`}
 								>
 									<UserAvatar username={user.username} size="sm" className="shadow-inner" />
@@ -159,7 +159,7 @@ const Members = forwardRef<MembersRef, {
 											className={`text-xs px-2 py-1 rounded border transition ${sortBy === sortOption
 												? 'bg-indigo-600 text-white border-indigo-600'
 												: 'bg-white text-gray-600 border-gray-300 hover:bg-indigo-50'
-												}`}
+											}`}
 										>
 											{sortOption === 'name' ? 'Name' : 'Role'}
 										</button>
@@ -237,7 +237,7 @@ const Members = forwardRef<MembersRef, {
 												className={`text-sm px-3 py-1.5 rounded border transition flex items-center gap-2 ${role === roleOption
 													? 'bg-indigo-600 text-white border-indigo-600'
 													: 'bg-white text-gray-600 border-gray-300 hover:bg-indigo-50'
-													}`}
+												}`}
 											>
 												{roleOption === 'creator' && <FaPlusCircle className="text-xs" />}
 												{roleOption === 'admin' && <FaUserShield className="text-xs" />}

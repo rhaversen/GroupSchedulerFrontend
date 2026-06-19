@@ -231,11 +231,11 @@ export default function DashboardPage () {
 										</div>
 									</div>
 								) : (
-										<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-200">
-											{upcomingEvents.map(event => (
-												<EventCard key={event._id} event={event} currentUser={currentUser} userNames={userNames} />
-											))}
-										</div>
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-200">
+										{upcomingEvents.map(event => (
+											<EventCard key={event._id} event={event} currentUser={currentUser} userNames={userNames} />
+										))}
+									</div>
 								)}
 								{enrichingNames && !loading && events && events.length > 0 && (
 									<div className="mt-4 text-xs text-gray-400">{'Enhancing member info...'}</div>
