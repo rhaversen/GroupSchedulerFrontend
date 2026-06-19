@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { FaClipboardList, FaEdit, FaCalendar, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
+import { FaList, FaCalendarAlt, FaCheckCircle, FaTimes, FaCalendarTimes } from 'react-icons/fa'
 
 import { type EventType } from '@/types/backendDataTypes'
 
@@ -8,7 +8,7 @@ export interface FilterOptions {
 	statusFilter: string
 	viewTab: 'upcoming' | 'past'
 	viewMode: 'created' | 'admin' | 'participant' | 'both'
-	publicFilter: 'all' | 'public' | 'private'
+	visibilityFilter: 'all' | 'public' | 'private' | 'draft'
 }
 
 export interface StatusOption {
@@ -28,7 +28,7 @@ export function useEventsFilters () {
 	const [statusFilter, setStatusFilter] = useState<string>('')
 	const [viewTab, setViewTab] = useState<'upcoming' | 'past'>('upcoming')
 	const [viewMode, setViewMode] = useState<'created' | 'admin' | 'participant' | 'both'>('both')
-	const [publicFilter, setPublicFilter] = useState<'all' | 'public' | 'private'>('all')
+	const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private' | 'draft'>('all')
 
 	const filterEvents = (events: EventType[]) => {
 		let filtered = events
@@ -37,7 +37,7 @@ export function useEventsFilters () {
 			const term = searchTerm.toLowerCase()
 			filtered = filtered.filter(event =>
 				event.name.toLowerCase().includes(term) ||
-				event.description.toLowerCase().includes(term)
+				(event.description?.toLowerCase().includes(term) ?? false)
 			)
 		}
 
@@ -45,24 +45,13 @@ export function useEventsFilters () {
 		const now = Date.now()
 		if (viewTab === 'upcoming') {
 			filtered = filtered.filter(event => {
-				const eventTime = event.scheduledTime ?? event.timeWindow.end
-				return eventTime > now
+				const eventTime = event.scheduledTime ?? event.timeWindow?.end
+				return eventTime != null && eventTime > now
 			})
 		} else if (viewTab === 'past') {
 			filtered = filtered.filter(event => {
-				const eventTime = event.scheduledTime ?? event.timeWindow.end
-				return eventTime <= now
-			})
-		}
-
-		// Filter by public/private
-		if (publicFilter !== 'all') {
-			filtered = filtered.filter(event => {
-				if (publicFilter === 'public') {
-					return event.public === true
-				} else {
-					return event.public === false
-				}
+				const eventTime = event.scheduledTime ?? event.timeWindow?.end
+				return eventTime != null && eventTime <= now
 			})
 		}
 
@@ -71,10 +60,8 @@ export function useEventsFilters () {
 
 	const getStatusOptions = (): StatusOption[] => {
 		return [
-			{ id: '', label: 'All Statuses', icon: <FaClipboardList /> },
-			{ id: 'draft', label: 'Draft', icon: <FaEdit /> },
-			{ id: 'scheduling', label: 'Scheduling', icon: <FaCalendar /> },
-			{ id: 'scheduled', label: 'Scheduled', icon: <FaCalendarAlt /> },
+			{ id: '', label: 'All Statuses', icon: <FaList /> },
+			{ id: 'scheduling', label: 'Pending', icon: <FaCalendarAlt /> },
 			{ id: 'confirmed', label: 'Confirmed', icon: <FaCheckCircle /> },
 			{ id: 'cancelled', label: 'Cancelled', icon: <FaTimes /> }
 		]
@@ -111,8 +98,8 @@ export function useEventsFilters () {
 		setViewTab,
 		viewMode,
 		setViewMode,
-		publicFilter,
-		setPublicFilter,
+		visibilityFilter,
+		setVisibilityFilter,
 		filterEvents,
 		getStatusOptions,
 		getEmptyState

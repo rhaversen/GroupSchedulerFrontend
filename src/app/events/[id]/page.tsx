@@ -13,6 +13,7 @@ import {
 	HiOutlineEye
 } from 'react-icons/hi'
 
+import { EventTimeline } from '@/components'
 import EventsSubNav from '@/components/EventsSubNav'
 import Navigation from '@/components/Navigation'
 import PageHero from '@/components/PageHero'
@@ -24,9 +25,7 @@ import { type EventType, type UserType } from '@/types/backendDataTypes'
 
 const getStatusBadgeVariant = (status: EventType['status']) => {
 	switch (status) {
-		case 'draft': return 'default'
-		case 'scheduling': return 'warning'
-		case 'scheduled': return 'info'
+		case 'scheduling': return 'info'
 		case 'confirmed': return 'success'
 		case 'cancelled': return 'danger'
 		default: return 'default'
@@ -36,8 +35,7 @@ const getStatusBadgeVariant = (status: EventType['status']) => {
 const getStatusIcon = (status: EventType['status']) => {
 	switch (status) {
 		case 'confirmed': return <HiOutlineCheckCircle className="h-4 w-4" />
-		case 'scheduling': return <HiOutlineClock className="h-4 w-4" />
-		case 'scheduled': return <HiOutlineCalendar className="h-4 w-4" />
+		case 'scheduling': return <HiOutlineCalendar className="h-4 w-4" />
 		case 'cancelled': return <HiOutlineExclamationCircle className="h-4 w-4" />
 		default: return <HiOutlineCalendar className="h-4 w-4" />
 	}
@@ -173,10 +171,10 @@ export default function EventDetailPage () {
 								<Badge
 									variant={getStatusBadgeVariant(event.status)}
 									className="flex items-center gap-2 text-base px-4 py-2 bg-white bg-opacity-20 text-indigo-600 border-white border-opacity-30"
-									title={event.status === 'draft' ? 'Draft: Only creators/admins can view this event' : event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'scheduled' ? 'Scheduled: A tentative time has been selected (not final)' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
+									title={event.status === 'scheduling' ? 'Scheduling: System is finding the best time' : event.status === 'cancelled' ? 'Cancelled: This event will not occur' : 'Status'}
 								>
 									{getStatusIcon(event.status)}
-									<span className="capitalize font-medium">{event.status}</span>
+									<span className="capitalize font-medium">{event.visibility === 'draft' ? 'Draft' : event.status}</span>
 								</Badge>
 							)}
 							{event.status === 'confirmed' && event.scheduledTime != null && (
@@ -243,41 +241,104 @@ export default function EventDetailPage () {
 
 					{/* Timing Information */}
 					<Card className="border-0 shadow-md">
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2 text-xl">
-								<HiOutlineClock className="h-6 w-6" />
-								{'Event Timing'}
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<div>
-									<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Time Window'}</label>
-									<div className="mt-2 space-y-1">
-										<p className="text-gray-900 font-medium">
-											{formatFullDateLabel(new Date(event.timeWindow.start))}
-										</p>
-										<p className="text-gray-900 font-medium">
-											{'to '}{formatFullDateLabel(new Date(event.timeWindow.end))}
-										</p>
+						{event.status === 'confirmed' ? (
+							<>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2 text-xl">
+										<HiOutlineClock className="h-6 w-6" />
+										{'Finalized Schedule'}
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-8">
+									<div className="rounded-md bg-green-50 border border-green-200 px-4 py-4 text-sm text-green-900 leading-relaxed">
+										<p className="font-medium mb-1">{'This event has been confirmed.'}</p>
+										<p>{'The time below is final and will not change.'}</p>
 									</div>
-								</div>
-
-								{event.status === 'confirmed' && event.scheduledTime != null && (
-									<div>
-										<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Time'}</label>
-										<div className="mt-2">
-											<p className="text-green-700 font-medium text-lg">
-												{formatFullDateLabel(new Date(event.scheduledTime))}
-											</p>
-											<p className="text-sm text-gray-500">
-												{timeUntil(event.scheduledTime)}
-											</p>
+									{event.scheduledTime != null && (
+										<div>
+											<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Confirmed Start'}</label>
+											<div className="mt-2">
+												<p className="text-green-700 font-semibold text-lg">
+													{formatFullDateLabel(new Date(event.scheduledTime))}
+												</p>
+												<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
+											</div>
 										</div>
-									</div>
-								)}
-							</div>
-						</CardContent>
+									)}
+									{event.scheduledTime != null && event.duration != null && (
+										<div className="grid gap-4 sm:grid-cols-2">
+											<div>
+												<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Duration'}</label>
+												<p className="mt-2 text-gray-800">
+													{Math.round((event.duration || 0) / 60000)}{' min'}
+												</p>
+											</div>
+											<div>
+												<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">{'Ends'}</label>
+												<p className="mt-2 text-gray-800">
+													{formatFullDateLabel(new Date(event.scheduledTime + event.duration))}
+												</p>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</>
+						) : (
+							<>
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2 text-xl">
+										<HiOutlineClock className="h-6 w-6" />
+										{'Event Timing'}
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-8">
+									{(() => {
+										let stage: string | null = null
+										switch (event.status) {
+											case 'scheduling':
+												stage = 'Scheduling: Member availability is being analyzed.'
+												break
+											case 'cancelled':
+												stage = 'Cancelled: Event will not occur. Historical timing data shown below.'
+												break
+										}
+										return (
+											<div className="rounded-md bg-indigo-50 border border-indigo-200 px-4 py-3 text-sm text-indigo-900 leading-relaxed">
+												{(stage != null) && <p className="mb-2">{stage}</p>}
+												<p className="text-indigo-800">
+													{'Timeline: Gray bar is the full window. Green blocks are preferred periods; red blocks are blackout periods. The scheduled block may shift until confirmed.'}
+												</p>
+											</div>
+										)
+									})()}
+									{event.scheduledTime != null && (
+										<div>
+											<label className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+												{event.status === 'scheduling' ? 'Proposed Start' : 'Current Proposed Start'}
+											</label>
+											<div className="mt-2">
+												<p className="text-indigo-700 font-medium text-lg">
+													{formatFullDateLabel(new Date(event.scheduledTime))}
+												</p>
+												<p className="text-xs text-amber-600 font-medium">{'Subject to change'}</p>
+												<p className="text-sm text-gray-500">{timeUntil(event.scheduledTime)}</p>
+											</div>
+										</div>
+									)}
+									{event.timeWindow != null && (
+										<EventTimeline
+											windowStart={event.timeWindow.start}
+											windowEnd={event.timeWindow.end}
+											duration={event.duration ?? 0}
+											preferred={event.preferredTimes ?? []}
+											blackout={event.blackoutPeriods ?? []}
+											scheduledTime={event.scheduledTime ?? undefined}
+											className="mt-2"
+										/>
+									)}
+								</CardContent>
+							</>
+						)}
 					</Card>
 
 					{/* Members List */}

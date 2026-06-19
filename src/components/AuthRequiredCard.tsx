@@ -7,11 +7,11 @@ import { FaLock } from 'react-icons/fa'
 import { Card, CardContent, Button } from '@/components/ui'
 
 interface AuthRequiredCardProps {
-  title?: string
-  message?: string
-  redirectLabel?: string
-  redirectHref?: string
-  showSignup?: boolean
+	title?: string
+	message?: string
+	redirectLabel?: string
+	redirectHref?: string
+	showSignup?: boolean
 }
 
 export default function AuthRequiredCard ({

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { FaBullseye, FaUsers, FaCheckCircle, FaPlus, FaClock, FaCalendarTimes } from 'react-icons/fa'
 
 import EventCard from '@/components/EventCard'
+import EventCardSkeleton from '@/components/EventCardSkeleton'
 import Navigation from '@/components/Navigation'
 import PageHero from '@/components/PageHero'
 import { Button, Card, CardContent, CardHeader, CardTitle, StatsCard } from '@/components/ui'
@@ -17,8 +18,7 @@ interface DashboardStats {
 	myEvents: number
 	participating: number
 	draft: number
-	scheduling: number
-	scheduled: number
+	pending: number // scheduling
 	confirmed: number
 	cancelled: number
 }
@@ -73,11 +73,11 @@ export default function DashboardPage () {
 			try {
 				const res = await api.get<{ events: EventType[]; total: number }>(`/v1/events?memberOf=${currentUser._id}`)
 				if (cancelled) { return }
-				const evts = res.data.events
-				setEvents(evts)
+				const events = res.data.events
+				setEvents(events)
 				setLoading(false)
 				const ids = new Set<string>()
-				evts.forEach(e => e.members.forEach(m => ids.add(m.userId)))
+				events.forEach(e => e.members.forEach(m => ids.add(m.userId)))
 				if (ids.size > 0) {
 					setEnrichingNames(true)
 					;(async () => {
@@ -111,7 +111,7 @@ export default function DashboardPage () {
 
 	const stats = useMemo((): DashboardStats => {
 		if (!events || !currentUser) {
-			return { total: 0, myEvents: 0, participating: 0, draft: 0, scheduling: 0, scheduled: 0, confirmed: 0, cancelled: 0 }
+			return { total: 0, myEvents: 0, participating: 0, draft: 0, pending: 0, confirmed: 0, cancelled: 0 }
 		}
 
 		const myEvents = events.filter(e =>
@@ -126,9 +126,8 @@ export default function DashboardPage () {
 			total: events.length,
 			myEvents: myEvents.length,
 			participating: participating.length,
-			draft: events.filter(e => e.status === 'draft').length,
-			scheduling: events.filter(e => e.status === 'scheduling').length,
-			scheduled: events.filter(e => e.status === 'scheduled').length,
+			draft: events.filter(e => e.visibility === 'draft').length,
+			pending: events.filter(e => e.status === 'scheduling').length,
 			confirmed: events.filter(e => e.status === 'confirmed').length,
 			cancelled: events.filter(e => e.status === 'cancelled').length
 		}
@@ -188,15 +187,15 @@ export default function DashboardPage () {
 						)}
 					/>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-						{['My Events','Participating','Upcoming','In Progress'].map((label, idx) => (
+						{['My Events','Participating','Upcoming','Pending'].map((label, idx) => (
 							statsLoading ? (
 								<div key={label} className="h-32 rounded-xl bg-gray-200 animate-pulse" />
 							) : (
 								<StatsCard
 									key={label}
 									title={label}
-									value={label === 'My Events' ? stats.myEvents : label === 'Participating' ? stats.participating : label === 'Upcoming' ? stats.confirmed : stats.scheduling}
-									description={label === 'My Events' ? 'Events I created/manage' : label === 'Participating' ? 'Events I\'m invited to' : label === 'Upcoming' ? 'Ready to go' : 'Currently scheduling'}
+									value={label === 'My Events' ? stats.myEvents : label === 'Participating' ? stats.participating : label === 'Upcoming' ? stats.confirmed : stats.pending}
+									description={label === 'My Events' ? 'Events I created/manage' : label === 'Participating' ? 'Events I\'m invited to' : label === 'Upcoming' ? 'Ready to go' : 'Scheduling events'}
 									icon={idx === 0 ? <FaBullseye className="text-2xl text-indigo-600" /> : idx === 1 ? <FaUsers className="text-2xl text-blue-600" /> : idx === 2 ? <FaCheckCircle className="text-2xl text-green-600" /> : <FaClock className="text-2xl text-yellow-600" />}
 								/>
 							)
@@ -216,7 +215,11 @@ export default function DashboardPage () {
 								{error != null ? (
 									<div className="text-center py-12"><p className="text-red-600 text-lg">{error}</p></div>
 								) : (loading || userLoading) ? (
-									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">{Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-48 bg-gray-200 rounded-xl animate-pulse" />)}</div>
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+										{Array.from({ length: 6 }).map((_, i) => (
+											<EventCardSkeleton key={i} index={i} />
+										))}
+									</div>
 								) : upcomingEvents.length === 0 ? (
 									<div className="relative overflow-hidden rounded-xl">
 										<div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-10" />
@@ -228,7 +231,7 @@ export default function DashboardPage () {
 										</div>
 									</div>
 								) : (
-									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+									<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-200">
 										{upcomingEvents.map(event => (
 											<EventCard key={event._id} event={event} currentUser={currentUser} userNames={userNames} />
 										))}

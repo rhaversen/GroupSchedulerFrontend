@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react'
-import { FaList, FaStar, FaCog, FaHandPaper, FaScroll, FaGlobe, FaUnlock, FaLock, FaClock } from 'react-icons/fa'
+import { FaList, FaHandPaper, FaScroll, FaGlobe, FaUsers, FaClock, FaEdit, FaPlusCircle, FaUserShield } from 'react-icons/fa'
 import { HiOutlineSearch, HiOutlineRefresh, HiChevronDown, HiChevronUp } from 'react-icons/hi'
 
 interface EventsFiltersProps {
@@ -11,8 +11,8 @@ interface EventsFiltersProps {
 	setViewTab: (tab: 'upcoming' | 'past') => void
 	viewMode: 'created' | 'admin' | 'participant' | 'both'
 	setViewMode: (mode: 'created' | 'admin' | 'participant' | 'both') => void
-	publicFilter: 'all' | 'public' | 'private'
-	setPublicFilter: (filter: 'all' | 'public' | 'private') => void
+	visibilityFilter: 'all' | 'public' | 'private' | 'draft'
+	setVisibilityFilter: (filter: 'all' | 'public' | 'private' | 'draft') => void
 	statusOptions: Array<{ id: string; label: string; icon: ReactNode }>
 }
 
@@ -25,8 +25,8 @@ export default function EventsFilters ({
 	setViewTab,
 	viewMode,
 	setViewMode,
-	publicFilter,
-	setPublicFilter,
+	visibilityFilter,
+	setVisibilityFilter,
 	statusOptions
 }: EventsFiltersProps) {
 	const [isExpanded, setIsExpanded] = useState(false)
@@ -36,10 +36,10 @@ export default function EventsFilters ({
 		setStatusFilter('')
 		setViewTab('upcoming')
 		setViewMode('both')
-		setPublicFilter('all')
+		setVisibilityFilter('all')
 	}
 
-	const hasActiveFilters = Boolean(searchTerm || statusFilter || viewTab !== 'upcoming' || viewMode !== 'both' || publicFilter !== 'all')
+	const hasActiveFilters = Boolean(searchTerm || statusFilter || viewTab !== 'upcoming' || viewMode !== 'both' || visibilityFilter !== 'all')
 
 	return (
 		<div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-3 sm:p-4 shadow-lg">
@@ -76,15 +76,15 @@ export default function EventsFilters ({
 
 			{(isExpanded || typeof window !== 'undefined') && (
 				<div className={`mt-3 space-y-3 lg:block ${isExpanded ? 'block animate-in slide-in-from-top-2 duration-200' : 'hidden'} lg:animate-none`}>
-					<div className="grid grid-cols-1 lg:grid-cols-[70%_auto] gap-3">
+					<div className="grid grid-cols-1 lg:grid-cols-[60%_auto] gap-3">
 						<div className="space-y-1.5">
-							<h3 className="text-white/90 text-xs font-medium px-1">{'Event Type'}</h3>
+							<h3 className="text-white/90 text-xs font-medium px-1">{'My Role'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
-									{ id: 'both', label: 'All Events', shortLabel: 'All', icon: <FaList /> },
-									{ id: 'created', label: 'Created by Me', shortLabel: 'Created', icon: <FaStar /> },
-									{ id: 'admin', label: 'Admin Role', shortLabel: 'Admin', icon: <FaCog /> },
-									{ id: 'participant', label: 'Participating', shortLabel: 'Participant', icon: <FaHandPaper /> }
+									{ id: 'both', label: 'Any Role', shortLabel: 'Any', icon: <FaList /> },
+									{ id: 'created', label: 'Created', shortLabel: 'Created', icon: <FaPlusCircle /> },
+									{ id: 'admin', label: 'Admin', shortLabel: 'Admin', icon: <FaUserShield /> },
+									{ id: 'participant', label: 'Participant', shortLabel: 'Participant', icon: <FaHandPaper /> }
 								].map((modeOption) => (
 									<button
 										key={modeOption.id}
@@ -127,7 +127,7 @@ export default function EventsFilters ({
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 lg:grid-cols-[70%_auto] gap-3">
+					<div className="grid grid-cols-1 lg:grid-cols-[60%_auto] gap-3">
 						{statusOptions.length > 0 && (
 							<div className="space-y-1.5">
 								<h3 className="text-white/90 text-xs font-medium px-1">{'Status'}</h3>
@@ -154,15 +154,16 @@ export default function EventsFilters ({
 							<h3 className="text-white/90 text-xs font-medium px-1">{'Visibility'}</h3>
 							<div className="flex flex-wrap gap-2">
 								{[
-									{ id: 'all', label: 'All', icon: <FaGlobe /> },
-									{ id: 'public', label: 'Public', icon: <FaUnlock /> },
-									{ id: 'private', label: 'Private', icon: <FaLock /> }
+									{ id: 'all', label: 'All', icon: <FaList /> },
+									{ id: 'draft', label: 'Draft', icon: <FaEdit /> },
+									{ id: 'private', label: 'Members', icon: <FaUsers /> },
+									{ id: 'public', label: 'Public', icon: <FaGlobe /> }
 								].map((filter) => (
 									<button
 										key={filter.id}
-										onClick={() => setPublicFilter(filter.id as 'all' | 'public' | 'private')}
+										onClick={() => setVisibilityFilter(filter.id as 'all' | 'public' | 'private' | 'draft')}
 										className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 min-w-0 ${
-											publicFilter === filter.id
+											visibilityFilter === filter.id
 												? 'bg-white text-indigo-600 shadow-md transform scale-105'
 												: 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm'
 										}`}
