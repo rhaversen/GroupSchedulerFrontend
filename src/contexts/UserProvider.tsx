@@ -30,28 +30,28 @@ const UserContext = createContext<UserContextType>({
 export const useUser = (): UserContextType => useContext(UserContext)
 
 export default function UserProvider ({ children }: { readonly children: ReactNode }): ReactElement {
-const [currentUser, setCurrentUser] = useState<UserType | null>(null)
-const [userLoading, setUserLoading] = useState(true)
+	const [currentUser, setCurrentUser] = useState<UserType | null>(null)
+	const [userLoading, setUserLoading] = useState(true)
 
-useEffect(() => {
-	const cookie = Cookies.get('currentUser')
-	if (cookie != null) {
-		setCurrentUser(JSON.parse(cookie))
-		setUserLoading(false)
-	} else {
-		const fetchUser = async () => {
-			try {
-				const userRes = await api.get<UserType>('/v1/users/me')
-				setCurrentUser(userRes.data)
-			} catch {
-				setCurrentUser(null)
-			} finally {
-				setUserLoading(false)
+	useEffect(() => {
+		const cookie = Cookies.get('currentUser')
+		if (cookie != null) {
+			setCurrentUser(JSON.parse(cookie))
+			setUserLoading(false)
+		} else {
+			const fetchUser = async () => {
+				try {
+					const userRes = await api.get<UserType>('/v1/users/me')
+					setCurrentUser(userRes.data)
+				} catch {
+					setCurrentUser(null)
+				} finally {
+					setUserLoading(false)
+				}
 			}
+			fetchUser()
 		}
-		fetchUser()
-	}
-}, [])
+	}, [])
 
 	useEffect(() => {
 		if (currentUser !== null) {
@@ -61,11 +61,11 @@ useEffect(() => {
 		}
 	}, [currentUser])
 
-const value = React.useMemo(() => ({
-	currentUser,
-	setCurrentUser,
-	userLoading
-}), [currentUser, userLoading])
+	const value = React.useMemo(() => ({
+		currentUser,
+		setCurrentUser,
+		userLoading
+	}), [currentUser, userLoading])
 
 	return (
 		<UserContext.Provider value={value}>

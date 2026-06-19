@@ -73,9 +73,9 @@ const Navigation = (): ReactElement => {
 											key={item.href}
 											href={item.href}
 											className={`inline-flex items-center pt-1 border-b-2 font-medium transition-colors px-0 sm:px-1 text-xs sm:text-sm ${isActive
-													? 'border-indigo-500 text-gray-900'
-													: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-												}`}
+												? 'border-indigo-500 text-gray-900'
+												: 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+											}`}
 										>
 											{item.label}
 										</Link>
@@ -153,9 +153,9 @@ const Navigation = (): ReactElement => {
 										key={item.href}
 										href={item.href}
 										className={`block pl-3 pr-4 py-2 text-base font-medium transition-colors ${isActive
-												? 'text-indigo-700 bg-indigo-50 border-r-4 border-indigo-500'
-												: 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-											}`}
+											? 'text-indigo-700 bg-indigo-50 border-r-4 border-indigo-500'
+											: 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+										}`}
 										onClick={() => setMobileMenuOpen(false)}
 									>
 										{item.label}

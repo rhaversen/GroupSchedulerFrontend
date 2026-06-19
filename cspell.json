@@ -26,6 +26,10 @@
         "setLocal",
         "enabledelayedexpansion",
         "dummyimage",
-        "chunkname"
+        "chunkname",
+        "evts",
+        "eventcard",
+        "popout",
+        "nohover"
     ]
 }
