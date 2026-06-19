@@ -77,10 +77,8 @@ export function EventCard ({ event, currentUser = null, userNames }: EventCardPr
 		}
 	}
 
-	const eventTime = event.scheduledTime !== null && event.scheduledTime !== undefined
-		? new Date(event.scheduledTime)
-		: new Date(event.timeWindow.end)
-	const isUpcoming = eventTime.getTime() > currentTime
+	const eventTimeMs = event.scheduledTime ?? event.timeWindow?.end ?? event.timeWindow?.start ?? 0
+	const isUpcoming = eventTimeMs > currentTime
 	const userRole = getUserRole()
 	const roleDisplay = getRoleDisplay(userRole)
 	const firstCreatorName = creators.length > 0 ? getCreatorNameImmediate(creators[0].userId) : null
