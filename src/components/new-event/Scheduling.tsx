@@ -17,6 +17,8 @@ function roundMsOfDayTo30 (ms: number): number { const step = 30 * 60 * 1000; co
 function formatLocalDate (ms: number): string { const d = new Date(ms); const yyyy = d.getFullYear(); const mm = pad2(d.getMonth() + 1); const dd = pad2(d.getDate()); return `${yyyy}-${mm}-${dd}` }
 function formatLocalTimeOnly (ms: number): string { const d = new Date(ms); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}` }
 
+const TODAY_DATE_STR = formatLocalDate(Date.now())
+
 function localDateAt (dateStr: string, hours = 0, minutes = 0): number {
 	if (!dateStr) { return NaN }
 	return new Date(`${dateStr}T${pad2(hours)}:${pad2(minutes)}`).getTime()
@@ -53,7 +55,7 @@ export interface SchedulingRef {
 }
 
 const Scheduling = forwardRef<SchedulingRef>((props, ref) => {
-	const todayDateStr = useMemo(() => formatLocalDate(Date.now()), [])
+	const todayDateStr = TODAY_DATE_STR
 
 	const [targetDate, setTargetDate] = useState('')
 
